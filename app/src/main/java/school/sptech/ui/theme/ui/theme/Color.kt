@@ -1,4 +1,4 @@
-package school.sptech.ui.theme
+package school.sptech.ui.theme.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
