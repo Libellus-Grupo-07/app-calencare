@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">CalencareApp</string>
+    <string name="title_activity_dados_empresa">DadosEmpresa</string>
 </resources>
