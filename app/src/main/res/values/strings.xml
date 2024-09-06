@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">CalencareApp</string>
+    <string name="title_activity_notificacoes">Notificacoes</string>
 </resources>
