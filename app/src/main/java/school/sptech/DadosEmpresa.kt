@@ -5,6 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -29,9 +32,9 @@ class DadosEmpresa : ComponentActivity() {
         setContent {
             CalencareAppTheme {
                 Scaffold(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    containerColor = Color.White // Cor de fundo do Scaffold
                 ) { innerPadding ->
-                    // Agora estamos passando o 'innerPadding' para a TelaPerfil
                     TelaPerfil(modifier = Modifier.padding(innerPadding))
                 }
             }
@@ -42,212 +45,160 @@ class DadosEmpresa : ComponentActivity() {
 @Composable
 fun TelaPerfil(modifier: Modifier = Modifier) {
     Scaffold(
-        bottomBar = {
-            BottomNavigationBar()
-        }
+
     ) { contentPadding ->
         Column(
             modifier = modifier
                 .fillMaxSize()
-                .padding(contentPadding) // Usando o padding do Scaffold
-                .padding(16.dp),  // Padding adicional para espaçamento
+                .padding(contentPadding)
+                .padding(16.dp)
+                .background(Color.White), // Cor de fundo da coluna
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Imagem de perfil
+            // Linha para os botões "Voltar", "Sair da Conta" e "Salvar"
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Botão Voltar à esquerda
+                IconButton(
+                    onClick = { /* Ação para Voltar */ }
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.voltar),
+                        modifier = Modifier.size(30.dp),
+                        contentDescription = "Voltar"
+                    )
+                }
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                // Botão "Sair da Conta"
+                Button(
+                    onClick = { /* Ação Dados da Empresa */ },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier.border(1.dp, Color(0xFF888888), RoundedCornerShape(50.dp))
+                ) {
+                    Text(
+                        text = "Sair da conta",
+                        style = TextStyle(
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 16.sp,
+                            color = Color(0xFF888888)
+                        )
+                    )
+                }
+                Spacer(modifier = Modifier.width(9.dp))
+
+                // Botão "Salvar"
+                Button(
+                    onClick = { /* Ação para Salvar */ },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9F35F0)),
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    Text(text = "Salvar", color = Color.White,
+                        style = TextStyle(
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 16.sp
+                        )
+                    )
+                }
+            }
+
+            // Imagem de perfil centralizada
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
-                    .size(100.dp)
+                    .size(120.dp)
                     .clip(CircleShape)
+                    .padding(vertical = 0.dp)
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.ft), // Placeholder da imagem
+                    painter = painterResource(id = R.drawable.ft),
                     contentDescription = "Imagem de perfil",
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .width(300.dp) // Define a largura fixo
-                        .height(300.dp)
+                    modifier = Modifier.size(100.dp)
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
+            // Botões para alternar dados da empresa e pessoais
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 Button(
-                    onClick = { /*TODO*/ },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF5722)) // Cor hexadecimal direto
+                    onClick = { /* Ação Dados da Empresa */ },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                    shape = RoundedCornerShape(50.dp),
+                    modifier = Modifier.border(1.dp, Color.Transparent, RoundedCornerShape(50.dp))
                 ) {
-                    Text(text = "Dados da Empresa")
+                    Text(
+                        text = "Dados da Empresa",
+                        style = TextStyle(
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 16.sp,
+                            color = Color(0xFF888888)
+                        )
+                    )
                 }
                 Button(
-                    onClick = { /*TODO*/ },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(159,53,240)) // Cor hexadecimal direto
+                    onClick = { /* Ação Dados Pessoais */ },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9F35F0)),
+                    shape = RoundedCornerShape(50.dp)
                 ) {
-                    Text(text = "Dados Pessoais")
+                    Text(text = "Dados Pessoais", color = Color.White)
                 }
             }
 
             Spacer(modifier = Modifier.height(30.dp))
 
-            // Campos de entrada de dados
-            TextField(
+            // Nome
+            Text(text = "Nome", color = Color(0xFF888888), fontSize = 16.sp, fontWeight = FontWeight.Bold, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(
                 value = "Patricia Dias",
                 onValueChange = {},
-                label = { Text("Nome") },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(100.dp)
             )
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            TextField(
+            // Telefone
+            Text(text = "Telefone", color = Color(0xFF888888), fontSize = 16.sp, fontWeight = FontWeight.Bold, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(
                 value = "(11) 973682-3933",
                 onValueChange = {},
-                label = { Text("Telefone") },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(100.dp)
             )
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            TextField(
+            // Email
+            Text(text = "Email", fontSize = 16.sp, color = Color(0xFF888888), fontWeight = FontWeight.Bold, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(
                 value = "patricia@email.com",
                 onValueChange = {},
-                label = { Text("Email") },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(100.dp)
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
-            TextField(
+            // Perfil
+            Text(text = "Perfil", fontSize = 16.sp, color = Color(0xFF888888), fontWeight = FontWeight.Bold, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(
                 value = "Administrador",
                 onValueChange = {},
-                label = { Text("Perfil") },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(100.dp)
             )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                onClick = { /*TODO*/ },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp)),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EA)) // Cor hexadecimal direto
-            ) {
-                Text(text = "Salvar", color = Color.White, fontWeight = FontWeight.Bold)
-            }
         }
     }
 }
-
-
-
-
-@Composable
-fun BottomNavigationBar() {
-    BottomAppBar(
-        containerColor = Color.White,  // Cor do fundo da barra de navegação
-        contentColor = Color.White,
-        tonalElevation = 8.dp
-    ) {
-        NavigationBar {
-            // Ícone de Início com cor personalizada
-            NavigationBarItem(
-                selected = true,
-                onClick = { /* Ação para Início */ },
-                icon = {
-                    Image(
-                        painter = painterResource(id = R.drawable.home), // Substitua pelo nome da sua imagem
-                        contentDescription = "Início",modifier = Modifier
-                            .width(20.dp) // Define a largura fixo
-                            .height(20.dp)
-                    )
-                },
-                label = { Text("Início") },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Color(0xFF6200EA), // Cor para ícone selecionado (roxo)
-                    selectedTextColor = Color(0xFF6200EA), // Cor para texto selecionado (roxo)
-                    unselectedIconColor = Color.Gray,      // Cor para ícone não selecionado
-                    unselectedTextColor = Color.Gray       // Cor para texto não selecionado
-                )
-            )
-
-            // Ícone de Estoque com cor personalizada
-            NavigationBarItem(
-                selected = false,
-                onClick = { /* Ação para Estoque */ },
-                icon = {
-                    Image(
-                        painter = painterResource(id = R.drawable.estoque), // Substitua pelo nome da sua imagem
-                        contentDescription = "Estoque",
-                        modifier = Modifier
-                            .width(20.dp) // Define a largura fixo
-                            .height(20.dp)
-                    )
-                },
-                label = { Text("Estoque") },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Color(0xFF4CAF50), // Cor para ícone selecionado (verde)
-                    selectedTextColor = Color(0xFF4CAF50), // Cor para texto selecionado (verde)
-                    unselectedIconColor = Color.Gray,      // Cor para ícone não selecionado
-                    unselectedTextColor = Color.Gray       // Cor para texto não selecionado
-                )
-            )
-
-            // Ícone de Finanças com cor personalizada
-            NavigationBarItem(
-                selected = false,
-                onClick = { /* Ação para Finanças */ },
-                icon = {
-                    Image(
-                        painter = painterResource(id = R.drawable.financas), // Substitua pelo nome da sua imagem
-                        contentDescription = "Finanças",
-                                modifier = Modifier
-                                .width(20.dp) // Define a largura fixo
-                            .height(20.dp)
-                    )
-                },
-                label = { Text("Finanças") },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Color(0xFFFFC107), // Cor para ícone selecionado (amarelo)
-                    selectedTextColor = Color(0xFFFFC107), // Cor para texto selecionado (amarelo)
-                    unselectedIconColor = Color.Gray,      // Cor para ícone não selecionado
-                    unselectedTextColor = Color.Gray,
-
-                )
-            )
-
-            // Ícone de Dashboard com cor personalizada
-            NavigationBarItem(
-                selected = false,
-                onClick = { /* Ação para Dashboard */ },
-                icon = {
-                    Image(
-                        painter = painterResource(id = R.drawable.dashboard), // Substitua pelo nome da sua imagem
-                        contentDescription = "Dashboard",
-                        modifier = Modifier
-                            .width(20.dp) // Define a largura fixo
-                            .height(20.dp)
-                    )
-                },
-                label = { Text("Dashboard") },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Color(254254254), // Cor para ícone selecionado (laranja)
-                    selectedTextColor = Color(254254254), // Cor para texto selecionado (laranja)
-                    unselectedIconColor = Color.Gray,      // Cor para ícone não selecionado
-                    unselectedTextColor = Color.Gray       // Cor para texto não selecionado
-                )
-            )
-        }
-    }
-}
-
 
 
 
