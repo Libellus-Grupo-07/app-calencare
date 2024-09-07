@@ -102,12 +102,8 @@ class Notificacoes : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Notificacoes(name: String, modifier: Modifier = Modifier) {
-    Box(modifier = Modifier.fillMaxSize().background(Color(248,248,248,255))) {
-        Image(painter = painterResource(id = R.drawable.bg),
-            contentDescription = "background",
-            contentScale = ContentScale.FillBounds,
-            modifier = Modifier.fillMaxSize()
-        )
+    Box(modifier = Modifier.fillMaxSize()) {
+        Background()
 
         Column (modifier = modifier.verticalScroll(rememberScrollState())) {
 //            Row (
@@ -181,6 +177,15 @@ fun MultiStyleText(text1: String, color1: Color,
             append(text4)
         }
     })
+}
+
+@Composable
+fun Background(){
+    Image(painter = painterResource(id = R.drawable.bg),
+        contentDescription = "background",
+        contentScale = ContentScale.FillBounds,
+        modifier = Modifier.fillMaxSize().background(Color(248,248,248,255))
+    )
 }
 
 @Composable
