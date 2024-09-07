@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package school.sptech
 
 import android.os.Bundle
@@ -5,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,13 +17,26 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -39,7 +55,40 @@ class Notificacoes : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             CalencareAppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                //val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
+// .nestedScroll(scrollBehavior.nestedScrollConnection)
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    topBar = {
+                        CenterAlignedTopAppBar(
+                            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                                containerColor = Color(248,248,248,0),
+                                titleContentColor = Color(0,0,0,255),
+//                                containerColor = MaterialTheme.colorScheme.primaryContainer,
+//                                titleContentColor = MaterialTheme.colorScheme.primary,
+                            ),
+                            title = {
+                                Text("Notificações",
+                                    style = TextStyle(
+                                        fontSize = 20.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                    )
+                                )
+                            },
+                            navigationIcon = {
+                                IconButton(onClick = { /* do something */ }) {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                        contentDescription = "Localized description",
+                                        tint = Color(0,0,0,255)
+                                    )
+                                }
+                            },
+                            //scrollBehavior = scrollBehavior
+                        )
+                    },
+
+                ) { innerPadding ->
                     Notificacoes(
                         name = "Android",
                         modifier = Modifier.padding(innerPadding)
@@ -50,53 +99,67 @@ class Notificacoes : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Notificacoes(name: String, modifier: Modifier = Modifier) {
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize().background(Color(248,248,248,255))) {
         Image(painter = painterResource(id = R.drawable.bg),
             contentDescription = "background",
             contentScale = ContentScale.FillBounds,
             modifier = Modifier.fillMaxSize()
         )
 
-
-        Column (modifier = Modifier) {
-            Row (
-                modifier = modifier.padding(25.dp),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Column (
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Image(
-                        painter = painterResource(id = R.mipmap.leftarrow),
-                        contentDescription = "Ícone voltar",
-                        modifier = modifier.size(25.dp)
-                    )
-                }
-
-                Column (
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = modifier.weight(1f)
-                    //modifier = modifier.weight(0.5f)
-                ) {
-                    Text(text = "Notificações",
-                        style = TextStyle(
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                        )
-                    )
-                }
-            }
+        Column (modifier = modifier.verticalScroll(rememberScrollState())) {
+//            Row (
+//                modifier = modifier.padding(25.dp),
+//                horizontalArrangement = Arrangement.Center
+//            ) {
+//                Column (
+//                    horizontalAlignment = Alignment.CenterHorizontally
+//                ) {
+//                    Image(
+//                        painter = painterResource(id = R.mipmap.leftarrow),
+//                        contentDescription = "Ícone voltar",
+//                        modifier = modifier.size(25.dp)
+//                    )
+//                }
+//
+//                Column (
+//                    horizontalAlignment = Alignment.CenterHorizontally,
+//                    modifier = modifier.padding(start = 100.dp)
+//                    //modifier = modifier.weight(1f)
+//                    //modifier = modifier.weight(0.5f)
+//                ) {
+//                    Text(text = "Notificações",
+//                        color = Color(0,0,0,255),
+//                        style = TextStyle(
+//                            fontSize = 20.sp,
+//                            fontWeight = FontWeight.SemiBold,
+//                        )
+//                    )
+//                }
+//            }
 
             NotificacaoBloco("05/09/2024 21:59", "Esmalte Azul Metálico Risqué", 3)
             NotificacaoBloco("05/09/2024 21:55", "Shampoo Mais Lisos Wella", 0)
             NotificacaoBloco("05/09/2024 21:21", "Esmalte Azul Metálico Risqué", 15)
+            NotificacaoBloco("05/09/2024 21:21", "Esmalte Azul Metálico Risqué", 15)
+            NotificacaoBloco("05/09/2024 21:21", "Esmalte Azul Metálico Risqué", 15)
+            NotificacaoBloco("05/09/2024 21:21", "Esmalte Azul Metálico Risqué", 15)
+            NotificacaoBloco("05/09/2024 21:21", "Esmalte Azul Metálico Risqué", 15)
+            NotificacaoBloco("05/09/2024 21:21", "Esmalte Azul Metálico Risqué", 15)
+            NotificacaoBloco("05/09/2024 21:21", "Esmalte Azul Metálico Risqué", 15)
+            NotificacaoBloco("05/09/2024 21:21", "Esmalte Azul Metálico Risqué", 15)
+            NotificacaoBloco("05/09/2024 21:21", "Esmalte Azul Metálico Risqué", 15)
+            NotificacaoBloco("05/09/2024 21:21", "Esmalte Azul Metálico Risqué", 15)
+            NotificacaoBloco("05/09/2024 21:21", "Esmalte Azul Metálico Risqué", 15)
+            NotificacaoBloco("05/09/2024 21:21", "Esmalte Azul Metálico Risqué", 15)
+            NotificacaoBloco("05/09/2024 21:21", "Esmalte Azul Metálico Risqué", 15)
+            NotificacaoBloco("05/09/2024 21:21", "Esmalte Azul Metálico Risqué", 15)
+            NotificacaoBloco("05/09/2024 21:21", "Esmalte Azul Metálico Risqué", 15)
 
         }
     }
-
-
 }
 
 @Composable
@@ -155,6 +218,7 @@ fun NotificacaoBloco(dtHora:String, nomeProduto:String, qntdProduto:Int) {
                     color = Color(88, 88, 88, 255),
                     style = TextStyle(
                         fontSize = 12.sp,
+                        fontWeight = FontWeight.SemiBold,
                     )
                 )
             }
@@ -176,7 +240,7 @@ fun NotificacaoBloco(dtHora:String, nomeProduto:String, qntdProduto:Int) {
                         color = cor,
                         style = TextStyle(
                             fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold,
+                            fontWeight = FontWeight.SemiBold,
                         )
                     )
                 }
@@ -207,8 +271,6 @@ fun NotificacaoBloco(dtHora:String, nomeProduto:String, qntdProduto:Int) {
         }
     }
 }
-
-
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
