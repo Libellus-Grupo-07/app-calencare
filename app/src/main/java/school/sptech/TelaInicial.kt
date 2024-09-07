@@ -1,9 +1,5 @@
 package school.sptech
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -27,7 +23,6 @@ import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -63,20 +58,6 @@ import school.sptech.ui.theme.Verde
 import school.sptech.ui.theme.VerdeOpacidade15
 import school.sptech.ui.theme.Vermelho
 import school.sptech.ui.theme.VermelhoOpacidade15
-
-class Inicio : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            CalencareAppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    TelaInicial(modifier = Modifier.padding(innerPadding))
-                }
-            }
-        }
-    }
-}
 
 @Composable
 fun CabecalhoInicio(modifier: Modifier = Modifier){
@@ -372,7 +353,7 @@ fun ButtonEstoque(qtdEstoque:Int){
             text = "$qtdEstoque em Estoque",
             color = corTexto,
             fontWeight = FontWeight.SemiBold,
-            fontSize = 13.sp
+            fontSize = 13.sp,
         )
     }
 }
@@ -427,7 +408,7 @@ fun ContainerCardProduto(){
                     text = "Produtos com Quantidade Baixa",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.ExtraBold,
-                    letterSpacing = -0.5.sp
+                    letterSpacing = -0.5.sp,
                 )
             }
             
@@ -453,7 +434,9 @@ fun ContainerCardProduto(){
 
 @Composable
 fun TelaInicial(modifier:Modifier = Modifier){
-    Column(modifier = modifier.padding(horizontal = 24.dp, vertical = 12.dp).verticalScroll(state =  ScrollState(1))) {
+    Column(modifier = modifier
+        .padding(horizontal = 24.dp, vertical = 12.dp)
+        .verticalScroll(state = ScrollState(1))) {
         CabecalhoInicio()
         Spacer(modifier = Modifier.size(21.dp))
         BoxKpis()
