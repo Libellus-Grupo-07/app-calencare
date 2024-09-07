@@ -13,6 +13,22 @@
         android:theme="@style/Theme.CalencareApp"
         tools:targetApi="31">
         <activity
+            android:name=".NavGraph"
+            android:exported="false"
+            android:label="@string/title_activity_nav_graph"
+            android:theme="@style/Theme.CalencareApp" />
+        <activity
+            android:name=".TelaSplash"
+            android:exported="true"
+            android:label="@string/title_activity_tela_splash"
+            android:theme="@style/Theme.CalencareApp">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".ui.theme.MainActivity"
             android:exported="false"
             android:label="@string/title_activity_main"
@@ -21,18 +37,12 @@
             android:name=".TelaLogin"
             android:exported="false"
             android:label="@string/title_activity_tela_login"
-            android:theme="@style/Theme.CalencareApp" />
+            android:theme="@style/Theme.CalencareApp" /> <!-- Removido o intent-filter da MainActivity -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.CalencareApp">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:theme="@style/Theme.CalencareApp" />
     </application>
 
 </manifest>
