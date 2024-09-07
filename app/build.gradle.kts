@@ -64,6 +64,7 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation("androidx.navigation:navigation-compose:2.7.6")
+    implementation("androidx.compose.ui:ui-text-google-fonts:1.6.8")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -21,6 +21,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import school.sptech.ui.theme.Branco
 import school.sptech.ui.theme.Cinza
 import school.sptech.ui.theme.RoxoNubank
+import school.sptech.ui.theme.fontFamily
 
 @Composable
 fun BottomBar(
@@ -37,7 +38,7 @@ fun BottomBar(
 
     NavigationBar(
         modifier = modifier,
-        containerColor = Branco
+        containerColor = Branco,
     ) {
         val navBackStacKEntry by navController.currentBackStackEntryAsState()
         val rotaAtual = navBackStacKEntry?.destination?.route
@@ -65,9 +66,10 @@ fun BottomBar(
                 label = {
                     Text(
                         text = tela.titulo!!,
-                        fontSize = 14.sp,
-                        letterSpacing = -0.05.sp,
-                        fontWeight = FontWeight.SemiBold
+                        fontSize = 12.5.sp,
+                        letterSpacing = -0.5.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        fontFamily = fontFamily
                     )
                 },
                 colors = NavigationBarItemDefaults.colors(

@@ -58,6 +58,7 @@ import school.sptech.ui.theme.Verde
 import school.sptech.ui.theme.VerdeOpacidade15
 import school.sptech.ui.theme.Vermelho
 import school.sptech.ui.theme.VermelhoOpacidade15
+import school.sptech.ui.theme.fontFamily
 
 @Composable
 fun CabecalhoInicio(modifier: Modifier = Modifier){
@@ -87,8 +88,8 @@ fun CabecalhoInicio(modifier: Modifier = Modifier){
                 Text(
                     text = "Patricia Dias",
                     fontWeight = FontWeight.ExtraBold,
-                    fontSize = 15.sp,
-                    letterSpacing = -0.05.sp,
+                    fontSize = 14.sp,
+                    letterSpacing = -0.5.sp,
                     lineHeight = 15.sp,
                     color = RoxoNubank
                 )
@@ -97,9 +98,9 @@ fun CabecalhoInicio(modifier: Modifier = Modifier){
 
                 Text(
                     text = "Studio Patricia Dias",
-                    fontWeight = FontWeight.ExtraBold,
-                    fontSize = 13.sp,
-                    letterSpacing = -0.05.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 11.5.sp,
+                    letterSpacing = -0.5.sp,
                     lineHeight = 15.sp,
                     color = Cinza
                 )
@@ -150,14 +151,14 @@ fun CardKpi(titulo:String, valor:String, cor:String, modifier: Modifier = Modifi
                 Column {
                     Text(
                         text = titulo,
-                        fontSize = 11.sp,
+                        fontSize = 9.5.sp,
                         fontWeight = FontWeight.SemiBold,
                         letterSpacing = -0.3.sp,
                         color = Preto
                     )
                     Text(
                         text = valor,
-                        fontSize = 17.sp,
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.ExtraBold,
                         letterSpacing = -0.5.sp,
                         color = corTexto
@@ -207,7 +208,7 @@ fun BoxKpis(modifier: Modifier = Modifier){
                 Column(modifier = modifier.weight(0.5f)) {
                     CardKpi(
                         titulo = "Produtos com Estoque Baixo",
-                        valor = "25 produtos",
+                        valor = "5 produtos",
                         cor = "Laranja"
                     )
                 }
@@ -236,24 +237,24 @@ fun CardProduto(nome:String, categoria:String, qtdEstoque:Int, isTelaInicio:Bool
             Column {
                 Text(
                     text = nome,
-                    fontSize = 14.sp,
+                    fontSize = 12.5.sp,
                     lineHeight = 20.sp,
                     color = RoxoNubank,
                     fontWeight = FontWeight.Bold,
-                    letterSpacing = -0.05.sp
-
+                    letterSpacing = -0.5.sp,
+                    fontFamily = fontFamily
                 )
 
                 Spacer(modifier = Modifier.size(8.dp))
 
                 Text(
                     text = categoria,
-                    fontSize = 12.sp,
+                    fontSize = 11.5.sp,
                     fontWeight = FontWeight.Medium,
-                    letterSpacing = -0.05.sp,
-                    lineHeight = 20.sp,
-                    color = Cinza
-
+                    letterSpacing = -0.5.sp,
+                    lineHeight = 15.sp,
+                    color = Cinza,
+                    fontFamily = fontFamily
                 )
                 Spacer(modifier = Modifier.size(8.dp))
 
@@ -275,7 +276,7 @@ fun CardProduto(nome:String, categoria:String, qtdEstoque:Int, isTelaInicio:Bool
                         Icon(
                             Icons.Rounded.Add,
                             contentDescription = "Ícone Adicionar",
-                            modifier = modifier.size(18.dp)
+                            modifier = Modifier.size(15.dp)
                         )
 
                         Spacer(modifier = Modifier.size(4.dp))
@@ -283,7 +284,9 @@ fun CardProduto(nome:String, categoria:String, qtdEstoque:Int, isTelaInicio:Bool
                         Text(
                             text = "Repor Estoque",
                             fontWeight = FontWeight.SemiBold,
-                            fontSize = 13.sp
+                            fontSize = 11.5.sp,
+                            fontFamily = fontFamily,
+                            letterSpacing = -0.5.sp
                         )
 
 
@@ -344,7 +347,7 @@ fun ButtonEstoque(qtdEstoque:Int){
             bitmap = ImageBitmap.imageResource(icone),
             contentDescription = descricao,
             tint = corTexto,
-            modifier = Modifier.size(15.dp)
+            modifier = Modifier.size(14.dp)
         )
 
         Spacer(modifier = Modifier.size(4.dp))
@@ -353,7 +356,9 @@ fun ButtonEstoque(qtdEstoque:Int){
             text = "$qtdEstoque em Estoque",
             color = corTexto,
             fontWeight = FontWeight.SemiBold,
-            fontSize = 13.sp,
+            fontSize = 11.5.sp,
+            fontFamily = fontFamily,
+            letterSpacing = -0.5.sp
         )
     }
 }
@@ -397,17 +402,13 @@ fun ContainerCardProduto(){
         ))
     }
 
-    var contador by remember {
-        mutableStateOf(0)
-    }
-
     Box(modifier = Modifier.fillMaxWidth()){
         Column {
             Row {
                 Text(
                     text = "Produtos com Quantidade Baixa",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
                     letterSpacing = -0.5.sp,
                 )
             }
