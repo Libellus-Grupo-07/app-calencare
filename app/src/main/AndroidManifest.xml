@@ -13,6 +13,11 @@
         android:theme="@style/Theme.CalencareApp"
         tools:targetApi="31">
         <activity
+            android:name=".Notificacoes"
+            android:exported="false"
+            android:label="@string/title_activity_notificacoes"
+            android:theme="@style/Theme.CalencareApp" />
+        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
