@@ -6,32 +6,59 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/logo_calencare"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.CalencareApp"
         tools:targetApi="31">
+        
+        <!-- activity -->
+        <!--     android:name=".NavGraph" -->
+        <!--     android:exported="false" -->
+        <!--     android:label="@string/title_activity_nav_graph" -->
+        <!--     android:theme="@style/Theme.CalencareApp" /> -->
+      
+        <activity
+            android:name=".TelaSplash"
+            android:exported="true"
+            android:label="TelaSplash"
+            android:theme="@style/Theme.CalencareApp">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+      
         <activity
             android:name=".Inicio"
             android:exported="false"
             android:label="Inicio"
             android:theme="@style/Theme.CalencareApp" />
+      
         <activity
             android:name=".Notificacoes"
             android:exported="false"
             android:label="@string/title_activity_notificacoes"
             android:theme="@style/Theme.CalencareApp" />
+
+        <activity
+            android:name=".ui.theme.MainActivity"
+            android:exported="false"
+            android:label="@string/title_activity_main"
+            android:theme="@style/Theme.CalencareApp" />
+      
+        <activity
+            android:name=".TelaLogin"
+            android:exported="false"
+            android:label="@string/title_activity_tela_login"
+            android:theme="@style/Theme.CalencareApp" /> <!-- Removido o intent-filter da MainActivity -->
+      
         <activity
             android:name=".MainActivity"
-            android:exported="true"
+            android:exported="false"
             android:label="@string/app_name"
-            android:theme="@style/Theme.CalencareApp">
-        <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:theme="@style/Theme.CalencareApp" />
     </application>
 
 </manifest>
