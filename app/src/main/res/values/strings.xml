@@ -4,4 +4,5 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_tela_splash">TelaSplash</string>
     <string name="title_activity_nav_graph">NavGraph</string>
+    <string name="title_activity_notificacoes">Notificacoes</string>
 </resources>
