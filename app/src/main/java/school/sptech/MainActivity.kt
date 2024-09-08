@@ -23,7 +23,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            CalencareAppTheme {
+            CalencareAppTheme(darkTheme = false) {
                 val navController = rememberNavController()
                 var buttonVisible by remember { mutableStateOf(true) }
 

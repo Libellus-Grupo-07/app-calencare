@@ -11,8 +11,10 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -198,7 +200,7 @@ fun BoxKpis(modifier: Modifier = Modifier){
                 Column(modifier = modifier.weight(0.5f)) {
                     CardKpi(
                         titulo = "Produtos Repostos no Dia",
-                        valor = "25 produtos",
+                        valor = "0 produtos",
                         cor = "Azul"
                     )
                 }
@@ -230,9 +232,13 @@ fun CardProduto(nome:String, categoria:String, qtdEstoque:Int, isTelaInicio:Bool
             ),
             shape = RoundedCornerShape(20.dp)
         )
-        .background(Branco, shape = RoundedCornerShape(20.dp))) {
+        .background(Branco, shape = RoundedCornerShape(20.dp))
+        .fillMaxHeight(),
+        Arrangement.Center,
+        Alignment.CenterVertically
+    ) {
         Box(modifier = Modifier
-            .padding(18.dp)
+            .padding(16.dp)
         ){
             Column {
                 Text(
@@ -284,13 +290,10 @@ fun CardProduto(nome:String, categoria:String, qtdEstoque:Int, isTelaInicio:Bool
                         Text(
                             text = "Repor Estoque",
                             fontWeight = FontWeight.SemiBold,
-                            fontSize = 11.5.sp,
+                            fontSize = 12.sp,
                             fontFamily = fontFamily,
                             letterSpacing = -0.5.sp
                         )
-
-
-
                     }
                 }
 
@@ -356,7 +359,7 @@ fun ButtonEstoque(qtdEstoque:Int){
             text = "$qtdEstoque em Estoque",
             color = corTexto,
             fontWeight = FontWeight.SemiBold,
-            fontSize = 11.5.sp,
+            fontSize = 12.sp,
             fontFamily = fontFamily,
             letterSpacing = -0.5.sp
         )
@@ -395,7 +398,7 @@ fun ContainerCardProduto(){
                 4
             ),
             Produto(
-                "Base Líquida Estée Lauder  SFS-10",
+                "Base Líquida Estée Lauder SFS-10",
                 "Maquiagem",
                 6
             ),
@@ -409,13 +412,14 @@ fun ContainerCardProduto(){
                     text = "Produtos com Quantidade Baixa",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
+                    fontFamily = fontFamily,
                     letterSpacing = -0.5.sp,
                 )
             }
             
             Spacer(modifier = Modifier.size(21.dp))
                     FlowRow(modifier = Modifier,
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                         maxItemsInEachRow = 2) {
                             repeat(2 * (produtos.size / 2)){ i ->
@@ -424,7 +428,7 @@ fun ContainerCardProduto(){
                                     categoria = produtos[i].categoria,
                                     qtdEstoque = produtos[i].qtdEstoque,
                                     isTelaInicio = true,
-                                    modifier = Modifier.weight(1f)
+                                    modifier = Modifier.weight(1f).height(210.dp)
                                 )
                             }
                         }
