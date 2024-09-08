@@ -47,6 +47,12 @@
             android:exported="false"
             android:label="@string/title_activity_notificacoes"
             android:theme="@style/Theme.CalencareApp" />
+      
+      <activity
+            android:name=".TelaAdicionarProduto"
+            android:exported="false"
+            android:label="@string/title_activity_tela_adicionar_produto"
+            android:theme="@style/Theme.CalencareApp" />
 
         <activity
             android:name=".DadosEmpresa"
