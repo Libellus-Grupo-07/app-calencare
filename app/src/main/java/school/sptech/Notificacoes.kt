@@ -47,7 +47,13 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import school.sptech.ui.theme.Amarelo
+import school.sptech.ui.theme.BrancoFundo
 import school.sptech.ui.theme.CalencareAppTheme
+import school.sptech.ui.theme.Laranja
+import school.sptech.ui.theme.Preto
+import school.sptech.ui.theme.RoxoNubank
+import school.sptech.ui.theme.Vermelho
 
 class Notificacoes : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,8 +68,8 @@ class Notificacoes : ComponentActivity() {
                     topBar = {
                         CenterAlignedTopAppBar(
                             colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                                containerColor = Color(248,248,248,0),
-                                titleContentColor = Color(0,0,0,255),
+                                containerColor = Color.Transparent,
+                                titleContentColor = Preto,
 //                                containerColor = MaterialTheme.colorScheme.primaryContainer,
 //                                titleContentColor = MaterialTheme.colorScheme.primary,
                             ),
@@ -80,7 +86,7 @@ class Notificacoes : ComponentActivity() {
                                     Icon(
                                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                         contentDescription = "Localized description",
-                                        tint = Color(0,0,0,255)
+                                        tint = Preto
                                     )
                                 }
                             },
@@ -104,38 +110,7 @@ class Notificacoes : ComponentActivity() {
 fun Notificacoes(name: String, modifier: Modifier = Modifier) {
     Box(modifier = Modifier.fillMaxSize()) {
         Background()
-
         Column (modifier = modifier.verticalScroll(rememberScrollState())) {
-//            Row (
-//                modifier = modifier.padding(25.dp),
-//                horizontalArrangement = Arrangement.Center
-//            ) {
-//                Column (
-//                    horizontalAlignment = Alignment.CenterHorizontally
-//                ) {
-//                    Image(
-//                        painter = painterResource(id = R.mipmap.leftarrow),
-//                        contentDescription = "Ícone voltar",
-//                        modifier = modifier.size(25.dp)
-//                    )
-//                }
-//
-//                Column (
-//                    horizontalAlignment = Alignment.CenterHorizontally,
-//                    modifier = modifier.padding(start = 100.dp)
-//                    //modifier = modifier.weight(1f)
-//                    //modifier = modifier.weight(0.5f)
-//                ) {
-//                    Text(text = "Notificações",
-//                        color = Color(0,0,0,255),
-//                        style = TextStyle(
-//                            fontSize = 20.sp,
-//                            fontWeight = FontWeight.SemiBold,
-//                        )
-//                    )
-//                }
-//            }
-
             NotificacaoBloco("05/09/2024 21:59", "Esmalte Azul Metálico Risqué", 3)
             NotificacaoBloco("05/09/2024 21:55", "Shampoo Mais Lisos Wella", 0)
             NotificacaoBloco("05/09/2024 21:21", "Esmalte Azul Metálico Risqué", 15)
@@ -153,7 +128,6 @@ fun Notificacoes(name: String, modifier: Modifier = Modifier) {
             NotificacaoBloco("05/09/2024 21:21", "Esmalte Azul Metálico Risqué", 15)
             NotificacaoBloco("05/09/2024 21:21", "Esmalte Azul Metálico Risqué", 15)
             NotificacaoBloco("05/09/2024 21:21", "Esmalte Azul Metálico Risqué", 15)
-
         }
     }
 }
@@ -184,7 +158,7 @@ fun Background(){
     Image(painter = painterResource(id = R.drawable.bg),
         contentDescription = "background",
         contentScale = ContentScale.FillBounds,
-        modifier = Modifier.fillMaxSize().background(Color(248,248,248,255))
+        modifier = Modifier.fillMaxSize().background(BrancoFundo)
     )
 }
 
@@ -195,15 +169,15 @@ fun NotificacaoBloco(dtHora:String, nomeProduto:String, qntdProduto:Int) {
     var textoAlerta = ""
 
     if (qntdProduto in 11..20) {
-        cor = Color(210, 181, 26, 255)
+        cor = Amarelo
         img = R.mipmap.yellowalert
         textoAlerta = "  ESTOQUE BAIXO"
     } else if (qntdProduto in 1..10) {
-        cor = Color(232, 122, 21, 255)
+        cor = Laranja
         img = R.mipmap.orangealert
         textoAlerta = "  QUASE SEM ESTOQUE"
     } else if (qntdProduto == 0) {
-        cor = Color.Red
+        cor = Vermelho
         img = R.mipmap.redalert
         textoAlerta = "  SEM ESTOQUE"
     }
@@ -260,10 +234,10 @@ fun NotificacaoBloco(dtHora:String, nomeProduto:String, qntdProduto:Int) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                MultiStyleText("O produto ", Color(0, 0, 0, 255),
-                    nomeProduto, Color(159, 53, 240, 255),
-                    " está com estoque em ", Color(0, 0, 0, 255),
-                    "$qntdProduto unidades.", Color(159, 53, 240, 255) )
+                MultiStyleText("O produto ", Preto,
+                    nomeProduto, RoxoNubank,
+                    " está com estoque em ", Preto,
+                    "$qntdProduto unidades.", RoxoNubank )
             }
 
             HorizontalDivider(

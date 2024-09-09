@@ -1,5 +1,8 @@
 package school.sptech
 
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -23,6 +26,7 @@ import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -51,6 +55,7 @@ import school.sptech.ui.theme.Branco
 import school.sptech.ui.theme.CalencareAppTheme
 import school.sptech.ui.theme.Cinza
 import school.sptech.ui.theme.Laranja
+import school.sptech.ui.theme.LaranjaDourado
 import school.sptech.ui.theme.LaranjaOpacidade15
 import school.sptech.ui.theme.Preto
 import school.sptech.ui.theme.RoxoNubank
@@ -59,6 +64,19 @@ import school.sptech.ui.theme.VerdeOpacidade15
 import school.sptech.ui.theme.Vermelho
 import school.sptech.ui.theme.VermelhoOpacidade15
 import school.sptech.ui.theme.fontFamily
+
+class TelaInicial : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            school.sptech.ui.theme.ui.theme.CalencareAppTheme {
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    TelaInicial(modifier = Modifier.padding(innerPadding))
+                }
+            }
+        }
+    }
+}
 
 @Composable
 fun CabecalhoInicio(modifier: Modifier = Modifier){
@@ -112,7 +130,8 @@ fun CabecalhoInicio(modifier: Modifier = Modifier){
             Icon(
                 bitmap = ImageBitmap.imageResource(id = R.mipmap.notificacao),
                 "I",
-                modifier = Modifier.size(32.dp)
+                modifier = Modifier.size(32.dp),
+                tint = Preto
             )
         }
     }
@@ -222,9 +241,9 @@ fun BoxKpis(modifier: Modifier = Modifier){
 fun CardProduto(nome:String, categoria:String, qtdEstoque:Int, isTelaInicio:Boolean, modifier: Modifier = Modifier){
     Row(modifier = modifier
         .border(
-            width = 1.dp,
+            width = 1.3.dp,
             brush = Brush.linearGradient(
-                colors = listOf(Laranja, RoxoNubank),
+                colors = listOf(LaranjaDourado, RoxoNubank),
                 start = Offset.Zero,
                 end = Offset.Infinite,
             ),
@@ -410,6 +429,7 @@ fun ContainerCardProduto(){
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = -0.5.sp,
+                    color = Preto
                 )
             }
             
@@ -435,6 +455,7 @@ fun ContainerCardProduto(){
 
 @Composable
 fun TelaInicial(modifier:Modifier = Modifier){
+    Background()
     Column(modifier = modifier
         .padding(horizontal = 24.dp, vertical = 12.dp)
         .verticalScroll(state = ScrollState(1))) {

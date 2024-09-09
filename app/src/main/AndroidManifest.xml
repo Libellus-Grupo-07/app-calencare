@@ -37,10 +37,11 @@
             android:theme="@style/Theme.CalencareApp" /> <!-- Removido o intent-filter da MainActivity -->
       
         <activity
-            android:name=".Inicio"
+            android:name=".TelaInicial"
             android:exported="false"
             android:label="Inicio"
-            android:theme="@style/Theme.CalencareApp" />
+            android:theme="@style/Theme.CalencareApp">
+        </activity>
       
         <activity
             android:name=".Notificacoes"
@@ -48,30 +49,32 @@
             android:label="@string/title_activity_notificacoes"
             android:theme="@style/Theme.CalencareApp" />
       
-      <activity
+        <activity
             android:name=".TelaAdicionarProduto"
             android:exported="false"
             android:label="@string/title_activity_tela_adicionar_produto"
-            android:theme="@style/Theme.CalencareApp" />
+            android:theme="@style/Theme.CalencareApp">
+        </activity>
 
         <activity
             android:name=".DadosEmpresa"
             android:exported="false"
             android:label="@string/title_activity_dados_empresa"
-            android:theme="@style/Theme.CalencareApp" />
+            android:theme="@style/Theme.CalencareApp">
+        </activity>
       
         <activity
             android:name=".MainActivity"
             android:exported="false"
             android:label="@string/app_name"
             android:theme="@style/Theme.CalencareApp" />
-      
+
         <activity
             android:name=".ui.theme.MainActivity"
             android:exported="false"
             android:label="@string/title_activity_main"
             android:theme="@style/Theme.CalencareApp" />
-      
+
     </application>
 
 </manifest>

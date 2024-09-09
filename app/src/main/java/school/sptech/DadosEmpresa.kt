@@ -24,6 +24,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import school.sptech.ui.theme.CalencareAppTheme
+import school.sptech.ui.theme.Preto
+import school.sptech.ui.theme.RoxoNubank
 
 class DadosEmpresa : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,7 +35,7 @@ class DadosEmpresa : ComponentActivity() {
             CalencareAppTheme {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
-                    containerColor = Color.White // Cor de fundo do Scaffold
+                    //containerColor = Color.White // Cor de fundo do Scaffold
                 ) { innerPadding ->
                     TelaPerfil(modifier = Modifier.padding(innerPadding))
                 }
@@ -44,15 +46,14 @@ class DadosEmpresa : ComponentActivity() {
 
 @Composable
 fun TelaPerfil(modifier: Modifier = Modifier) {
-    Scaffold(
-
-    ) { contentPadding ->
+    Scaffold { contentPadding ->
+        Background()
         Column(
             modifier = modifier
                 .fillMaxSize()
                 .padding(contentPadding)
-                .padding(16.dp)
-                .background(Color.White), // Cor de fundo da coluna
+                .padding(16.dp),
+                //.background(Color.White), // Cor de fundo da coluna
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Linha para os botões "Voltar", "Sair da Conta" e "Salvar"
@@ -112,7 +113,7 @@ fun TelaPerfil(modifier: Modifier = Modifier) {
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
-                    .size(120.dp)
+                    .size(100.dp)
                     .clip(CircleShape)
                     .padding(vertical = 0.dp)
             ) {
@@ -161,7 +162,14 @@ fun TelaPerfil(modifier: Modifier = Modifier) {
                 value = "Patricia Dias",
                 onValueChange = {},
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(100.dp)
+                shape = RoundedCornerShape(100.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = RoxoNubank,
+                    unfocusedBorderColor = Color.Gray,
+                    focusedTextColor = Preto,
+                    unfocusedTextColor = Preto,
+                    focusedLabelColor = Color.Gray
+                ),
             )
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -172,7 +180,14 @@ fun TelaPerfil(modifier: Modifier = Modifier) {
                 value = "(11) 973682-3933",
                 onValueChange = {},
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(100.dp)
+                shape = RoundedCornerShape(100.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = RoxoNubank,
+                    unfocusedBorderColor = Color.Gray,
+                    focusedTextColor = Preto,
+                    unfocusedTextColor = Preto,
+                    focusedLabelColor = Color.Gray
+                ),
             )
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -183,7 +198,14 @@ fun TelaPerfil(modifier: Modifier = Modifier) {
                 value = "patricia@email.com",
                 onValueChange = {},
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(100.dp)
+                shape = RoundedCornerShape(100.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = RoxoNubank,
+                    unfocusedBorderColor = Color.Gray,
+                    focusedTextColor = Preto,
+                    unfocusedTextColor = Preto,
+                    focusedLabelColor = Color.Gray
+                ),
             )
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -194,7 +216,14 @@ fun TelaPerfil(modifier: Modifier = Modifier) {
                 value = "Administrador",
                 onValueChange = {},
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(100.dp)
+                shape = RoundedCornerShape(100.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = RoxoNubank,
+                    unfocusedBorderColor = Color.Gray,
+                    focusedTextColor = Preto,
+                    unfocusedTextColor = Preto,
+                    focusedLabelColor = Color.Gray
+                ),
             )
         }
     }

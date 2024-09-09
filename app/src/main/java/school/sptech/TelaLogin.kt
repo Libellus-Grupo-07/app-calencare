@@ -30,6 +30,9 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import school.sptech.ui.theme.Branco
+import school.sptech.ui.theme.Preto
+import school.sptech.ui.theme.RoxoNubank
 import school.sptech.ui.theme.ui.theme.CalencareAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -54,9 +57,10 @@ fun LoginScreen(modifier: Modifier = Modifier) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
-            .then(modifier)
+            //.background(Color(0xFFF5F5F5))
+            //.then(modifier)
     ) {
+        Background()
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
@@ -69,7 +73,9 @@ fun LoginScreen(modifier: Modifier = Modifier) {
             Image(
                 painter = painterResource(id = R.mipmap.imagem_logo_calencare),
                 contentDescription = "Logo",
-                modifier = Modifier.width(180.dp).padding(16.dp)
+                modifier = Modifier
+                    .width(180.dp)
+                    .padding(16.dp)
             )
 
             // Imagem de login
@@ -86,7 +92,7 @@ fun LoginScreen(modifier: Modifier = Modifier) {
                 text = "Entrar",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black
+                color = Preto
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -156,9 +162,9 @@ fun LoginScreen(modifier: Modifier = Modifier) {
                     .fillMaxWidth()
                     .height(48.dp),
                 shape = RoundedCornerShape(100.dp),
-                colors = ButtonDefaults.buttonColors(Color(0xFF9F35F0))
+                colors = ButtonDefaults.buttonColors(RoxoNubank)
             ) {
-                Text(text = "Entrar", color = Color.White, fontSize = 16.sp)
+                Text(text = "Entrar", color = Branco, fontSize = 16.sp)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
