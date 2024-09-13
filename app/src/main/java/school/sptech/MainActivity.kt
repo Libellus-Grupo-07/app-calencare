@@ -14,7 +14,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import school.sptech.ui.theme.ui.theme.CalencareAppTheme
 import androidx.navigation.compose.rememberNavController
 import school.sptech.bottom.navbar.BottomBar
 import school.sptech.bottom.navbar.NavigationGraph

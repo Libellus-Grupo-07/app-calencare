@@ -7,6 +7,8 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,6 +23,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import school.sptech.ui.theme.CalencareAppTheme
+import school.sptech.ui.theme.Cinza
+import school.sptech.ui.theme.Preto
+import school.sptech.ui.theme.RoxoNubank
 
 class TelaAdicionarProduto : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,50 +42,55 @@ class TelaAdicionarProduto : ComponentActivity() {
 @Composable
 fun TelaAdicionarProdutoScreen() {
     Box(modifier = Modifier.fillMaxSize()) {
-        // Bolinha no canto superior direito
-        Canvas(modifier = Modifier
-            .size(100.dp)
-            .align(Alignment.TopEnd)
-            .offset(x = 50.dp, y = (-50).dp)) {
-            drawCircle(color = Color(0xFF9F36F0), radius = size.minDimension / 2, style = Fill)
-        }
-
-        // Bolinha no canto inferior esquerdo
-        Canvas(modifier = Modifier
-            .size(100.dp)
-            .align(Alignment.BottomStart)
-            .offset(x = (-50).dp, y = 50.dp)) {
-            drawCircle(color = Color(0xFF9F36F0), radius = size.minDimension / 2, style = Fill)
-        }
+//        // Bolinha no canto superior direito
+//        Canvas(modifier = Modifier
+//            .size(100.dp)
+//            .align(Alignment.TopEnd)
+//            .offset(x = 50.dp, y = (-50).dp)) {
+//            drawCircle(color = Color(0xFF9F36F0), radius = size.minDimension / 2, style = Fill)
+//        }
+//
+//        // Bolinha no canto inferior esquerdo
+//        Canvas(modifier = Modifier
+//            .size(100.dp)
+//            .align(Alignment.BottomStart)
+//            .offset(x = (-50).dp, y = 50.dp)) {
+//            drawCircle(color = Color(0xFF9F36F0), radius = size.minDimension / 2, style = Fill)
+//        }
 
         Scaffold(
             topBar = {
-                TopAppBar(
+                CenterAlignedTopAppBar(
+                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                        containerColor = Color.Transparent,
+                        titleContentColor = Preto,
+                    ),
                     title = {
-                        Box(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "Adicionar Produto",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 20.sp,
-                                textAlign = TextAlign.Center
-                            )
-                        }
+                        Text(
+                            text = "Adicionar Produto",
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 20.sp,
+                        )
                     },
                     navigationIcon = {
                         IconButton(onClick = { /* Ação do voltar */ }) {
-                            Image(
-                                painter = painterResource(id = R.mipmap.voltar),
+//                            Image(
+//                                painter = painterResource(id = R.mipmap.voltar),
+//                                contentDescription = "Voltar",
+//                                modifier = Modifier.size(30.dp)
+//                            )
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = "Voltar",
-                                modifier = Modifier.size(30.dp)
+                                tint = Preto
                             )
                         }
                     }
                 )
             }
         ) { paddingValues ->
+            Background()
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -179,6 +189,7 @@ fun ProductForm() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FormFieldWithLabel(
     value: String,
@@ -189,6 +200,7 @@ fun FormFieldWithLabel(
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = label,
+            color = Cinza,
             fontWeight = FontWeight.Bold,
             fontSize = 14.sp,
             modifier = Modifier.padding(bottom = 4.dp)
@@ -196,6 +208,13 @@ fun FormFieldWithLabel(
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = RoxoNubank,
+                unfocusedBorderColor = Color.Gray,
+                focusedTextColor = Preto,
+                unfocusedTextColor = Preto,
+                focusedLabelColor = Color.Gray
+            ),
             label = { Text(label) },
             modifier = Modifier
                 .fillMaxWidth()
