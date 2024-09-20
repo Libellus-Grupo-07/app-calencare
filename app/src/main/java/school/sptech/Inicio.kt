@@ -3,6 +3,7 @@ package school.sptech
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -33,7 +35,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,6 +53,7 @@ import school.sptech.ui.theme.AmareloOpacidade10
 import school.sptech.ui.theme.Azul
 import school.sptech.ui.theme.AzulOpacidade15
 import school.sptech.ui.theme.Branco
+import school.sptech.ui.theme.BrancoFundo
 import school.sptech.ui.theme.CalencareAppTheme
 import school.sptech.ui.theme.Cinza
 import school.sptech.ui.theme.Laranja
@@ -71,7 +73,7 @@ class TelaInicial : ComponentActivity() {
         setContent {
             school.sptech.ui.theme.ui.theme.CalencareAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    TelaInicial(modifier = Modifier.padding(innerPadding))
+                    TelaInicial1(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
@@ -106,6 +108,7 @@ fun CabecalhoInicio(modifier: Modifier = Modifier){
                 Text(
                     text = "Patricia Dias",
                     fontWeight = FontWeight.ExtraBold,
+                    fontFamily = fontFamily,
                     fontSize = 14.sp,
                     letterSpacing = -0.5.sp,
                     lineHeight = 15.sp,
@@ -117,6 +120,7 @@ fun CabecalhoInicio(modifier: Modifier = Modifier){
                 Text(
                     text = "Studio Patricia Dias",
                     fontWeight = FontWeight.Bold,
+                    fontFamily = fontFamily,
                     fontSize = 11.5.sp,
                     letterSpacing = -0.5.sp,
                     lineHeight = 15.sp,
@@ -172,13 +176,15 @@ fun CardKpi(titulo:String, valor:String, cor:String, modifier: Modifier = Modifi
                         text = titulo,
                         fontSize = 9.5.sp,
                         fontWeight = FontWeight.SemiBold,
-                        letterSpacing = -0.3.sp,
+                        fontFamily = fontFamily,
+                        letterSpacing = -0.35.sp,
                         color = Preto
                     )
                     Text(
                         text = valor,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.ExtraBold,
+                        fontFamily = fontFamily,
                         letterSpacing = -0.5.sp,
                         color = corTexto
                     )
@@ -279,7 +285,7 @@ fun CardProduto(nome:String, categoria:String, qtdEstoque:Int, isTelaInicio:Bool
 
                 ButtonEstoque(qtdEstoque = qtdEstoque)
 
-                if(isTelaInicio){
+                if(!isTelaInicio){
                     TextButton(
                         modifier = Modifier
                             .fillMaxWidth(),
@@ -303,16 +309,61 @@ fun CardProduto(nome:String, categoria:String, qtdEstoque:Int, isTelaInicio:Bool
                         Text(
                             text = "Repor Estoque",
                             fontWeight = FontWeight.SemiBold,
-                            fontSize = 11.5.sp,
+                            fontSize = 12.sp,
                             fontFamily = fontFamily,
                             letterSpacing = -0.5.sp
                         )
+                    }
+                } else {
+                    Row(
+                        modifier = modifier.fillMaxWidth(),
+                        Arrangement.spacedBy(4.dp),
+                        Alignment.CenterVertically,
+                    ) {
+                        TextButton(
+                            modifier = Modifier
+                                .weight(0.5f).height(36.dp),
+                            shape = CircleShape,
+                            onClick = { /*TODO*/ },
+                            colors = ButtonColors(
+                                contentColor = Cinza,
+                                containerColor = Branco,
+                                disabledContentColor = Cinza,
+                                disabledContainerColor = Preto
+                            ),
+                            border = BorderStroke(1.5.dp, Cinza)
+                        ) {
+                            Text(
+                                text = "Retirar",
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 12.sp,
+                                fontFamily = fontFamily,
+                                letterSpacing = -0.5.sp
+                            )
+                        }
 
-
-
+                        TextButton(
+                            modifier = Modifier
+                                .weight(0.5f).height(36.dp),
+                            shape = CircleShape,
+                            onClick = { /*TODO*/ },
+                            colors = ButtonColors(
+                                contentColor = Branco,
+                                containerColor = RoxoNubank,
+                                disabledContentColor = Cinza,
+                                disabledContainerColor = Preto
+                            ),
+                        ) {
+                            Text(
+                                text = "Repor",
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 12.sp,
+                                fontFamily = fontFamily,
+                                letterSpacing = -0.5.sp
+                            )
+                        }
                     }
                 }
-
             }
         }
     }
@@ -366,7 +417,7 @@ fun ButtonEstoque(qtdEstoque:Int){
             bitmap = ImageBitmap.imageResource(icone),
             contentDescription = descricao,
             tint = corTexto,
-            modifier = Modifier.size(14.dp)
+            modifier = Modifier.size(15.dp)
         )
 
         Spacer(modifier = Modifier.size(4.dp))
@@ -375,7 +426,7 @@ fun ButtonEstoque(qtdEstoque:Int){
             text = "$qtdEstoque em Estoque",
             color = corTexto,
             fontWeight = FontWeight.SemiBold,
-            fontSize = 11.5.sp,
+            fontSize = 12.sp,
             fontFamily = fontFamily,
             letterSpacing = -0.5.sp
         )
@@ -428,6 +479,7 @@ fun ContainerCardProduto(){
                     text = "Produtos com Quantidade Baixa",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
+                    fontFamily = fontFamily,
                     letterSpacing = -0.5.sp,
                     color = Preto
                 )
@@ -454,7 +506,7 @@ fun ContainerCardProduto(){
 }
 
 @Composable
-fun TelaInicial(modifier:Modifier = Modifier){
+fun TelaInicial1(modifier:Modifier = Modifier){
     Background()
     Column(modifier = modifier
         .padding(horizontal = 24.dp, vertical = 12.dp)
@@ -471,6 +523,6 @@ fun TelaInicial(modifier:Modifier = Modifier){
 @Composable
 fun InicioPreview(){
     CalencareAppTheme {
-        TelaInicial()
+        TelaInicial1()
     }
 }
