@@ -1,5 +1,9 @@
 package school.sptech
 
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -11,7 +15,6 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -25,13 +28,13 @@ import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,7 +47,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import school.sptech.entity.Produto
+import school.sptech.data.model.Produto
 import school.sptech.ui.theme.Amarelo
 import school.sptech.ui.theme.AmareloOpacidade10
 import school.sptech.ui.theme.Azul
@@ -53,6 +56,7 @@ import school.sptech.ui.theme.Branco
 import school.sptech.ui.theme.CalencareAppTheme
 import school.sptech.ui.theme.Cinza
 import school.sptech.ui.theme.Laranja
+import school.sptech.ui.theme.LaranjaDourado
 import school.sptech.ui.theme.LaranjaOpacidade15
 import school.sptech.ui.theme.Preto
 import school.sptech.ui.theme.RoxoNubank
@@ -61,6 +65,19 @@ import school.sptech.ui.theme.VerdeOpacidade15
 import school.sptech.ui.theme.Vermelho
 import school.sptech.ui.theme.VermelhoOpacidade15
 import school.sptech.ui.theme.fontFamily
+
+class TelaInicial : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            school.sptech.ui.theme.CalencareAppTheme {
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    TelaInicial(modifier = Modifier.padding(innerPadding))
+                }
+            }
+        }
+    }
+}
 
 @Composable
 fun CabecalhoInicio(modifier: Modifier = Modifier){
@@ -90,6 +107,7 @@ fun CabecalhoInicio(modifier: Modifier = Modifier){
                 Text(
                     text = "Patricia Dias",
                     fontWeight = FontWeight.ExtraBold,
+                    fontFamily = fontFamily,
                     fontSize = 14.sp,
                     letterSpacing = -0.5.sp,
                     lineHeight = 15.sp,
@@ -101,6 +119,7 @@ fun CabecalhoInicio(modifier: Modifier = Modifier){
                 Text(
                     text = "Studio Patricia Dias",
                     fontWeight = FontWeight.Bold,
+                    fontFamily = fontFamily,
                     fontSize = 11.5.sp,
                     letterSpacing = -0.5.sp,
                     lineHeight = 15.sp,
@@ -114,7 +133,8 @@ fun CabecalhoInicio(modifier: Modifier = Modifier){
             Icon(
                 bitmap = ImageBitmap.imageResource(id = R.mipmap.notificacao),
                 "I",
-                modifier = Modifier.size(32.dp)
+                modifier = Modifier.size(32.dp),
+                tint = Preto
             )
         }
     }
@@ -155,13 +175,15 @@ fun CardKpi(titulo:String, valor:String, cor:String, modifier: Modifier = Modifi
                         text = titulo,
                         fontSize = 9.5.sp,
                         fontWeight = FontWeight.SemiBold,
-                        letterSpacing = -0.3.sp,
+                        fontFamily = fontFamily,
+                        letterSpacing = -0.35.sp,
                         color = Preto
                     )
                     Text(
                         text = valor,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.ExtraBold,
+                        fontFamily = fontFamily,
                         letterSpacing = -0.5.sp,
                         color = corTexto
                     )
@@ -200,7 +222,7 @@ fun BoxKpis(modifier: Modifier = Modifier){
                 Column(modifier = modifier.weight(0.5f)) {
                     CardKpi(
                         titulo = "Produtos Repostos no Dia",
-                        valor = "0 produtos",
+                        valor = "25 produtos",
                         cor = "Azul"
                     )
                 }
@@ -224,21 +246,17 @@ fun BoxKpis(modifier: Modifier = Modifier){
 fun CardProduto(nome:String, categoria:String, qtdEstoque:Int, isTelaInicio:Boolean, modifier: Modifier = Modifier){
     Row(modifier = modifier
         .border(
-            width = 1.dp,
+            width = 1.3.dp,
             brush = Brush.linearGradient(
-                colors = listOf(Laranja, RoxoNubank),
+                colors = listOf(LaranjaDourado, RoxoNubank),
                 start = Offset.Zero,
                 end = Offset.Infinite,
             ),
             shape = RoundedCornerShape(20.dp)
         )
-        .background(Branco, shape = RoundedCornerShape(20.dp))
-        .fillMaxHeight(),
-        Arrangement.Center,
-        Alignment.CenterVertically
-    ) {
+        .background(Branco, shape = RoundedCornerShape(20.dp))) {
         Box(modifier = Modifier
-            .padding(16.dp)
+            .padding(18.dp)
         ){
             Column {
                 Text(
@@ -266,7 +284,7 @@ fun CardProduto(nome:String, categoria:String, qtdEstoque:Int, isTelaInicio:Bool
 
                 ButtonEstoque(qtdEstoque = qtdEstoque)
 
-                if(isTelaInicio){
+                if(!isTelaInicio){
                     TextButton(
                         modifier = Modifier
                             .fillMaxWidth(),
@@ -295,8 +313,56 @@ fun CardProduto(nome:String, categoria:String, qtdEstoque:Int, isTelaInicio:Bool
                             letterSpacing = -0.5.sp
                         )
                     }
-                }
+                } else {
+                    Row(
+                        modifier = modifier.fillMaxWidth(),
+                        Arrangement.spacedBy(4.dp),
+                        Alignment.CenterVertically,
+                    ) {
+                        TextButton(
+                            modifier = Modifier
+                                .weight(0.5f).height(36.dp),
+                            shape = CircleShape,
+                            onClick = { /*TODO*/ },
+                            colors = ButtonColors(
+                                contentColor = Cinza,
+                                containerColor = Branco,
+                                disabledContentColor = Cinza,
+                                disabledContainerColor = Preto
+                            ),
+                            border = BorderStroke(1.5.dp, Cinza)
+                        ) {
+                            Text(
+                                text = "Retirar",
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 12.sp,
+                                fontFamily = fontFamily,
+                                letterSpacing = -0.5.sp
+                            )
+                        }
 
+                        TextButton(
+                            modifier = Modifier
+                                .weight(0.5f).height(36.dp),
+                            shape = CircleShape,
+                            onClick = { /*TODO*/ },
+                            colors = ButtonColors(
+                                contentColor = Branco,
+                                containerColor = RoxoNubank,
+                                disabledContentColor = Cinza,
+                                disabledContainerColor = Preto
+                            ),
+                        ) {
+                            Text(
+                                text = "Repor",
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 12.sp,
+                                fontFamily = fontFamily,
+                                letterSpacing = -0.5.sp
+                            )
+                        }
+                    }
+                }
             }
         }
     }
@@ -350,7 +416,7 @@ fun ButtonEstoque(qtdEstoque:Int){
             bitmap = ImageBitmap.imageResource(icone),
             contentDescription = descricao,
             tint = corTexto,
-            modifier = Modifier.size(14.dp)
+            modifier = Modifier.size(15.dp)
         )
 
         Spacer(modifier = Modifier.size(4.dp))
@@ -398,7 +464,7 @@ fun ContainerCardProduto(){
                 4
             ),
             Produto(
-                "Base Líquida Estée Lauder SFS-10",
+                "Base Líquida Estée Lauder  SFS-10",
                 "Maquiagem",
                 6
             ),
@@ -414,12 +480,13 @@ fun ContainerCardProduto(){
                     fontWeight = FontWeight.Bold,
                     fontFamily = fontFamily,
                     letterSpacing = -0.5.sp,
+                    color = Preto
                 )
             }
             
             Spacer(modifier = Modifier.size(21.dp))
                     FlowRow(modifier = Modifier,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                         maxItemsInEachRow = 2) {
                             repeat(2 * (produtos.size / 2)){ i ->
@@ -428,7 +495,7 @@ fun ContainerCardProduto(){
                                     categoria = produtos[i].categoria,
                                     qtdEstoque = produtos[i].qtdEstoque,
                                     isTelaInicio = true,
-                                    modifier = Modifier.weight(1f).height(210.dp)
+                                    modifier = Modifier.weight(1f)
                                 )
                             }
                         }
@@ -439,6 +506,7 @@ fun ContainerCardProduto(){
 
 @Composable
 fun TelaInicial(modifier:Modifier = Modifier){
+    Background()
     Column(modifier = modifier
         .padding(horizontal = 24.dp, vertical = 12.dp)
         .verticalScroll(state = ScrollState(1))) {
@@ -457,3 +525,4 @@ fun InicioPreview(){
         TelaInicial()
     }
 }
+
