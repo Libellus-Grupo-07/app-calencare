@@ -7,4 +7,5 @@
     <string name="title_activity_notificacoes">Notificacoes</string>
     <string name="title_activity_dados_empresa">DadosEmpresa</string>
     <string name="title_activity_tela_adicionar_produto">TelaAdicionarProduto</string>
+    <string name="title_activity_dados_pessoais">DadosPessoais</string>
 </resources>
