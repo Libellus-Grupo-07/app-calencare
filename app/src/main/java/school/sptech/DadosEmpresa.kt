@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -84,7 +85,7 @@ fun TelaPerfil(modifier: Modifier = Modifier) {
                     modifier = Modifier.border(1.dp, Color(0xFF888888), RoundedCornerShape(50.dp))
                 ) {
                     Text(
-                        text = "Sair da conta",
+                        text = stringResource(R.string.sairconta),
                         style = TextStyle(
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 16.sp,
@@ -100,7 +101,7 @@ fun TelaPerfil(modifier: Modifier = Modifier) {
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9F35F0)),
                     shape = RoundedCornerShape(16.dp)
                 ) {
-                    Text(text = "Salvar", color = Color.White,
+                    Text(text = stringResource(R.string.salvar), color = Color.White,
                         style = TextStyle(
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 16.sp
@@ -137,7 +138,7 @@ fun TelaPerfil(modifier: Modifier = Modifier) {
                     modifier = Modifier.border(1.dp, Color.Transparent, RoundedCornerShape(50.dp))
                 ) {
                     Text(
-                        text = "Dados da Empresa",
+                        text = stringResource(R.string.dadosEmpresa),
                         style = TextStyle(
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 16.sp,
@@ -150,7 +151,7 @@ fun TelaPerfil(modifier: Modifier = Modifier) {
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9F35F0)),
                     shape = RoundedCornerShape(50.dp)
                 ) {
-                    Text(text = "Dados Pessoais", color = Color.White)
+                    Text(text = stringResource(R.string.dadosPessoais), color = Color.White)
                 }
             }
 
@@ -175,7 +176,7 @@ fun TelaPerfil(modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.height(20.dp))
 
             // Telefone
-            Text(text = "Telefone", color = Color(0xFF888888), fontSize = 16.sp, fontWeight = FontWeight.Bold, modifier = Modifier.fillMaxWidth())
+            Text(text = stringResource(R.string.telefone), color = Color(0xFF888888), fontSize = 16.sp, fontWeight = FontWeight.Bold, modifier = Modifier.fillMaxWidth())
             OutlinedTextField(
                 value = "(11) 973682-3933",
                 onValueChange = {},
@@ -193,7 +194,7 @@ fun TelaPerfil(modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.height(20.dp))
 
             // Email
-            Text(text = "Email", fontSize = 16.sp, color = Color(0xFF888888), fontWeight = FontWeight.Bold, modifier = Modifier.fillMaxWidth())
+            Text(text = stringResource(R.string.email), fontSize = 16.sp, color = Color(0xFF888888), fontWeight = FontWeight.Bold, modifier = Modifier.fillMaxWidth())
             OutlinedTextField(
                 value = "patricia@email.com",
                 onValueChange = {},
@@ -211,7 +212,7 @@ fun TelaPerfil(modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.height(20.dp))
 
             // Perfil
-            Text(text = "Perfil", fontSize = 16.sp, color = Color(0xFF888888), fontWeight = FontWeight.Bold, modifier = Modifier.fillMaxWidth())
+            Text(text = stringResource(R.string.perfil), fontSize = 16.sp, color = Color(0xFF888888), fontWeight = FontWeight.Bold, modifier = Modifier.fillMaxWidth())
             OutlinedTextField(
                 value = "Administrador",
                 onValueChange = {},

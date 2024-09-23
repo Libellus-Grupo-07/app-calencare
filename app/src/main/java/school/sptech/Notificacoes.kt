@@ -39,6 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -74,7 +75,8 @@ class Notificacoes : ComponentActivity() {
 //                                titleContentColor = MaterialTheme.colorScheme.primary,
                             ),
                             title = {
-                                Text("Notificações",
+                                Text(
+                                    stringResource(R.string.notificacoes),
                                     style = TextStyle(
                                         fontSize = 20.sp,
                                         fontWeight = FontWeight.SemiBold,
@@ -158,7 +160,9 @@ fun Background(){
     Image(painter = painterResource(id = R.drawable.bg),
         contentDescription = "background",
         contentScale = ContentScale.FillBounds,
-        modifier = Modifier.fillMaxSize().background(BrancoFundo)
+        modifier = Modifier
+            .fillMaxSize()
+            .background(BrancoFundo)
     )
 }
 
@@ -171,15 +175,15 @@ fun NotificacaoBloco(dtHora:String, nomeProduto:String, qntdProduto:Int) {
     if (qntdProduto in 11..20) {
         cor = Amarelo
         img = R.mipmap.yellowalert
-        textoAlerta = "  ESTOQUE BAIXO"
+        textoAlerta = stringResource(R.string.estoqueBaixo)
     } else if (qntdProduto in 1..10) {
         cor = Laranja
         img = R.mipmap.orangealert
-        textoAlerta = "  QUASE SEM ESTOQUE"
+        textoAlerta = stringResource(R.string.quaseSemEstoque)
     } else if (qntdProduto == 0) {
         cor = Vermelho
         img = R.mipmap.redalert
-        textoAlerta = "  SEM ESTOQUE"
+        textoAlerta = stringResource(R.string.semEstoque)
     }
 
     Column (modifier = Modifier) {
@@ -234,10 +238,11 @@ fun NotificacaoBloco(dtHora:String, nomeProduto:String, qntdProduto:Int) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                MultiStyleText("O produto ", Preto,
+                MultiStyleText(
+                    stringResource(R.string.oProduto), Preto,
                     nomeProduto, RoxoNubank,
-                    " está com estoque em ", Preto,
-                    "$qntdProduto unidades.", RoxoNubank )
+                    stringResource(R.string.situacaoEstoque), Preto,
+                    stringResource(R.string.qtdProdutoUnidade,qntdProduto), RoxoNubank )
             }
 
             HorizontalDivider(
