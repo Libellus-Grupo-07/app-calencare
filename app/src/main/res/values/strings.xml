@@ -47,4 +47,6 @@
     <string name="esqueceuSenha">Esqueceu a senha?</string>
     <string name="entrar">Entrar</string>
     <string name="ou">OU</string>
+    <string name="qtdProdutoUnidade">%1$d unidades.</string>
+    <string name="emEstoque">em Estoque %1$d</string>
 </resources>

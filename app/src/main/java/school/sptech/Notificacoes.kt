@@ -242,7 +242,7 @@ fun NotificacaoBloco(dtHora:String, nomeProduto:String, qntdProduto:Int) {
                     stringResource(R.string.oProduto), Preto,
                     nomeProduto, RoxoNubank,
                     stringResource(R.string.situacaoEstoque), Preto,
-                    "$qntdProduto unidades.", RoxoNubank )
+                    stringResource(R.string.qtdProdutoUnidade,qntdProduto), RoxoNubank )
             }
 
             HorizontalDivider(

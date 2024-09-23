@@ -373,7 +373,7 @@ fun ButtonEstoque(qtdEstoque:Int){
         Spacer(modifier = Modifier.size(4.dp))
 
         Text(
-            text = "$qtdEstoque em Estoque",
+            text = stringResource(R.string.emEstoque,qtdEstoque),
             color = corTexto,
             fontWeight = FontWeight.SemiBold,
             fontSize = 11.5.sp,
