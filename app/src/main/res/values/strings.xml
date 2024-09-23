@@ -1,51 +1,51 @@
 <resources>
     <string name="app_name">Calencare</string>
-    <string name="title_activity_tela_login">TelaLogin</string>
-    <string name="title_activity_main">MainActivity</string>
-    <string name="title_activity_tela_splash">TelaSplash</string>
-    <string name="title_activity_nav_graph">NavGraph</string>
-    <string name="title_activity_notificacoes">Notificacoes</string>
-    <string name="title_activity_dados_empresa">DadosEmpresa</string>
-    <string name="title_activity_tela_adicionar_produto">TelaAdicionarProduto</string>
-    <string name="title_activity_dados_pessoais">DadosPessoais</string>
-    <string name="title_activity_tela_adicionar_despesa">TelaAdicionarDespesa</string>
-    <string name="valor">valor</string>
-    <string name="categoria">categoria</string>
-    <string name="nome">nome</string>
-    <string name="adicionar_despesa">Adicionar Despesa</string>
-    <string name="voltar">voltar</string>
-    <string name="forma_pagamento">Forma de Pagamento</string>
-    <string name="data_pagamento">Data do Pagamento</string>
-    <string name="cancelar">Cancelar</string>
-    <string name="adicionar">Adicionar</string>
-    <string name="sairconta">Sair da conta</string>
-    <string name="salvar">salvar</string>
-    <string name="dadosEmpresa">Dados da Empresa</string>
-    <string name="dadosPessoais">Dados Pessoais</string>
-    <string name="telefone">Telefone</string>
+    <string name="title_activity_tela_login" translatable="false">TelaLogin</string>
+    <string name="title_activity_main" translatable="false">MainActivity</string>
+    <string name="title_activity_tela_splash" translatable="false">TelaSplash</string>
+    <string name="title_activity_nav_graph" translatable="false">NavGraph</string>
+    <string name="title_activity_notificacoes" translatable="false">Notificacoes</string>
+    <string name="title_activity_dados_empresa" translatable="false">DadosEmpresa</string>
+    <string name="title_activity_tela_adicionar_produto" translatable="false">TelaAdicionarProduto</string>
+    <string name="title_activity_dados_pessoais" translatable="false">DadosPessoais</string>
+    <string name="title_activity_tela_adicionar_despesa" translatable="false">TelaAdicionarDespesa</string>
+    <string name="valor" translatable="false">valor</string>
+    <string name="categoria" translatable="false">categoria</string>
+    <string name="nome" translatable="false">nome</string>
+    <string name="adicionar_despesa" translatable="false">Adicionar Despesa</string>
+    <string name="voltar" translatable="false">voltar</string>
+    <string name="forma_pagamento" translatable="false">Forma de Pagamento</string>
+    <string name="data_pagamento" translatable="false">Data do Pagamento</string>
+    <string name="cancelar" translatable="false">Cancelar</string>
+    <string name="adicionar" translatable="false">Adicionar</string>
+    <string name="sairconta" translatable="false">Sair da conta</string>
+    <string name="salvar" translatable="false">salvar</string>
+    <string name="dadosEmpresa" translatable="false">Dados da Empresa</string>
+    <string name="dadosPessoais" translatable="false">Dados Pessoais</string>
+    <string name="telefone" translatable="false">Telefone</string>
     <string name="email">Email</string>
-    <string name="perfil">Perfil</string>
-    <string name="notificacoes">Notificações</string>
-    <string name="estoqueBaixo">"  ESTOQUE BAIXO"</string>
-    <string name="quaseSemEstoque">"  QUASE SEM ESTOQUE"</string>
-    <string name="semEstoque">"  SEM ESTOQUE"</string>
-    <string name="oProduto">"O produto "</string>
-    <string name="situacaoEstoque">" está com estoque em "</string>
-    <string name="adicionarProduto">Adicionar Produto</string>
-    <string name="marca">Marca</string>
-    <string name="descricao">Descrição</string>
-    <string name="produtoEstoqueAlto">Produtos com Estoque Alto</string>
-    <string name="produtoSemEstoque">Produtos sem Estoque</string>
-    <string name="produtosRepostosDia">Produtos Repostos no Dia</string>
-    <string name="produtosEstoqueBaixo">Produtos com Estoque Baixo</string>
-    <string name="reporEstoque">Repor Estoque</string>
-    <string name="estoqueAbaixo15Produtos">Estoque Abaixo de 15 Produtos</string>
-    <string name="estoqueAlto">Estoque Alto</string>
-    <string name="produtosComQuantidadeBaixa">Produtos com Quantidade Baixa</string>
-    <string name="senha">Senha</string>
+    <string name="perfil" translatable="false">Perfil</string>
+    <string name="notificacoes" translatable="false">Notificações</string>
+    <string name="estoqueBaixo" translatable="false">"  ESTOQUE BAIXO"</string>
+    <string name="quaseSemEstoque" translatable="false">"  QUASE SEM ESTOQUE"</string>
+    <string name="semEstoque" translatable="false">"  SEM ESTOQUE"</string>
+    <string name="oProduto" translatable="false">"O produto "</string>
+    <string name="situacaoEstoque" translatable="false">" está com estoque em "</string>
+    <string name="adicionarProduto" translatable="false">Adicionar Produto</string>
+    <string name="marca" translatable="false">Marca</string>
+    <string name="descricao" translatable="false">Descrição</string>
+    <string name="produtoEstoqueAlto" translatable="false">Produtos com Estoque Alto</string>
+    <string name="produtoSemEstoque" translatable="false">Produtos sem Estoque</string>
+    <string name="produtosRepostosDia" translatable="false">Produtos Repostos no Dia</string>
+    <string name="produtosEstoqueBaixo" translatable="false">Produtos com Estoque Baixo</string>
+    <string name="reporEstoque" translatable="false">Repor Estoque</string>
+    <string name="estoqueAbaixo15Produtos" translatable="false">Estoque Abaixo de 15 Produtos</string>
+    <string name="estoqueAlto" translatable="false">Estoque Alto</string>
+    <string name="produtosComQuantidadeBaixa" translatable="false">Produtos com Quantidade Baixa</string>
     <string name="esqueceuSenha">Esqueceu a senha?</string>
     <string name="entrar">Entrar</string>
     <string name="ou">OU</string>
-    <string name="qtdProdutoUnidade">%1$d unidades.</string>
-    <string name="emEstoque">em Estoque %1$d</string>
+    <string name="qtdProdutoUnidade" translatable="false">%1$d unidades.</string>
+    <string name="emEstoque" translatable="false">em Estoque %1$d</string>
+    <string name="senha">Senha</string>
 </resources>
