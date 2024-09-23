@@ -16,6 +16,11 @@
             android:name=".TelaAdicionarDespesa"
             android:exported="false"
             android:label="@string/title_activity_tela_adicionar_despesa"
+            android:theme="@style/Theme.CalencareApp"/>
+        <activity
+            android:name=".DadosPessoais"
+            android:exported="false"
+            android:label="@string/title_activity_dados_pessoais"
             android:theme="@style/Theme.CalencareApp" />
         <!-- activity -->
         <!-- android:name=".NavGraph" -->
@@ -26,10 +31,9 @@
             android:name=".TelaSplash"
             android:exported="true"
             android:label="TelaSplash"
-            android:theme="@style/Theme.CalencareApp">
+            android:theme="@style/Theme.CalencareApp" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -42,7 +46,8 @@
             android:name=".TelaInicial"
             android:exported="false"
             android:label="Inicio"
-            android:theme="@style/Theme.CalencareApp"></activity>
+            android:theme="@style/Theme.CalencareApp" >
+        </activity>
         <activity
             android:name=".Notificacoes"
             android:exported="false"
@@ -57,7 +62,8 @@
             android:name=".DadosEmpresa"
             android:exported="false"
             android:label="@string/title_activity_dados_empresa"
-            android:theme="@style/Theme.CalencareApp"></activity>
+            android:theme="@style/Theme.CalencareApp" >
+        </activity>
         <activity
             android:name=".MainActivity"
             android:exported="false"
@@ -69,5 +75,4 @@
             android:label="@string/title_activity_main"
             android:theme="@style/Theme.CalencareApp" />
     </application>
-
 </manifest>
