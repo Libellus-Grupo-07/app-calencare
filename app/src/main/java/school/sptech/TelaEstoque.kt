@@ -203,7 +203,7 @@ fun TopBar(modifier: Modifier = Modifier) {
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun GreetingPreview() {
+fun EstoquePreview() {
     CalencareAppTheme {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
