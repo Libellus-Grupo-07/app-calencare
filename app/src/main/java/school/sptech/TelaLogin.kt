@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -110,7 +111,7 @@ fun LoginScreen(modifier: Modifier = Modifier) {
                             modifier = Modifier.size(24.dp)
                         )
                     },
-                    label = { Text("Email") },
+                    label = {stringResource(R.string.email)},
                     modifier = Modifier
                         .fillMaxWidth(),
                     singleLine = true,
@@ -131,7 +132,7 @@ fun LoginScreen(modifier: Modifier = Modifier) {
                             modifier = Modifier.size(24.dp)
                         )
                     },
-                    label = { Text("Senha") },
+                    label = { stringResource(R.string.senha) },
                     visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
                     shape = RoundedCornerShape(100.dp),
                     modifier = Modifier
@@ -148,7 +149,7 @@ fun LoginScreen(modifier: Modifier = Modifier) {
                 horizontalArrangement = Arrangement.End
             ) {
                 TextButton(onClick = { /* Ação de esquecimento de senha */ }) {
-                    Text("Esqueceu a senha?", color = Color.Gray)
+                    Text(stringResource(R.string.esqueceuSenha), color = Color.Gray)
                 }
             }
 
@@ -164,7 +165,7 @@ fun LoginScreen(modifier: Modifier = Modifier) {
                 shape = RoundedCornerShape(100.dp),
                 colors = ButtonDefaults.buttonColors(RoxoNubank)
             ) {
-                Text(text = "Entrar", color = Branco, fontSize = 16.sp)
+                Text(stringResource(R.string.entrar), color = Branco, fontSize = 16.sp)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -181,7 +182,7 @@ fun LoginScreen(modifier: Modifier = Modifier) {
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "OU",
+                    text = stringResource(R.string.ou),
                     color = Color.Gray,
                     fontSize = 12.sp
                 )

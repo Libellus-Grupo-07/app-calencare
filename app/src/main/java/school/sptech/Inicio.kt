@@ -43,6 +43,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -199,7 +200,7 @@ fun BoxKpis(modifier: Modifier = Modifier){
             Row(modifier = modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
                 Column(modifier = modifier.weight(0.4f)) {
                     CardKpi(
-                        titulo = "Produtos com Estoque Alto",
+                        titulo = stringResource(R.string.produtoEstoqueAlto),
                         valor = "25 produtos",
                         cor = "Verde"
                     )
@@ -209,7 +210,7 @@ fun BoxKpis(modifier: Modifier = Modifier){
 
                 Column(modifier = modifier.weight(0.4f)) {
                     CardKpi(
-                        titulo = "Produtos sem Estoque",
+                        titulo = stringResource(R.string.produtoSemEstoque),
                         valor = "1 produto",
                         cor = "Vermelho"
                     )
@@ -221,7 +222,7 @@ fun BoxKpis(modifier: Modifier = Modifier){
             Row {
                 Column(modifier = modifier.weight(0.5f)) {
                     CardKpi(
-                        titulo = "Produtos Repostos no Dia",
+                        titulo = stringResource(R.string.produtosRepostosDia),
                         valor = "25 produtos",
                         cor = "Azul"
                     )
@@ -231,7 +232,7 @@ fun BoxKpis(modifier: Modifier = Modifier){
 
                 Column(modifier = modifier.weight(0.5f)) {
                     CardKpi(
-                        titulo = "Produtos com Estoque Baixo",
+                        titulo = stringResource(R.string.produtosEstoqueBaixo),
                         valor = "5 produtos",
                         cor = "Laranja"
                     )
@@ -306,7 +307,7 @@ fun CardProduto(nome:String, categoria:String, qtdEstoque:Int, isTelaInicio:Bool
                         Spacer(modifier = Modifier.size(4.dp))
 
                         Text(
-                            text = "Repor Estoque",
+                            text = stringResource(R.string.reporEstoque),
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 12.sp,
                             fontFamily = fontFamily,
@@ -377,24 +378,24 @@ fun ButtonEstoque(qtdEstoque:Int){
 
     when(qtdEstoque){
         0 -> {
-            descricao = "Sem Estoque"
+            descricao = stringResource(R.string.semEstoque)
             corFundo = VermelhoOpacidade15
             corTexto = Vermelho
             icone = R.mipmap.sem_estoque
         }
         in 1..4 -> {
-            descricao = "Quase Sem Estoque"
+            descricao = stringResource(R.string.quaseSemEstoque)
             corFundo = LaranjaOpacidade15
             corTexto = Laranja
             icone = R.mipmap.baixo_estoque
         }
         in 5 .. 14 -> {
-            descricao = "Estoque Abaixo de 15 Produtos"
+            descricao = stringResource(R.string.estoqueAbaixo15Produtos)
             corFundo = AmareloOpacidade10
             corTexto = Amarelo
             icone = R.mipmap.estoque_abaixo_15
         } else -> {
-            descricao = "Estoque Alto"
+            descricao = stringResource(R.string.estoqueAlto)
             corFundo = VerdeOpacidade15;
             corTexto = Verde
             icone = R.mipmap.estoque_alto
@@ -422,7 +423,7 @@ fun ButtonEstoque(qtdEstoque:Int){
         Spacer(modifier = Modifier.size(4.dp))
 
         Text(
-            text = "$qtdEstoque em Estoque",
+            text = stringResource(R.string.emEstoque,qtdEstoque),
             color = corTexto,
             fontWeight = FontWeight.SemiBold,
             fontSize = 12.sp,
@@ -475,7 +476,7 @@ fun ContainerCardProduto(){
         Column {
             Row {
                 Text(
-                    text = "Produtos com Quantidade Baixa",
+                    text = stringResource(R.string.produtosComQuantidadeBaixa),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = fontFamily,
