@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -90,7 +89,7 @@ fun LoginScreen(modifier: Modifier = Modifier) {
 
             // Título "Entrar"
             Text(
-                text = "Entrar",
+                text = stringResource(R.string.entrar),
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = Preto
@@ -111,7 +110,7 @@ fun LoginScreen(modifier: Modifier = Modifier) {
                             modifier = Modifier.size(24.dp)
                         )
                     },
-                    label = {stringResource(R.string.email)},
+                    label = {Text(stringResource(R.string.email))},
                     modifier = Modifier
                         .fillMaxWidth(),
                     singleLine = true,
@@ -132,7 +131,7 @@ fun LoginScreen(modifier: Modifier = Modifier) {
                             modifier = Modifier.size(24.dp)
                         )
                     },
-                    label = { stringResource(R.string.senha) },
+                    label = { Text(stringResource(R.string.senha)) },
                     visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
                     shape = RoundedCornerShape(100.dp),
                     modifier = Modifier
@@ -214,7 +213,7 @@ fun LoginScreen(modifier: Modifier = Modifier) {
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@Preview(showBackground = true, showSystemUi = true, locale = "en")
 @Composable
 fun LoginScreenPreview() {
     CalencareAppTheme {
