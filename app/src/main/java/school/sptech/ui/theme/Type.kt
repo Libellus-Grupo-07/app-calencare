@@ -36,6 +36,9 @@ val fontFamily = FontFamily(
     ),
 )
 
+val letterSpacingPrincipal = -0.5.sp
+val letterSpacingSecundaria = -0.3.sp
+
 // Set of Material typography styles to start with
 val Typography = Typography(
     bodyLarge = TextStyle(

@@ -9,6 +9,7 @@
     <string name="title_activity_tela_adicionar_produto" translatable="false">TelaAdicionarProduto</string>
     <string name="title_activity_dados_pessoais" translatable="false">DadosPessoais</string>
     <string name="title_activity_tela_adicionar_despesa" translatable="false">TelaAdicionarDespesa</string>
+    <string name="title_activity_tela_estoque">TelaEstoque</string>
     <string name="valor" translatable="false">valor</string>
     <string name="categoria" translatable="false">categoria</string>
     <string name="nome" translatable="false">nome</string>
