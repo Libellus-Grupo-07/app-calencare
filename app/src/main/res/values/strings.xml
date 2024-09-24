@@ -48,4 +48,5 @@
     <string name="ou">OU</string>
     <string name="qtdProdutoUnidade">%1$d unidades.</string>
     <string name="emEstoque">em Estoque %1$d</string>
+    <string name="title_activity_tela_estoque">TelaEstoque</string>
 </resources>
