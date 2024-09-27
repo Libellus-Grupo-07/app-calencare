@@ -35,7 +35,7 @@ import school.sptech.ui.theme.Preto
 import school.sptech.ui.theme.RoxoNubank
 import school.sptech.ui.theme.ui.theme.CalencareAppTheme
 
-class MainActivity : ComponentActivity() {
+class TelaLogin : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
