@@ -33,7 +33,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -69,9 +68,9 @@ class TelaInicial : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            school.sptech.ui.theme.ui.theme.CalencareAppTheme {
+            CalencareAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    TelaInicial(modifier = Modifier.padding(innerPadding))
+                    TelaInicial1(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
@@ -454,7 +453,7 @@ fun ContainerCardProduto(){
 }
 
 @Composable
-fun TelaInicial(modifier:Modifier = Modifier){
+fun TelaInicial1(modifier:Modifier = Modifier){
     Background()
     Column(modifier = modifier
         .padding(horizontal = 24.dp, vertical = 12.dp)
@@ -471,6 +470,6 @@ fun TelaInicial(modifier:Modifier = Modifier){
 @Composable
 fun InicioPreview(){
     CalencareAppTheme {
-        TelaInicial()
+        TelaInicial1()
     }
 }

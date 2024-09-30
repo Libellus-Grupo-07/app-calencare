@@ -31,9 +31,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import school.sptech.ui.theme.Branco
+import school.sptech.ui.theme.CalencareAppTheme
 import school.sptech.ui.theme.Preto
 import school.sptech.ui.theme.RoxoNubank
-import school.sptech.ui.theme.ui.theme.CalencareAppTheme
 
 class TelaLogin : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
