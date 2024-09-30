@@ -48,4 +48,9 @@
     <string name="qtdProdutoUnidade" translatable="false">%1$d unidades.</string>
     <string name="emEstoque" translatable="false">em Estoque %1$d</string>
     <string name="senha">Senha</string>
+    <string name="informacoesProduto">Informações do Produto</string>
+    <string name="retirar">- Retirar</string>
+    <string name="repor">+ Repor</string>
+    <string name="quantidadeEstoque">Quantidade de Estoque</string>
+    <string name="emEstoque" translatable="false">%1$d em Estoque.</string>
 </resources>
