@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -50,33 +51,29 @@ fun TelaFinancas() {
     LaunchedEffect(Unit) {
         despesas.addAll(
             listOf(
-                Despesa(
-                    name = "Despesa 1",
-                    value = "R$ 150,00",
-                    date = "01/09/2024",
-                    category = "Categoria A"
-                ),
-                Despesa(
-                    name = "Despesa 2",
-                    value = "R$ 300,00",
-                    date = "15/09/2024",
-                    category = "Categoria B"
-                )
+                Despesa("Despesa 1", "R$ 150,00", "01/09/2024", "Categoria A"),
+                Despesa("Despesa 2", "R$ 300,00", "15/09/2024", "Categoria B")
             )
+        )
+    }
+
+    if (mostrarSeletorData) {
+        SeletorDataDialog(
+            mesSelecionado = mesSelecionado,
+            anoSelecionado = anoSelecionado,
+            onDismissRequest = { mostrarSeletorData = false },
+            onConfirm = { mes, ano ->
+                mesSelecionado = mes
+                anoSelecionado = ano
+                mostrarSeletorData = false
+            }
         )
     }
 
     ConteudoTelaFinancas(
         mesSelecionado = mesSelecionado,
         anoSelecionado = anoSelecionado,
-        mostrarSeletorData = mostrarSeletorData,
         aoClicarSeletorData = { mostrarSeletorData = true },
-        aoSolicitarFechamento = { mostrarSeletorData = false },
-        aoSelecionarData = { mes, ano ->
-            mesSelecionado = mes
-            anoSelecionado = ano
-            mostrarSeletorData = false
-        },
         receitas = receitas.value,
         despesasTotais = despesasTotais.value,
         faturamento = faturamento.value,
@@ -84,27 +81,78 @@ fun TelaFinancas() {
         despesas = despesas,
         corTitulo = Preto,
         corValor = Verde,
-        adicionarDespesa = { despesa ->
-            despesas.add(despesa)
-        }
+        adicionarDespesa = { despesa -> despesas.add(despesa) }
     )
 }
 
-data class Despesa(
-    val name: String,
-    val value: String,
-    val date: String,
-    val category: String
-)
+data class Despesa(val name: String, val value: String, val date: String, val category: String)
+
+@Composable
+fun SeletorDataDialog(
+    mesSelecionado: String,
+    anoSelecionado: Int,
+    onDismissRequest: () -> Unit,
+    onConfirm: (String, Int) -> Unit
+) {
+    var mes by remember { mutableStateOf(mesSelecionado) }
+    var ano by remember { mutableStateOf(anoSelecionado) }
+    var expandedMes by remember { mutableStateOf(false) }
+    var expandedAno by remember { mutableStateOf(false) }
+
+    val meses = listOf("Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro")
+    val anos = (2020..2100).toList()
+
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        title = { Text(text = "Selecione o Mês e Ano") },
+        text = {
+            Column {
+                DropdownBox(mes, expandedMes, { expandedMes = true }, { mes = it; expandedMes = false }, meses)
+                Spacer(modifier = Modifier.height(16.dp))
+                DropdownBox(ano.toString(), expandedAno, { expandedAno = true }, { ano = it.toInt(); expandedAno = false }, anos.map { it.toString() })
+            }
+        },
+        confirmButton = { TextButton(onClick = { onConfirm(mes, ano) }) { Text("Confirmar") } },
+        dismissButton = { TextButton(onClick = onDismissRequest) { Text("Cancelar") } }
+    )
+}
+
+@Composable
+fun DropdownBox(
+    selectedText: String,
+    expanded: Boolean,
+    onClick: () -> Unit,
+    onItemClick: (String) -> Unit,
+    items: List<String>
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .background(Color.White)
+            .padding(16.dp)
+    ) {
+        Text(text = selectedText)
+    }
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = { onClick() },
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        items.forEach { item ->
+            DropdownMenuItem(
+                text = { Text(item) },
+                onClick = { onItemClick(item) }
+            )
+        }
+    }
+}
 
 @Composable
 fun ConteudoTelaFinancas(
     mesSelecionado: String,
     anoSelecionado: Int,
-    mostrarSeletorData: Boolean,
     aoClicarSeletorData: () -> Unit,
-    aoSolicitarFechamento: () -> Unit,
-    aoSelecionarData: (String, Int) -> Unit,
     receitas: Double,
     despesasTotais: Double,
     faturamento: Double,
@@ -114,23 +162,17 @@ fun ConteudoTelaFinancas(
     corValor: Color,
     adicionarDespesa: (Despesa) -> Unit
 ) {
+    Background()
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(BrancoFundo)
-            .padding(16.dp)
+            .padding(20.dp)
+            .padding(top = 16.dp)
     ) {
-        Cabecalho(
-            mesSelecionado = mesSelecionado,
-            anoSelecionado = anoSelecionado,
-            aoClicarSeletorData = aoClicarSeletorData,
-            corTexto = corTitulo
-        )
-
+        Cabecalho(mesSelecionado, anoSelecionado, aoClicarSeletorData, corTitulo)
         ResumoFinanceiro(receitas, despesasTotais, faturamento, comissoes, corValor)
-
         Spacer(modifier = Modifier.height(16.dp))
-        ListaDespesas(despesas = despesas, corTexto = corTitulo, adicionarDespesa = adicionarDespesa)
+        ListaDespesas(despesas, corTitulo, adicionarDespesa)
     }
 }
 
@@ -142,8 +184,7 @@ fun Cabecalho(
     corTexto: Color
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -151,13 +192,11 @@ fun Cabecalho(
             text = "Finanças",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
-            color = RoxoNubank
+            color = Preto
         )
-        TextButton(
-            onClick = aoClicarSeletorData
-        ) {
+        TextButton(onClick = aoClicarSeletorData) {
             Text(
-                text = "$mesSelecionado $anoSelecionado",
+                text = mesSelecionado,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
                 color = Preto
@@ -178,39 +217,18 @@ fun ResumoFinanceiro(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 16.dp),
+                .padding(vertical = 10.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            CartaoResumo(
-                titulo = "Total em Receitas",
-                valor = "R$ +${receitas}",
-                corFundo = VerdeOpacidade15,
-                corValor = Verde
-            )
-            CartaoResumo(
-                titulo = "Total em Despesas",
-                valor = "R$ -${despesas}",
-                corFundo = VermelhoOpacidade15,
-                corValor = Vermelho
-            )
+            CartaoResumo("Total em Receitas", "R$ +$receitas", VerdeOpacidade15, Verde)
+            CartaoResumo("Total em Despesas", "R$ -$despesas", VermelhoOpacidade15, Vermelho)
         }
         Row(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            CartaoResumo(
-                titulo = "Total em Faturamento",
-                valor = "R$ +${faturamento}",
-                corFundo = AzulOpacidade15,
-                corValor = Azul
-            )
-            CartaoResumo(
-                titulo = "Total em Comissões",
-                valor = "R$ -${comissoes}",
-                corFundo = AmareloOpacidade10,
-                corValor = Amarelo
-            )
+            CartaoResumo("Total em Faturamento", "R$ +$faturamento", AzulOpacidade15, Azul)
+            CartaoResumo("Total em Comissões", "R$ -$comissoes", AmareloOpacidade10, Amarelo)
         }
     }
 }
@@ -219,10 +237,10 @@ fun ResumoFinanceiro(
 fun CartaoResumo(titulo: String, valor: String, corFundo: Color, corValor: Color) {
     Box(
         modifier = Modifier
-            .width(160.dp)
+            .width(175.dp)
             .height(100.dp)
             .background(corFundo, shape = RoundedCornerShape(10.dp))
-            .padding(16.dp)
+            .padding(10.dp)
     ) {
         Column(
             verticalArrangement = Arrangement.Center,
@@ -231,13 +249,13 @@ fun CartaoResumo(titulo: String, valor: String, corFundo: Color, corValor: Color
         ) {
             Text(
                 text = titulo,
-                fontSize = 10.sp,
+                fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = Preto,
             )
             Text(
                 text = valor,
-                fontSize = 18.sp,
+                fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(top = 8.dp),
                 color = corValor,
@@ -263,25 +281,16 @@ fun ListaDespesas(despesas: List<Despesa>, corTexto: Color, adicionarDespesa: (D
                 fontWeight = FontWeight.Bold,
                 color = corTexto
             )
-            TextButton(
-                onClick = {
-                    adicionarDespesa(
-                        Despesa(
-                            name = "Nova Despesa",
-                            value = "R$ 100,00",
-                            date = "01/10/2024",
-                            category = "Categoria C"
-                        )
-                    )
-                }
-            ) {
+            TextButton(onClick = {
+                adicionarDespesa(Despesa("Nova Despesa", "R$ 100,00", "01/10/2024", "Categoria C"))
+            }) {
                 Text(text = "Adicionar Despesa", color = corTexto)
             }
         }
 
         LazyColumn {
             items(despesas) { despesa ->
-                ItemDespesa(despesa = despesa, corTexto = corTexto)
+                ItemDespesa(despesa, corTexto)
             }
         }
     }
@@ -295,43 +304,43 @@ fun ItemDespesa(despesa: Despesa, corTexto: Color) {
             .padding(vertical = 4.dp, horizontal = 8.dp)
             .border(1.dp, PretoOpacidade15, RoundedCornerShape(20.dp)),
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Branco
-        )
-
+        colors = CardDefaults.cardColors(containerColor = Branco)
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(14.dp),
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.align(Alignment.CenterStart)
             ) {
-                Image(painter = painterResource(id = R.mipmap.icone_dinheiro_despesa),
+                Image(
+                    painter = painterResource(id = R.mipmap.icone_dinheiro_despesa),
                     contentDescription = "Imagem Despesa",
-                    modifier = Modifier.size(75.dp)
-                    .padding(10.dp)
-                    )
+                    modifier = Modifier
+                        .size(75.dp)
+                        .padding(8.dp)
+                )
                 Column {
                     Text(
                         text = despesa.category,
-                        fontSize = 12.sp,
+                        fontSize = 13.sp,
                         color = Preto,
                     )
                     Text(
                         text = despesa.name,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp,
+                        fontSize = 18.sp,
                         color = corTexto,
-                        modifier = Modifier.padding(top = 10.dp)
+                        modifier = Modifier.padding(top = 15.dp)
                     )
                     Text(
                         text = despesa.value,
-                        fontSize = 12.sp,
+                        fontSize = 18.sp,
                         color = Color.Red,
-                        modifier = Modifier.padding(top = 4.dp)
+                        modifier = Modifier.padding(top = 8.dp),
+                        fontWeight = FontWeight.Bold
                     )
                 }
             }
