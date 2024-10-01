@@ -71,9 +71,9 @@ class TelaInicial : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            school.sptech.ui.theme.ui.theme.CalencareAppTheme {
+            CalencareAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    TelaInicial(modifier = Modifier.padding(innerPadding))
+                    TelaInicial1(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
@@ -172,6 +172,6 @@ fun TelaInicial(modifier:Modifier = Modifier){
 @Composable
 fun InicioPreview(){
     CalencareAppTheme {
-        TelaInicial()
+        TelaInicial1()
     }
 }

@@ -31,17 +31,23 @@
         <!-- android:exported="false" -->
         <!-- android:label="@string/title_activity_nav_graph" -->
         <!-- android:theme="@style/Theme.CalencareApp" /> -->
+
         <activity
-            android:name=".TelaSplash"
+            android:name=".TelaFinancasActivity"
             android:exported="true"
-            android:label="TelaSplash"
-            android:theme="@style/Theme.CalencareApp">
+            android:label="@string/title_activity_tela_financas"
+            android:theme="@style/Theme.CalencareApp" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".TelaSplash"
+            android:exported="false"
+            android:label="TelaSplash"
+            android:theme="@style/Theme.CalencareApp" />
         <activity
             android:name=".TelaLogin"
             android:exported="false"
@@ -51,7 +57,7 @@
             android:name=".TelaInicial"
             android:exported="false"
             android:label="Inicio"
-            android:theme="@style/Theme.CalencareApp"></activity>
+            android:theme="@style/Theme.CalencareApp" />
         <activity
             android:name=".Notificacoes"
             android:exported="false"
@@ -72,11 +78,5 @@
             android:exported="false"
             android:label="@string/app_name"
             android:theme="@style/Theme.CalencareApp" />
-        <activity
-            android:name=".ui.theme.MainActivity"
-            android:exported="false"
-            android:label="@string/title_activity_main"
-            android:theme="@style/Theme.CalencareApp" />
     </application>
-
 </manifest>
