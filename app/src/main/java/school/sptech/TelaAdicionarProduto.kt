@@ -17,6 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -67,7 +68,7 @@ fun TelaAdicionarProdutoScreen() {
                     ),
                     title = {
                         Text(
-                            text = "Adicionar Produto",
+                            text = stringResource(R.string.adicionarProduto),
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 20.sp,
                         )
@@ -131,7 +132,7 @@ fun ButtonRow(
                 modifier = Modifier.size(18.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Text("Cancelar")
+            Text(stringResource(R.string.cancelar))
         }
         Button(
             onClick = onAddClick,
@@ -143,7 +144,7 @@ fun ButtonRow(
                 modifier = Modifier.size(18.dp)
             )
             Spacer(modifier = Modifier.width(8.dp)) 
-            Text("Adicionar", color = Color.White)
+            Text(stringResource(R.string.adicionar), color = Color.White)
         }
     }
 }
@@ -159,7 +160,7 @@ fun ProductForm() {
         FormFieldWithLabel(
             value = name,
             onValueChange = { name = it },
-            label = "Nome"
+            label = stringResource(R.string.nome)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -167,7 +168,7 @@ fun ProductForm() {
         FormFieldWithLabel(
             value = brand,
             onValueChange = { brand = it },
-            label = "Marca"
+            label = stringResource(R.string.marca)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -175,7 +176,7 @@ fun ProductForm() {
         FormFieldWithLabel(
             value = category,
             onValueChange = { category = it },
-            label = "Categoria"
+            label = stringResource(R.string.categoria)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -183,7 +184,7 @@ fun ProductForm() {
         FormFieldWithLabel(
             value = description,
             onValueChange = { description = it },
-            label = "Descrição",
+            label = stringResource(R.string.descricao),
             isMultiline = true
         )
     }
