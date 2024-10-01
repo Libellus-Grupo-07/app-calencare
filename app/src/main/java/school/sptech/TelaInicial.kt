@@ -140,7 +140,7 @@ fun CabecalhoInicio(modifier: Modifier = Modifier){
 }
 
 @Composable
-fun TelaInicial(modifier:Modifier = Modifier){
+fun TelaInicial1(modifier:Modifier = Modifier){
     val listaProdutos = remember {
         mutableListOf(
             Produto("Esmalte Azul Metálico Risqué 8ml", "Unha", 0),
