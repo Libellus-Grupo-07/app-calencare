@@ -17,6 +17,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -58,7 +59,7 @@ fun TelaFinancas() {
     }
 
     if (mostrarSeletorData) {
-        SeletorDataDialog(
+        CustomMonthYearPickerDialog(
             mesSelecionado = mesSelecionado,
             anoSelecionado = anoSelecionado,
             onDismissRequest = { mostrarSeletorData = false },
@@ -88,7 +89,7 @@ fun TelaFinancas() {
 data class Despesa(val name: String, val value: String, val date: String, val category: String)
 
 @Composable
-fun SeletorDataDialog(
+fun CustomMonthYearPickerDialog(
     mesSelecionado: String,
     anoSelecionado: Int,
     onDismissRequest: () -> Unit,
@@ -112,8 +113,16 @@ fun SeletorDataDialog(
                 DropdownBox(ano.toString(), expandedAno, { expandedAno = true }, { ano = it.toInt(); expandedAno = false }, anos.map { it.toString() })
             }
         },
-        confirmButton = { TextButton(onClick = { onConfirm(mes, ano) }) { Text("Confirmar") } },
-        dismissButton = { TextButton(onClick = onDismissRequest) { Text("Cancelar") } }
+        confirmButton = {
+            TextButton(onClick = { onConfirm(mes, ano) }) {
+                Text("Confirmar")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text("Cancelar")
+            }
+        }
     )
 }
 
@@ -196,10 +205,18 @@ fun Cabecalho(
         )
         TextButton(onClick = aoClicarSeletorData) {
             Text(
-                text = mesSelecionado,
+                text = "$mesSelecionado $anoSelecionado",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
                 color = Preto
+            )
+            val density = LocalDensity.current
+            Image(
+                painter = painterResource(id = R.mipmap.flecha_para_baixo),
+                contentDescription = "Flecha para Baixo",
+                modifier = Modifier
+                    .size(with(density) { 16.sp.toDp() })
+                    .padding(start = 4.dp)
             )
         }
     }
@@ -255,7 +272,7 @@ fun CartaoResumo(titulo: String, valor: String, corFundo: Color, corValor: Color
             )
             Text(
                 text = valor,
-                fontSize = 20.sp,
+                fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(top = 8.dp),
                 color = corValor,
