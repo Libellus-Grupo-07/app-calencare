@@ -1,4 +1,4 @@
-package school.sptech
+package school.sptech.ui.screens
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -16,10 +16,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.delay
+import school.sptech.R
+import school.sptech.bottom.navigation.NavigationGraph
 import school.sptech.ui.theme.CalencareAppTheme
 
 class TelaSplash : ComponentActivity() {
@@ -29,7 +29,12 @@ class TelaSplash : ComponentActivity() {
         setContent {
             CalencareAppTheme {
                 val navController = rememberNavController()
-                NavGraph(navController = navController)
+                NavigationGraph(
+                    navController = navController,
+                    onBottomBarVisibleChanged = { isVisible -> false },
+                    onTopBarVisibleChanged = { exist -> false },
+                    onTitleTopBarChanged = { titulo -> ""}
+                )
             }
         }
     }
@@ -85,13 +90,3 @@ fun SplashScreen(navController: NavHostController, modifier: Modifier = Modifier
     }
 }
 
-@Composable
-fun NavGraph(navController: NavHostController) {
-    NavHost(
-        navController = navController,
-        startDestination = "splash"
-    ) {
-        composable("splash") { SplashScreen(navController = navController) }
-        composable("login") { LoginScreen() }
-    }
-}

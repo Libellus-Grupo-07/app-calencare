@@ -5,4 +5,5 @@
     <string name="entrar">Login</string>
     <string name="ou">OR</string>
     <string name="senha">Password</string>
+    <string name="estoque">Inventory</string>
 </resources>

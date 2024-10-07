@@ -1,4 +1,4 @@
-package school.sptech
+package school.sptech.ui.screens
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -30,10 +30,17 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import school.sptech.ui.components.Background
 import school.sptech.ui.theme.Branco
 import school.sptech.ui.theme.CalencareAppTheme
 import school.sptech.ui.theme.Preto
 import school.sptech.ui.theme.RoxoNubank
+import school.sptech.ui.theme.CalencareAppTheme
+import school.sptech.R
+import school.sptech.Routes
+import school.sptech.bottom.navigation.NavBar
 
 class TelaLogin : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,7 +48,7 @@ class TelaLogin : ComponentActivity() {
         setContent {
             CalencareAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    LoginScreen(modifier = Modifier.padding(innerPadding))
+                    LoginScreen(navController = rememberNavController(), modifier = Modifier.padding(innerPadding))
                 }
             }
         }
@@ -49,7 +56,7 @@ class TelaLogin : ComponentActivity() {
 }
 
 @Composable
-fun LoginScreen(modifier: Modifier = Modifier) {
+fun LoginScreen(navController: NavController, modifier: Modifier = Modifier) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val passwordVisibility by remember { mutableStateOf(false) }
@@ -152,12 +159,13 @@ fun LoginScreen(modifier: Modifier = Modifier) {
                 }
             }
 
-
             Spacer(modifier = Modifier.height(24.dp))
 
             // Botão "Entrar"
             Button(
-                onClick = { /* Ação de login */ },
+                onClick = {
+                    navController.navigate(NavBar.Inicio.route)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp),
@@ -217,6 +225,6 @@ fun LoginScreen(modifier: Modifier = Modifier) {
 @Composable
 fun LoginScreenPreview() {
     CalencareAppTheme {
-        LoginScreen()
+        LoginScreen(rememberNavController())
     }
 }

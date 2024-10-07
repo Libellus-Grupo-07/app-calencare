@@ -50,4 +50,6 @@
     <string name="qtdProdutoUnidade" translatable="false">%1$d unidades.</string>
     <string name="emEstoque" translatable="false">em Estoque %1$d</string>
     <string name="senha">Senha</string>
+    <string name="title_activity_dashboard">Dashboard</string>
+    <string name="estoque">Estoque</string>
 </resources>
