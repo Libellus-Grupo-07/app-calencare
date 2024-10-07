@@ -38,18 +38,17 @@
         <!-- android:label="@string/title_activity_nav_graph" -->
         <!-- android:theme="@style/Theme.CalencareApp" /> -->
         <activity
-            android:name=".ui.screens.TelaLogin"
-            android:name=".TelaFinancasActivity"
+            android:name=".ui.screens.TelaFinancasActivity"
             android:exported="true"
             android:label="@string/title_activity_tela_financas"
             android:theme="@style/Theme.CalencareApp"/>
         <activity
-            android:name=".TelaSplash"
+            android:name=".ui.screens.TelaSplash"
             android:exported="false"
             android:label="TelaSplash"
             android:theme="@style/Theme.CalencareApp" />
         <activity
-            android:name=".TelaLogin"
+            android:name=".ui.screens.TelaLogin"
             android:exported="false"
             android:label="@string/title_activity_tela_login"
             android:theme="@style/Theme.CalencareApp" /> <!-- Removido o intent-filter da MainActivity -->
