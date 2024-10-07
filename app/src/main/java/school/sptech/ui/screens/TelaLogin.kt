@@ -34,6 +34,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import school.sptech.ui.components.Background
 import school.sptech.ui.theme.Branco
+import school.sptech.ui.theme.CalencareAppTheme
 import school.sptech.ui.theme.Preto
 import school.sptech.ui.theme.RoxoNubank
 import school.sptech.ui.theme.CalencareAppTheme

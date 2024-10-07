@@ -31,18 +31,25 @@
             android:name=".ui.screens.DadosPessoais"
             android:exported="false"
             android:label="@string/title_activity_dados_pessoais"
-            android:theme="@style/Theme.CalencareApp" /> <!-- activity -->
+            android:theme="@style/Theme.CalencareApp" /> 
+        <!-- activity -->
         <!-- android:name=".NavGraph" -->
         <!-- android:exported="false" -->
         <!-- android:label="@string/title_activity_nav_graph" -->
         <!-- android:theme="@style/Theme.CalencareApp" /> -->
         <activity
-            android:name=".ui.screens.TelaSplash"
+            android:name=".ui.screens.TelaLogin"
+            android:name=".TelaFinancasActivity"
+            android:exported="true"
+            android:label="@string/title_activity_tela_financas"
+            android:theme="@style/Theme.CalencareApp"/>
+        <activity
+            android:name=".TelaSplash"
             android:exported="false"
             android:label="TelaSplash"
             android:theme="@style/Theme.CalencareApp" />
         <activity
-            android:name=".ui.screens.TelaLogin"
+            android:name=".TelaLogin"
             android:exported="false"
             android:label="@string/title_activity_tela_login"
             android:theme="@style/Theme.CalencareApp" /> <!-- Removido o intent-filter da MainActivity -->
@@ -77,5 +84,4 @@
             </intent-filter>
         </activity>
     </application>
-
 </manifest>
