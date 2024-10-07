@@ -145,7 +145,7 @@ fun CardProduto(nome:String, categoria:String, qtdEstoque:Int, isTelaInicio:Bool
 
                 ButtonEstoque(qtdEstoque = qtdEstoque)
 
-                if(!isTelaInicio){
+                if(isTelaInicio){
                     TextButton(
                         modifier = Modifier
                             .fillMaxWidth(),

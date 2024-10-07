@@ -1,4 +1,4 @@
-package school.sptech.bottom.navbar
+package school.sptech.ui.components
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import school.sptech.bottom.navigation.NavBar
 import school.sptech.ui.theme.Branco
 import school.sptech.ui.theme.Cinza
 import school.sptech.ui.theme.RoxoNubank
@@ -30,10 +31,10 @@ fun BottomBar(
     modifier: Modifier = Modifier
 ){
     val telas = listOf(
-        BottomNavBar.Inicio,
-        BottomNavBar.Estoque,
-        BottomNavBar.Financas,
-        BottomNavBar.Dashboard,
+        NavBar.Inicio,
+        NavBar.Estoque,
+        NavBar.Financas,
+        NavBar.Dashboard,
     )
 
     NavigationBar(
@@ -47,13 +48,15 @@ fun BottomBar(
             NavigationBarItem(
                 selected = rotaAtual == tela.route,
                 onClick = {
-                    navController.navigate(tela.route){
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
+                    if(rotaAtual != tela.route) {
+                        navController.navigate(tela.route) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
 
-                        launchSingleTop = true
-                        restoreState = true
+                            launchSingleTop = true
+                            restoreState = true
+                        }
                     }
                 },
                 icon = {

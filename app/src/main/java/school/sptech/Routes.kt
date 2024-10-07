@@ -1,9 +1,10 @@
 package school.sptech
 
 sealed class Routes(val route:String) {
-    object Inicio : Routes("inicio")
-    object Estoque : Routes("estoque")
-    object Financas : Routes("financas")
-    object Dashboard : Routes("dashboard")
+    object Splash : Routes("splash")
+    object Login : Routes("login")
+    object Notificacoes : Routes("notificacoes")
+    object AdicionarProduto : Routes("adicionar_produto")
+    object AdicionarDespesa : Routes("adicionar_despesa")
 
 }

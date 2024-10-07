@@ -13,17 +13,22 @@
         android:theme="@style/Theme.CalencareApp"
         tools:targetApi="31">
         <activity
-            android:name=".TelaEstoque"
+            android:name=".ui.screens.Dashboard"
+            android:exported="false"
+            android:label="@string/title_activity_dashboard"
+            android:theme="@style/Theme.CalencareApp" />
+        <activity
+            android:name=".ui.screens.Estoque"
             android:exported="false"
             android:label="@string/title_activity_tela_estoque"
             android:theme="@style/Theme.CalencareApp" />
         <activity
-            android:name=".TelaAdicionarDespesa"
+            android:name=".ui.screens.TelaAdicionarDespesa"
             android:exported="false"
             android:label="@string/title_activity_tela_adicionar_despesa"
             android:theme="@style/Theme.CalencareApp" />
         <activity
-            android:name=".DadosPessoais"
+            android:name=".ui.screens.DadosPessoais"
             android:exported="false"
             android:label="@string/title_activity_dados_pessoais"
             android:theme="@style/Theme.CalencareApp" /> <!-- activity -->
@@ -32,51 +37,45 @@
         <!-- android:label="@string/title_activity_nav_graph" -->
         <!-- android:theme="@style/Theme.CalencareApp" /> -->
         <activity
-            android:name=".TelaSplash"
-            android:exported="true"
+            android:name=".ui.screens.TelaSplash"
+            android:exported="false"
             android:label="TelaSplash"
-            android:theme="@style/Theme.CalencareApp">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:theme="@style/Theme.CalencareApp" />
         <activity
-            android:name=".TelaLogin"
+            android:name=".ui.screens.TelaLogin"
             android:exported="false"
             android:label="@string/title_activity_tela_login"
             android:theme="@style/Theme.CalencareApp" /> <!-- Removido o intent-filter da MainActivity -->
         <activity
-            android:name=".TelaInicial"
+            android:name=".ui.screens.TelaInicial"
             android:exported="false"
             android:label="Inicio"
-            android:theme="@style/Theme.CalencareApp"></activity>
+            android:theme="@style/Theme.CalencareApp" />
         <activity
-            android:name=".Notificacoes"
+            android:name=".ui.screens.Notificacoes"
             android:exported="false"
             android:label="@string/title_activity_notificacoes"
             android:theme="@style/Theme.CalencareApp" />
         <activity
-            android:name=".TelaAdicionarProduto"
+            android:name=".ui.screens.TelaAdicionarProduto"
             android:exported="false"
             android:label="@string/title_activity_tela_adicionar_produto"
             android:theme="@style/Theme.CalencareApp" />
         <activity
-            android:name=".DadosEmpresa"
+            android:name=".ui.screens.DadosEmpresa"
             android:exported="false"
             android:label="@string/title_activity_dados_empresa"
-            android:theme="@style/Theme.CalencareApp"></activity>
+            android:theme="@style/Theme.CalencareApp" />
         <activity
             android:name=".MainActivity"
-            android:exported="false"
+            android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.CalencareApp" />
-        <activity
-            android:name=".ui.theme.MainActivity"
-            android:exported="false"
-            android:label="@string/title_activity_main"
-            android:theme="@style/Theme.CalencareApp" />
+            android:theme="@style/Theme.CalencareApp">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
