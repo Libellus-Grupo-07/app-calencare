@@ -1,8 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Calencare</string>
+    <string name="valor">Value</string>
+    <string name="categoria">Category</string>
+    <string name="nome">Name</string>
+    <string name="voltar">Back</string>
+    <string name="cancelar">Cancel</string>
+    <string name="adicionar">Add</string>
+    <string name="sairconta">Logout</string>
+    <string name="salvar">Save</string>
+    <string name="dadosEmpresa">Company Details</string>
+    <string name="dadosPessoais">Personal Details</string>
+    <string name="telefone">Phone</string>
+    <string name="perfil">Account</string>
+    <string name="notificacoes">Notifications</string>
+    <string name="estoqueBaixo">LOW STOCK</string>
+    <string name="quaseSemEstoque">ALMOST OUT OF STOCK</string>
+    <string name="semEstoque">OUT OF STOCK</string>
+    <string name="oProduto">The product</string>
+    <string name="adicionarProduto">Add Product</string>
+    <string name="descricao">Description</string>
+    <string name="produtoEstoqueAlto">High Stock Products</string>
+    <string name="produtoSemEstoque">Out of Stock Products</string>
+    <string name="produtosRepostosDia">Products Restocked Today</string>
+    <string name="produtosEstoqueBaixo">Low Stock Products</string>
+    <string name="reporEstoque">Replenish Stock</string>
+    <string name="estoqueAlto">High Stock</string>
     <string name="esqueceuSenha">Forgot your password?</string>
     <string name="entrar">Login</string>
     <string name="ou">OR</string>
     <string name="senha">Password</string>
+    <string name="estoque">Inventory</string>
+    <string name="financas">Finances</string>
+    <string name="receita">Revenue</string>
+    <string name="lucro">Profit</string>
+    <string name="despesa">Expense</string>
+    <string name="tituloDashboard">Inputs x Outputs</string>
+    <string name="movimentos">Movements</string>
+    <string name="repor">Replenish</string>
+    <string name="retirar">Remove</string>
 </resources>
