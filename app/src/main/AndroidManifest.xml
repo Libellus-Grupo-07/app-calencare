@@ -2,13 +2,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@drawable/logo_calencare"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/logo_calencare"
         android:supportsRtl="true"
         android:theme="@style/Theme.CalencareApp"
         tools:targetApi="31">
@@ -28,10 +30,10 @@
             android:label="@string/title_activity_tela_adicionar_despesa"
             android:theme="@style/Theme.CalencareApp" />
         <activity
-            android:name=".ui.screens.DadosPessoais"
+            android:name=".ui.screens.Conta"
             android:exported="false"
-            android:label="@string/title_activity_dados_pessoais"
-            android:theme="@style/Theme.CalencareApp" /> 
+            android:label="@string/title_activity_conta"
+            android:theme="@style/Theme.CalencareApp" />
         <!-- activity -->
         <!-- android:name=".NavGraph" -->
         <!-- android:exported="false" -->
@@ -41,7 +43,7 @@
             android:name=".ui.screens.TelaFinancasActivity"
             android:exported="true"
             android:label="@string/title_activity_tela_financas"
-            android:theme="@style/Theme.CalencareApp"/>
+            android:theme="@style/Theme.CalencareApp" />
         <activity
             android:name=".ui.screens.TelaSplash"
             android:exported="false"
@@ -68,11 +70,6 @@
             android:label="@string/title_activity_tela_adicionar_produto"
             android:theme="@style/Theme.CalencareApp" />
         <activity
-            android:name=".ui.screens.DadosEmpresa"
-            android:exported="false"
-            android:label="@string/title_activity_dados_empresa"
-            android:theme="@style/Theme.CalencareApp" />
-        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
@@ -83,4 +80,5 @@
             </intent-filter>
         </activity>
     </application>
+
 </manifest>

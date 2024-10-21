@@ -1,4 +1,4 @@
-package school.sptech.bottom.navigation
+package school.sptech.navigation
 
 import school.sptech.R
 

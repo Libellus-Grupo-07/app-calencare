@@ -15,7 +15,7 @@ val provider = GoogleFont.Provider(
     certificates = R.array.com_google_android_gms_fonts_certs
 )
 
-val fontFamily = FontFamily(
+var fontFamilyPoppins = FontFamily(
     Font(
         googleFont = GoogleFont("Poppins"), fontProvider = provider
     ),
@@ -42,27 +42,26 @@ val letterSpacingSecundaria = -0.3.sp
 // Set of Material typography styles to start with
 val Typography = Typography(
     bodyLarge = TextStyle(
-        fontFamily = fontFamily,
+        fontFamily = fontFamilyPoppins,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 24.sp,
         letterSpacing = -0.5.sp
     ),
 
-    /* Other default text styles to override
-    titleLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
-        letterSpacing = 0.sp
-    ),
-    labelSmall = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
-    )
-    */
+//    /* Other default text styles to override
+//    titleLarge = TextStyle(
+//        fontFamily = fontFamilyPoppins,
+//        fontWeight = FontWeight.Normal,
+//        fontSize = 22.sp,
+//        lineHeight = 28.sp,
+//        letterSpacing = 0.sp
+//    ),
+//    labelSmall = TextStyle(
+//        fontFamily = fontFamilyPoppins,
+//        fontWeight = FontWeight.Medium,
+//        fontSize = 11.sp,
+//        lineHeight = 16.sp,
+//        letterSpacing = 0.5.sp
+//    )
 )

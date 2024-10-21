@@ -19,7 +19,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.delay
 import school.sptech.R
-import school.sptech.bottom.navigation.NavigationGraph
+import school.sptech.navigation.NavigationGraph
 import school.sptech.ui.theme.CalencareAppTheme
 
 class TelaSplash : ComponentActivity() {
