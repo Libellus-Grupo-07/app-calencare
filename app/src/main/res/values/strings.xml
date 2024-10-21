@@ -10,6 +10,7 @@
     <string name="title_activity_tela_adicionar_produto" translatable="false">TelaAdicionarProduto</string>
     <string name="title_activity_tela_adicionar_despesa" translatable="false">TelaAdicionarDespesa</string>
     <string name="title_activity_tela_estoque" translatable="false">TelaEstoque</string>
+    <string name="title_activity_dashboard" translatable="false">Dashboard</string>
     <string name="valor">Valor</string>
     <string name="categoria">Categoria</string>
     <string name="nome">Nome</string>
@@ -49,7 +50,11 @@
     <string name="qtdProdutoUnidade" translatable="false">%1$d unidades.</string>
     <string name="emEstoque" translatable="false">em Estoque %1$d</string>
     <string name="senha">Senha</string>
-    <string name="title_activity_dashboard" translatable="false">Dashboard</string>
+    <string name="informacoesProduto">Informações do Produto</string>
+    <string name="retirar">- Retirar</string>
+    <string name="repor">+ Repor</string>
+    <string name="quantidadeEstoque">Quantidade de Estoque</string>
+    <string name="emEstoque" translatable="false">%1$d em Estoque.</string>
     <string name="estoque">Estoque</string>
     <string name="valorMovimentos" translatable="false">R$ %1$s %2$s</string>
     <string name="financas">Finanças</string>
@@ -58,7 +63,6 @@
     <string name="lucro">Lucro</string>
     <string name="despesa">Despesa</string>
     <string name="tituloDashboard">Entradas x Saídas</string>
-    <string name="title_activity_teste" translatable="false">Teste</string>
     <string name="movimentos">Movimentos</string>
     <string name="repor">Repor</string>
     <string name="retirar">Retirar</string>
