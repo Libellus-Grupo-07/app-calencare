@@ -11,11 +11,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -24,6 +23,7 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,25 +34,33 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import school.sptech.R
 import school.sptech.Routes
-import school.sptech.ui.theme.BrancoFundo
 import school.sptech.ui.theme.Cinza
 import school.sptech.ui.theme.Preto
 import school.sptech.ui.theme.RoxoNubank
-import school.sptech.ui.theme.fontFamily
+import school.sptech.ui.theme.fontFamilyPoppins
 import school.sptech.ui.theme.letterSpacingPrincipal
+import school.sptech.ui.viewModel.UsuarioViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import school.sptech.data.model.Funcionario
 
 @Composable
-fun TopBarInicio(navController: NavController, modifier: Modifier = Modifier){
+fun TopBarInicio(
+    usuario: Funcionario,
+    navController: NavController,
+    modifier: Modifier = Modifier
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth(),
@@ -63,9 +71,12 @@ fun TopBarInicio(navController: NavController, modifier: Modifier = Modifier){
             modifier = modifier,
             Arrangement.Absolute.Left,
             Alignment.CenterVertically
-        ){
+        ) {
 
-            IconButton(onClick = { /*TODO*/ }, modifier = modifier.size(52.dp)) {
+            IconButton(
+                onClick = { navController.navigate(Routes.DadosPessoais.route) },
+                modifier = modifier.size(52.dp)
+            ) {
                 Image(
                     bitmap = ImageBitmap.imageResource(id = R.mipmap.foto_perfil),
                     contentDescription = "Foto de Perfil",
@@ -77,7 +88,8 @@ fun TopBarInicio(navController: NavController, modifier: Modifier = Modifier){
 
             Column {
                 Text(
-                    text = "Patricia Dias",
+                    text = usuario.nome ?: "Nome do User",
+                    //text = "Nome do User",
                     fontWeight = FontWeight.ExtraBold,
                     fontSize = 14.sp,
                     letterSpacing = -0.5.sp,
@@ -88,7 +100,8 @@ fun TopBarInicio(navController: NavController, modifier: Modifier = Modifier){
                 Spacer(modifier = modifier.size(4.dp))
 
                 Text(
-                    text = "Studio Patricia Dias",
+                    text = usuario.empresa?.razaoSocial ?: "Nome da Empresa",
+//                    text = "Nome da Empresa",
                     fontWeight = FontWeight.Bold,
                     fontSize = 11.5.sp,
                     letterSpacing = -0.5.sp,
@@ -115,7 +128,6 @@ fun TopBarInicio(navController: NavController, modifier: Modifier = Modifier){
 }
 
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBarVoltar(navController: NavController, titulo: String) {
@@ -130,20 +142,16 @@ fun TopBarVoltar(navController: NavController, titulo: String) {
                 style = TextStyle(
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    fontFamily = fontFamily,
+                    fontFamily = fontFamilyPoppins,
                     letterSpacing = letterSpacingPrincipal
                 )
             )
         },
         navigationIcon = {
-            IconButton(onClick = { navController.popBackStack() }) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Localized description",
-                    tint = Preto
-                )
-            }
+            ButtonIconVoltar(onClick = { navController.popBackStack() })
         },
+        modifier = Modifier.padding(horizontal = 8.dp),
+
         //scrollBehavior = scrollBehavior
     )
 }
@@ -159,31 +167,15 @@ fun TopBarEstoque(navController: NavController, modifier: Modifier = Modifier) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        IconButton(
-            modifier = modifier
-                .align(Alignment.CenterVertically)
-                .fillMaxHeight(0.08f),
-            onClick = {
-                navController.popBackStack()
-            },
-            colors = IconButtonDefaults.iconButtonColors(
-                contentColor = Preto
-            )
-        ){
-            Icon(
-                Icons.Rounded.ArrowBack,
-                contentDescription = "Ícone de Voltar",
-                modifier = Modifier.size(32.dp),
-            )
-        }
+        ButtonIconVoltar(onClick = { navController.popBackStack() })
 
         OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth(0.6f)
-                .fillMaxHeight(0.065f),
+                .fillMaxHeight(0.069f),
             value = text,
             onValueChange = {
-                if(it.length < 20){
+                if (it.length < 20) {
                     text = it
                 }
             },
@@ -202,7 +194,7 @@ fun TopBarEstoque(navController: NavController, modifier: Modifier = Modifier) {
                     text = "Pesquisar",
                     fontSize = 12.5.sp,
                     fontWeight = FontWeight.Medium,
-                    fontFamily = fontFamily,
+                    fontFamily = fontFamilyPoppins,
                     letterSpacing = letterSpacingPrincipal,
                     color = Preto,
                     lineHeight = 8.sp
@@ -212,7 +204,7 @@ fun TopBarEstoque(navController: NavController, modifier: Modifier = Modifier) {
                 textDirection = TextDirection.ContentOrLtr,
                 fontSize = 12.5.sp,
                 fontWeight = FontWeight.Medium,
-                fontFamily = fontFamily,
+                fontFamily = fontFamilyPoppins,
                 letterSpacing = letterSpacingPrincipal,
                 color = Preto,
             ),
@@ -261,3 +253,71 @@ fun TopBarEstoque(navController: NavController, modifier: Modifier = Modifier) {
     }
 }
 
+@Composable
+fun TopBarComSelecaoData(
+    titulo: String,
+    mesSelecionado: String,
+    anoSelecionado: Int,
+    aoClicarSeletorData: () -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        TituloLarge(titulo = titulo)
+        TextButton(onClick = aoClicarSeletorData) {
+            Text(
+                text = "$mesSelecionado $anoSelecionado",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.SemiBold,
+                fontFamily = fontFamilyPoppins,
+                letterSpacing = letterSpacingPrincipal,
+                color = Cinza
+            )
+            val density = LocalDensity.current
+            Image(
+                painter = painterResource(id = R.mipmap.flecha_para_baixo),
+                contentDescription = "Flecha para Baixo",
+                modifier = Modifier
+                    .size(with(density) { 16.sp.toDp() })
+                    .padding(start = 4.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun TopBarConta(
+    enabledButtonSalvar: Boolean,
+    onClickSalvar: () -> Unit,
+    navController: NavController
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        ButtonIconVoltar(onClick = { navController.popBackStack() })
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        ButtonOutline(
+            titulo = stringResource(id = R.string.sairconta),
+            iconId = R.mipmap.logout,
+            isMediumButton = true,
+            onClick = { /*TODO*/ }
+        )
+
+        Spacer(modifier = Modifier.width(4.dp))
+
+        ButtonBackground(
+            titulo = stringResource(R.string.salvar),
+            cor = RoxoNubank,
+            isMediumButton = true,
+            onClick = onClickSalvar,
+            enabled = enabledButtonSalvar
+        )
+    }
+}

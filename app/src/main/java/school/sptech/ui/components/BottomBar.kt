@@ -18,11 +18,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import school.sptech.bottom.navigation.NavBar
+import school.sptech.navigation.NavBar
 import school.sptech.ui.theme.Branco
 import school.sptech.ui.theme.Cinza
 import school.sptech.ui.theme.RoxoNubank
-import school.sptech.ui.theme.fontFamily
+import school.sptech.ui.theme.fontFamilyPoppins
 
 @Composable
 fun BottomBar(
@@ -72,7 +72,7 @@ fun BottomBar(
                         fontSize = 12.5.sp,
                         letterSpacing = -0.5.sp,
                         fontWeight = FontWeight.SemiBold,
-                        fontFamily = fontFamily
+                        fontFamily = fontFamilyPoppins
                     )
                 },
                 colors = NavigationBarItemDefaults.colors(

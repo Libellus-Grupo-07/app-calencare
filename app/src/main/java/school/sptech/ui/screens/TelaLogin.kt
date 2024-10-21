@@ -3,14 +3,16 @@ package school.sptech.ui.screens
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -37,10 +39,16 @@ import school.sptech.ui.theme.Branco
 import school.sptech.ui.theme.CalencareAppTheme
 import school.sptech.ui.theme.Preto
 import school.sptech.ui.theme.RoxoNubank
-import school.sptech.ui.theme.CalencareAppTheme
 import school.sptech.R
-import school.sptech.Routes
-import school.sptech.bottom.navigation.NavBar
+import school.sptech.navigation.NavBar
+import school.sptech.ui.components.InputIcon
+import school.sptech.ui.components.TextoButtonExtraLarge
+import school.sptech.ui.theme.Cinza
+import school.sptech.ui.theme.fontFamilyPoppins
+import school.sptech.ui.theme.letterSpacingPrincipal
+import school.sptech.ui.viewModel.UsuarioViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import school.sptech.data.model.Funcionario
 
 class TelaLogin : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,7 +56,10 @@ class TelaLogin : ComponentActivity() {
         setContent {
             CalencareAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    LoginScreen(navController = rememberNavController(), modifier = Modifier.padding(innerPadding))
+                    LoginScreen(
+                        navController = rememberNavController(),
+                        modifier = Modifier.padding(innerPadding)
+                    )
                 }
             }
         }
@@ -56,10 +67,14 @@ class TelaLogin : ComponentActivity() {
 }
 
 @Composable
-fun LoginScreen(navController: NavController, modifier: Modifier = Modifier) {
+fun LoginScreen(
+    viewModel: UsuarioViewModel = viewModel(),
+    navController: NavController,
+    modifier: Modifier = Modifier
+) {
     var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    val passwordVisibility by remember { mutableStateOf(false) }
+    var senha by remember { mutableStateOf("") }
+    var passwordVisibility by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -104,47 +119,45 @@ fun LoginScreen(navController: NavController, modifier: Modifier = Modifier) {
 
             Spacer(modifier = Modifier.height(24.dp))
             Column{
-
-
                 // Campo de Email
-                OutlinedTextField(
-                    value = email,
-                    onValueChange = { email = it },
-                    leadingIcon = {
-                        Image(
-                            painter = painterResource(id = R.mipmap.icone_email),
-                            contentDescription = "Email",
-                            modifier = Modifier.size(24.dp)
-                        )
+                InputIcon(
+                    value = email, //viewModel.usuario.email ?: "",
+                    onValueChange = {
+                        //viewModel.usuario.email = it
+                        email = it
                     },
-                    label = {Text(stringResource(R.string.email))},
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    singleLine = true,
-                    shape = RoundedCornerShape(100.dp),
-
-                    )
+                    leadingIcon = R.mipmap.icone_email,
+                    label = stringResource(R.string.email),
+                )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Campo de Senha
-                OutlinedTextField(
-                    value = password,
-                    onValueChange = { password = it },
-                    leadingIcon = {
-                        Image(
-                            painter = painterResource(id = R.mipmap.icone_senha),
-                            contentDescription = "senha",
-                            modifier = Modifier.size(24.dp)
-                        )
+                InputIcon(
+                    value = senha, //viewModel.usuario.senha ?: "",
+                    onValueChange = {
+                        //viewModel.usuario.senha = it
+                        senha = it
                     },
-                    label = { Text(stringResource(R.string.senha)) },
+                    leadingIcon =  R.mipmap.icone_senha,
+                    trailingIcon = {
+                        IconButton(
+                            onClick = { passwordVisibility = !passwordVisibility }
+                        ){
+                            Icon(
+                                painter = painterResource(
+                                    id = if (passwordVisibility)
+                                        R.mipmap.olho_aberto
+                                    else R.mipmap.olho_fechado
+                                ),
+                                contentDescription = "Visibilidade",
+                                modifier = Modifier.size(18.dp),
+                                tint = Color.Gray,
+                            )
+                        }
+                    },
+                    label = stringResource(R.string.senha),
                     visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
-                    shape = RoundedCornerShape(100.dp),
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    singleLine = true
-
                 )
             }
 
@@ -155,24 +168,34 @@ fun LoginScreen(navController: NavController, modifier: Modifier = Modifier) {
                 horizontalArrangement = Arrangement.End
             ) {
                 TextButton(onClick = { /* Ação de esquecimento de senha */ }) {
-                    Text(stringResource(R.string.esqueceuSenha), color = Color.Gray)
+                    Text(
+                        stringResource(R.string.esqueceuSenha),
+                        color = Cinza,
+                        fontFamily = fontFamilyPoppins,
+                        letterSpacing = letterSpacingPrincipal,
+                        fontWeight = FontWeight.Normal
+                    )
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             // Botão "Entrar"
             Button(
                 onClick = {
+                    viewModel.getFuncionario(1)
                     navController.navigate(NavBar.Inicio.route)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(48.dp),
+                    .height(54.dp),
                 shape = RoundedCornerShape(100.dp),
-                colors = ButtonDefaults.buttonColors(RoxoNubank)
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = RoxoNubank,
+                    contentColor = Branco
+                )
             ) {
-                Text(stringResource(R.string.entrar), color = Branco, fontSize = 16.sp)
+                TextoButtonExtraLarge(texto = stringResource(R.string.entrar))
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -190,8 +213,11 @@ fun LoginScreen(navController: NavController, modifier: Modifier = Modifier) {
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = stringResource(R.string.ou),
-                    color = Color.Gray,
-                    fontSize = 12.sp
+                    color = Cinza,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 12.sp,
+                    fontFamily = fontFamilyPoppins,
+                    letterSpacing = letterSpacingPrincipal
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 HorizontalDivider(
@@ -207,13 +233,22 @@ fun LoginScreen(navController: NavController, modifier: Modifier = Modifier) {
                 onClick = { /* Ação de login com Google */ },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(48.dp),
-                shape = RoundedCornerShape(100.dp)
+                    .height(54.dp),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    containerColor = Color.Transparent,
+                    contentColor = Cinza,
+
+                ),
+                shape = RoundedCornerShape(100.dp),
+                border = BorderStroke(
+                    width = 1.dp,
+                    color = Cinza
+                )
             ) {
                 Image(
                     painter = painterResource(id = R.mipmap.continuar_com_google1),
                     contentDescription = "Google",
-                    modifier = modifier.fillMaxSize(),
+                    modifier = modifier.fillMaxSize(0.75f),
                     alignment = Alignment.Center
                 )
             }
@@ -225,6 +260,6 @@ fun LoginScreen(navController: NavController, modifier: Modifier = Modifier) {
 @Composable
 fun LoginScreenPreview() {
     CalencareAppTheme {
-        LoginScreen(rememberNavController())
+        LoginScreen(navController = rememberNavController())
     }
 }

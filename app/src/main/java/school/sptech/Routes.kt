@@ -6,5 +6,6 @@ sealed class Routes(val route:String) {
     object Notificacoes : Routes("notificacoes")
     object AdicionarProduto : Routes("adicionar_produto")
     object AdicionarDespesa : Routes("adicionar_despesa")
-
+    object DadosEmpresa: Routes("dados_empresa")
+    object DadosPessoais: Routes("dados_pessoais")
 }

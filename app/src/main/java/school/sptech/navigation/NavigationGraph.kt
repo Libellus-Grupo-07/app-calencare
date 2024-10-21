@@ -1,4 +1,4 @@
-package school.sptech.bottom.navigation
+package school.sptech.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import school.sptech.R
 import school.sptech.Routes
+import school.sptech.ui.screens.TelaConta
 import school.sptech.ui.screens.LoginScreen
 import school.sptech.ui.screens.SplashScreen
 import school.sptech.ui.screens.TelaAddDespesa
@@ -14,7 +15,6 @@ import school.sptech.ui.screens.TelaAdicionarProdutoScreen
 import school.sptech.ui.screens.TelaDashboard
 import school.sptech.ui.screens.TelaEstoque
 import school.sptech.ui.screens.TelaFinancas
-import school.sptech.ui.screens.TelaInicial
 import school.sptech.ui.screens.TelaInicio
 import school.sptech.ui.screens.TelaNotificacoes
 
@@ -37,14 +37,14 @@ fun NavigationGraph(
             onBottomBarVisibleChanged(false)
             onTopBarVisibleChanged(false)
             onTitleTopBarChanged("")
-            LoginScreen(navController)
+            LoginScreen(navController = navController)
         }
 
         composable(NavBar.Inicio.route) {
             onBottomBarVisibleChanged(true)
             onTopBarVisibleChanged(false)
             onTitleTopBarChanged("")
-            TelaInicio(navController)
+            TelaInicio(navController = navController)
         }
 
         composable(Routes.Notificacoes.route) {
@@ -63,7 +63,7 @@ fun NavigationGraph(
         composable(NavBar.Financas.route) {
             onBottomBarVisibleChanged(true)
             onTopBarVisibleChanged(false)
-            TelaFinancas()
+            TelaFinancas(navController)
         }
 
         composable(NavBar.Dashboard.route) {
@@ -82,6 +82,12 @@ fun NavigationGraph(
             onBottomBarVisibleChanged(false)
             onTopBarVisibleChanged(true)
             TelaAddDespesa(navController)
+        }
+
+        composable(Routes.DadosPessoais.route) {
+            onBottomBarVisibleChanged(false)
+            onTopBarVisibleChanged(false)
+            TelaConta(navController =  navController)
         }
     }
 }

@@ -69,8 +69,17 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    //implementation(libs.viewmodel.compose)
+
 
     implementation("androidx.compose.ui:ui-text-google-fonts:1.6.8")
+    implementation("io.github.ehsannarmani:compose-charts:0.0.14")
+
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
