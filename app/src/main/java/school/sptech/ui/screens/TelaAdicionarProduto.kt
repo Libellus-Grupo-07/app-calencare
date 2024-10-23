@@ -14,8 +14,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import school.sptech.R
 import school.sptech.ui.components.Background
+import school.sptech.ui.components.DropdownFieldWithLabel
 import school.sptech.ui.components.FormButtons
 import school.sptech.ui.components.FormFieldWithLabel
+import school.sptech.ui.components.LabelInput
 import school.sptech.ui.components.TopBarVoltar
 import school.sptech.ui.theme.CalencareAppTheme
 
@@ -83,10 +85,11 @@ fun ProductForm() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        FormFieldWithLabel(
+        DropdownFieldWithLabel(
             value = category,
             onValueChange = { category = it },
-            label = stringResource(R.string.categoria)
+            label = stringResource(R.string.categoria),
+            options = listOf("Unha", "Cabelo", "Maquiagem")
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -97,6 +100,10 @@ fun ProductForm() {
             label = stringResource(R.string.descricao),
             isMultiline = true
         )
+
+        Row(modifier = Modifier.fillMaxWidth(), Arrangement.SpaceBetween){
+            LabelInput(label = stringResource(R.string.possui_validade))
+        }
     }
 }
 

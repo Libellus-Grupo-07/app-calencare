@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -51,8 +52,6 @@ import school.sptech.ui.theme.Preto
 import school.sptech.ui.theme.RoxoNubank
 import school.sptech.ui.theme.fontFamilyPoppins
 import school.sptech.ui.theme.letterSpacingPrincipal
-import school.sptech.ui.viewModel.UsuarioViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import school.sptech.data.model.Funcionario
 
 @Composable
@@ -137,14 +136,8 @@ fun TopBarVoltar(navController: NavController, titulo: String) {
             titleContentColor = Preto
         ),
         title = {
-            Text(
-                text = titulo,
-                style = TextStyle(
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = fontFamilyPoppins,
-                    letterSpacing = letterSpacingPrincipal
-                )
+            TituloMedium(
+                titulo = titulo
             )
         },
         navigationIcon = {
@@ -284,6 +277,36 @@ fun TopBarComSelecaoData(
                     .padding(start = 4.dp)
             )
         }
+    }
+}
+
+@Composable
+fun TopBarInformacoesProduto(onClickVoltar: () -> Unit, onClickSalvar: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .padding(horizontal = 12.dp)
+            .padding(top = 36.dp)
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    )
+    {
+        ButtonIconVoltar(onClick = onClickVoltar)
+
+        TituloMedium(
+            titulo = stringResource(R.string.informacoesProduto)
+        )
+
+
+        IconButton(onClick = { /*TODO*/ }) {
+            Icon(
+                painter = painterResource(id = R.mipmap.check),
+                contentDescription = "Check",
+                modifier = Modifier.size(24.dp),
+                tint = Preto
+            )
+        }
+
     }
 }
 

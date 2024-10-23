@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -155,10 +156,10 @@ fun ButtonOutline(
         colors = ButtonColors(
             contentColor = Cinza,
             containerColor = Branco,
-            disabledContentColor = Cinza,
+            disabledContentColor = CinzaOpacidade35,
             disabledContainerColor = Branco
         ),
-        border = BorderStroke(1.3.dp, Cinza),
+        border = BorderStroke(1.3.dp, if(enabledButton) Cinza else CinzaOpacidade35),
         contentPadding = PaddingValues(
             horizontal = 18.dp,
         )
@@ -184,6 +185,8 @@ fun ButtonBackground(
     enabledIcon: Boolean = true,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    iconPainter: ImageVector? = null,
+    iconId: Int? = null,
     isMediumButton: Boolean = false
 ){
     val corTexto = when(cor){
@@ -210,11 +213,20 @@ fun ButtonBackground(
         )
     ) {
         if(enabledIcon){
-            Icon(
-                Icons.Rounded.Check,
-                contentDescription = "Ícone de $titulo",
-                modifier = modifier.width(if (isMediumButton) 16.dp else 18.dp)
-            )
+            if(iconId != null){
+                Icon(
+                    painter = painterResource(id = iconId),
+                    contentDescription = "Ícone de $titulo",
+                    modifier = modifier.width(if (isMediumButton) 16.dp else 18.dp)
+                )
+            } else {
+                Icon(
+                    imageVector = iconPainter ?: Icons.Rounded.Check,
+                    contentDescription = "Ícone de $titulo",
+                    modifier = modifier.width(if (isMediumButton) 16.dp else 18.dp)
+                )
+            }
+
             Spacer(modifier = modifier.size(if(isMediumButton) 4.dp else 6.dp))
         }
 

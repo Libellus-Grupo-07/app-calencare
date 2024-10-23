@@ -126,7 +126,8 @@ fun TelaInicio(
                 BoxProdutos(
                     produtos = listaProdutos,
                     titulo = stringResource(id = R.string.produtosComQuantidadeBaixa),
-                    isTelaInicio = true
+                    isTelaInicio = true,
+                    navController = navController
                 )
             }
         }

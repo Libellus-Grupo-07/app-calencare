@@ -51,10 +51,7 @@
     <string name="emEstoque" translatable="false">em Estoque %1$d</string>
     <string name="senha">Senha</string>
     <string name="informacoesProduto">Informações do Produto</string>
-    <string name="retirar">- Retirar</string>
-    <string name="repor">+ Repor</string>
-    <string name="quantidadeEstoque">Quantidade de Estoque</string>
-    <string name="emEstoque" translatable="false">%1$d em Estoque.</string>
+    <string name="totalEmEstoque">Total em Estoque: </string>
     <string name="estoque">Estoque</string>
     <string name="valorMovimentos" translatable="false">R$ %1$s %2$s</string>
     <string name="financas">Finanças</string>
@@ -72,4 +69,6 @@
     <string name="cep">CEP</string>
     <string name="numero">Número</string>
     <string name="complemento">Complemento</string>
+    <string name="qtdEmEstoque">%1$d em Estoque</string>
+    <string name="possui_validade">Possui Validade?</string>
 </resources>

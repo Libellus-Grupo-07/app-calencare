@@ -15,6 +15,7 @@ import school.sptech.ui.screens.TelaAdicionarProdutoScreen
 import school.sptech.ui.screens.TelaDashboard
 import school.sptech.ui.screens.TelaEstoque
 import school.sptech.ui.screens.TelaFinancas
+import school.sptech.ui.screens.TelaInformacoesProdutoScreen
 import school.sptech.ui.screens.TelaInicio
 import school.sptech.ui.screens.TelaNotificacoes
 
@@ -88,6 +89,12 @@ fun NavigationGraph(
             onBottomBarVisibleChanged(false)
             onTopBarVisibleChanged(false)
             TelaConta(navController =  navController)
+        }
+
+        composable(Routes.InformacoesProduto.route) {
+            onBottomBarVisibleChanged(false)
+            onTopBarVisibleChanged(true)
+            TelaInformacoesProdutoScreen(navController = navController)
         }
     }
 }

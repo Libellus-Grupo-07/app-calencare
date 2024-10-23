@@ -62,7 +62,8 @@ fun TelaEstoque(navController: NavController){
                     produtos = listaProdutos,
                     titulo = stringResource(id = R.string.estoque),
                     isTelaInicio = false,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    navController = navController
                 )
             }
         }
