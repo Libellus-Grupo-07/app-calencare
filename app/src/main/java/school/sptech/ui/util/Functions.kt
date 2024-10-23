@@ -35,3 +35,6 @@ fun formatarDataDatePicker(inputFormat:Boolean = false, data:Long?): String{
             dateMillis = data ?: Date().time,
             locale = CalendarLocale.getDefault()).toString()
 }
+
+fun getEnabledButtonRetirarEstoque (qtdEstoque: Int):Boolean { return qtdEstoque > 0 }
+

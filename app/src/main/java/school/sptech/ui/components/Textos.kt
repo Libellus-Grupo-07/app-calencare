@@ -30,6 +30,18 @@ fun TituloLarge(titulo:String) {
 }
 
 @Composable
+fun TituloMedium(titulo:String) {
+    Text(
+        text = titulo,
+        color = Preto,
+        fontSize = 18.sp,
+        fontWeight = FontWeight.Bold,
+        fontFamily = fontFamilyPoppins,
+        letterSpacing = letterSpacingPrincipal
+    )
+}
+
+@Composable
 fun LabelInput(label:String){
     Text(
         text = label,

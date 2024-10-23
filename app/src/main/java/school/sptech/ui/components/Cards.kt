@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -110,7 +111,16 @@ fun CardKpi(titulo:String, valor:String, cor:String, modifier: Modifier = Modifi
 }
 
 @Composable
-fun CardProduto(nome:String, categoria:String, qtdEstoque:Int, isTelaInicio:Boolean, modifier: Modifier = Modifier){
+fun CardProduto(
+    nome: String,
+    categoria: String,
+    qtdEstoque: Int,
+    isTelaInicio: Boolean,
+    onClickReporEstoque: () -> Unit,
+    onClickRetirarEstoque: () -> Unit,
+    onClickCardProduto: () -> Unit,
+    modifier: Modifier = Modifier
+){
     Row(modifier = modifier
         .border(
             width = 1.3.dp,
@@ -121,7 +131,9 @@ fun CardProduto(nome:String, categoria:String, qtdEstoque:Int, isTelaInicio:Bool
             ),
             shape = RoundedCornerShape(20.dp)
         )
-        .background(Branco, shape = RoundedCornerShape(20.dp))) {
+        .background(Branco, shape = RoundedCornerShape(20.dp))
+        .clickable(onClick = onClickCardProduto)
+    ) {
         Box(modifier = Modifier
             .padding(18.dp)
         ){
@@ -191,7 +203,7 @@ fun CardProduto(nome:String, categoria:String, qtdEstoque:Int, isTelaInicio:Bool
                                 .weight(0.5f)
                                 .height(36.dp),
                             shape = CircleShape,
-                            onClick = { /*TODO*/ },
+                            onClick = onClickRetirarEstoque,
                             colors = ButtonDefaults.buttonColors(
                                 contentColor = Cinza,
                                 containerColor = Branco,
@@ -215,7 +227,7 @@ fun CardProduto(nome:String, categoria:String, qtdEstoque:Int, isTelaInicio:Bool
                                 .weight(0.5f)
                                 .height(36.dp),
                             shape = CircleShape,
-                            onClick = { /*TODO*/ },
+                            onClick = onClickReporEstoque,
                             colors = ButtonDefaults.buttonColors(
                                 contentColor = Branco,
                                 containerColor = RoxoNubank,
