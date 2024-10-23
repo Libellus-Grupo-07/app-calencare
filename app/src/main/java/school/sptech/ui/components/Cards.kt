@@ -28,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -111,6 +112,7 @@ fun CardKpi(titulo:String, valor:String, cor:String, modifier: Modifier = Modifi
 
 @Composable
 fun CardProduto(nome:String, categoria:String, qtdEstoque:Int, isTelaInicio:Boolean, modifier: Modifier = Modifier){
+    var exibirModal by remember { mutableStateOf(false) }
     Row(modifier = modifier
         .border(
             width = 1.3.dp,
@@ -156,7 +158,7 @@ fun CardProduto(nome:String, categoria:String, qtdEstoque:Int, isTelaInicio:Bool
                         modifier = Modifier
                             .fillMaxWidth(),
                         shape = CircleShape,
-                        onClick = { /*TODO*/ },
+                        onClick = { exibirModal = true },
                         colors = ButtonDefaults.buttonColors(
                             contentColor = Branco,
                             containerColor = RoxoNubank,
@@ -215,7 +217,7 @@ fun CardProduto(nome:String, categoria:String, qtdEstoque:Int, isTelaInicio:Bool
                                 .weight(0.5f)
                                 .height(36.dp),
                             shape = CircleShape,
-                            onClick = { /*TODO*/ },
+                            onClick = { exibirModal = true },
                             colors = ButtonDefaults.buttonColors(
                                 contentColor = Branco,
                                 containerColor = RoxoNubank,
@@ -233,6 +235,15 @@ fun CardProduto(nome:String, categoria:String, qtdEstoque:Int, isTelaInicio:Bool
                         }
                     }
                 }
+            }
+            if (exibirModal) {
+                ReporProductModal(
+                    onDismiss = { exibirModal = false }
+                    ,produto = nome, quantidadeEstoque = qtdEstoque
+                    ,onConfirm = {
+                        exibirModal = false
+                    }
+                )
             }
         }
     }

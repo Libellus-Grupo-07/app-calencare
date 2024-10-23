@@ -13,27 +13,28 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import school.sptech.ui.theme.Cinza
 import school.sptech.ui.theme.Preto
+import school.sptech.ui.theme.Verde
 import school.sptech.ui.theme.fontFamilyPoppins
 import school.sptech.ui.theme.letterSpacingPrincipal
 import school.sptech.ui.theme.letterSpacingSecundaria
 
 @Composable
-fun TituloLarge(titulo:String) {
+fun TituloLarge(titulo:String, defaultColor: Boolean = true) {
     Text(
         text = titulo,
         fontSize = 18.sp,
         fontWeight = FontWeight.Bold,
         fontFamily = fontFamilyPoppins,
         letterSpacing = letterSpacingPrincipal,
-        color = Preto
+        color = if (defaultColor) Preto else Color.Unspecified
     )
 }
 
 @Composable
-fun LabelInput(label:String){
+fun LabelInput(label:String, color: Color = Cinza){
     Text(
         text = label,
-        color = Cinza,
+        color = color,
         fontWeight = FontWeight.Bold,
         fontFamily = fontFamilyPoppins,
         fontSize = 14.sp,
