@@ -1,7 +1,9 @@
 package school.sptech.ui.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +14,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
@@ -31,6 +36,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -41,12 +47,15 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import formatarDataDatePicker
 import school.sptech.R
 import school.sptech.ui.theme.Branco
 import school.sptech.ui.theme.Cinza
+import school.sptech.ui.theme.CinzaOpacidade7
 import school.sptech.ui.theme.Laranja
 import school.sptech.ui.theme.Preto
 import school.sptech.ui.theme.PretoOpacidade25
@@ -218,10 +227,12 @@ fun ReporProductModal(
     quantidadeEstoque: Int,
     onDismiss: () -> Unit,
     onConfirm: (Int) -> Unit,
+    availableDates: List<String>,
     viewModel: ReporProdutoViewModel = ReporProdutoViewModel()
 ) {
-    var data by remember { mutableStateOf("") }
     var checked by remember { mutableStateOf(false) }
+    val selectedDates = remember { mutableStateListOf<String>() }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         containerColor = Branco,
@@ -262,12 +273,16 @@ fun ReporProductModal(
                     Checkbox(checked = checked, onCheckedChange = { checked = it })
                 }
                 if (checked) {
-                    Spacer(modifier = Modifier.height(7.dp))
-                    FormFieldWithLabel(
-                        value = data,
-                        onValueChange = { data = it },
-                        label = "Data de Validade",
-                        isDateInput = true
+                    SelectableDatesRow(
+                        dates = availableDates,
+                        selectedDates = selectedDates,
+                        onDateSelected = { date ->
+                            if (selectedDates.contains(date)) {
+                                selectedDates.remove(date)
+                            } else {
+                                selectedDates.add(date)
+                            }
+                        }
                     )
                 }
                 Spacer(modifier = Modifier.height(16.dp))
@@ -305,13 +320,8 @@ fun ReporProductModal(
                         )
                     }
                 }
-
                 Spacer(modifier = Modifier.height(16.dp))
-
-                // Estoque disponível
-                Row(
-
-                ) {
+                Row() {
                     LabelInput(label = "Total em Estoque: ")
                     LabelInput(
                         label = "$quantidadeEstoque produtos",

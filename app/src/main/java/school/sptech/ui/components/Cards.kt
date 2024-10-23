@@ -238,11 +238,14 @@ fun CardProduto(nome:String, categoria:String, qtdEstoque:Int, isTelaInicio:Bool
             }
             if (exibirModal) {
                 ReporProductModal(
-                    onDismiss = { exibirModal = false }
-                    ,produto = nome, quantidadeEstoque = qtdEstoque
-                    ,onConfirm = {
+                    produto = nome,
+                    quantidadeEstoque = qtdEstoque,
+                    onDismiss = { exibirModal = false },
+                    onConfirm = {
                         exibirModal = false
-                    }
+                        // Lógica adicional para confirmar
+                    },
+                    availableDates = listOf("2024-10-23", "2024-10-24", "2024-10-25") // Substitua pelos seus dados
                 )
             }
         }
