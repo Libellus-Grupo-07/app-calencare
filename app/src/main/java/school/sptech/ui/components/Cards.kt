@@ -111,7 +111,7 @@ fun CardKpi(titulo:String, valor:String, cor:String, modifier: Modifier = Modifi
     }
 }
 
-
+@Composable
 fun CardProduto(
     nome: String,
     categoria: String,
