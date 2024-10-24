@@ -193,4 +193,3 @@ fun BoxPerfil(telaAtual:String, onChangeTelaAtual: (String) -> Unit) {
     }
 
 }
-
