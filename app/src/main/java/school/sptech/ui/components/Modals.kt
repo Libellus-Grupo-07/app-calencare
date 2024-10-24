@@ -218,10 +218,11 @@ fun ReporProductModal(
     quantidadeEstoque: Int,
     onDismiss: () -> Unit,
     onConfirm: (Int) -> Unit,
-    viewModel: ReporProdutoViewModel = ReporProdutoViewModel()
+    viewModel: ReporProdutoViewModel = ReporProdutoViewModel(),
+    datesFromBackend: List<String>
 ) {
     var data by remember { mutableStateOf("") }
-    var checked by remember { mutableStateOf(false) }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         containerColor = Branco,
@@ -253,21 +254,10 @@ fun ReporProductModal(
                     readOnly = true
                 )
                 Spacer(modifier = Modifier.height(7.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    LabelInput(label = "Possui Validade?")
-                    Checkbox(checked = checked, onCheckedChange = { checked = it })
-                }
-                if (checked) {
-                    Spacer(modifier = Modifier.height(7.dp))
-                    FormFieldWithLabel(
-                        value = data,
-                        onValueChange = { data = it },
-                        label = "Data de Validade",
-                        isDateInput = true
+                if (datesFromBackend.isNotEmpty() && datesFromBackend[0].isNotEmpty()) {
+                    SelectableDatesRow(
+                        dates = datesFromBackend,
+                        onDateSelected = { data = it }
                     )
                 }
                 Spacer(modifier = Modifier.height(16.dp))
@@ -305,13 +295,8 @@ fun ReporProductModal(
                         )
                     }
                 }
-
                 Spacer(modifier = Modifier.height(16.dp))
-
-                // Estoque disponível
-                Row(
-
-                ) {
+                Row() {
                     LabelInput(label = "Total em Estoque: ")
                     LabelInput(
                         label = "$quantidadeEstoque produtos",

@@ -237,12 +237,15 @@ fun CardProduto(nome:String, categoria:String, qtdEstoque:Int, isTelaInicio:Bool
                 }
             }
             if (exibirModal) {
+                val datesFromBackend = listOf("20/10/2024") // Example dates, replace with actual data from backend
                 ReporProductModal(
-                    onDismiss = { exibirModal = false }
-                    ,produto = nome, quantidadeEstoque = qtdEstoque
-                    ,onConfirm = {
+                    onDismiss = { exibirModal = false },
+                    produto = nome,
+                    quantidadeEstoque = qtdEstoque,
+                    onConfirm = {
                         exibirModal = false
-                    }
+                    },
+                    datesFromBackend = datesFromBackend // Pass the datesFromBackend parameter here
                 )
             }
         }
