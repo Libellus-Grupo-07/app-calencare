@@ -53,6 +53,8 @@ import school.sptech.ui.theme.PretoOpacidade25
 import school.sptech.ui.theme.RoxoNubank
 import school.sptech.ui.theme.Verde
 import school.sptech.ui.theme.VerdeOpacidade15
+import school.sptech.ui.theme.Vermelho
+import school.sptech.ui.theme.VermelhoOpacidade15
 import school.sptech.ui.theme.fontFamilyPoppins
 import school.sptech.ui.theme.letterSpacingPrincipal
 import school.sptech.ui.viewModel.ReporProdutoViewModel
@@ -213,7 +215,10 @@ fun DatePickerModal(dateSelected: Long, onDismiss: () -> Unit, onDateSelected: (
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReporProductModal(
+fun ProductModal(
+    title: String,
+    buttonColor: Color,
+    buttonText: String,
     produto: String,
     quantidadeEstoque: Int,
     onDismiss: () -> Unit,
@@ -226,12 +231,12 @@ fun ReporProductModal(
     AlertDialog(
         onDismissRequest = onDismiss,
         containerColor = Branco,
-        titleContentColor = Verde,
+        titleContentColor = buttonColor,
         title = {
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                TituloLarge(titulo = "Repor Produto", defaultColor = false)
+                TituloLarge(titulo = title, defaultColor = false)
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(
                     onClick = onDismiss,
@@ -307,13 +312,57 @@ fun ReporProductModal(
         },
         confirmButton = {
             ButtonBackground(
-                titulo = stringResource(id = R.string.repor),
-                cor = Verde,
+                titulo = buttonText,
+                cor = buttonColor,
                 onClick = { onConfirm(viewModel.quantidade.value) }
             )
         },
         dismissButton = {
             ButtonCancelar(onClick = onDismiss)
         }
+    )
+}
+
+@Composable
+fun ReporProductModal(
+    produto: String,
+    quantidadeEstoque: Int,
+    onDismiss: () -> Unit,
+    onConfirm: (Int) -> Unit,
+    viewModel: ReporProdutoViewModel = ReporProdutoViewModel(),
+    datesFromBackend: List<String>
+) {
+    ProductModal(
+        title = "Repor Produto",
+        buttonColor = Verde,
+        buttonText = stringResource(id = R.string.repor),
+        produto = produto,
+        quantidadeEstoque = quantidadeEstoque,
+        onDismiss = onDismiss,
+        onConfirm = onConfirm,
+        viewModel = viewModel,
+        datesFromBackend = datesFromBackend
+    )
+}
+
+@Composable
+fun RetirarProductModal(
+    produto: String,
+    quantidadeEstoque: Int,
+    onDismiss: () -> Unit,
+    onConfirm: (Int) -> Unit,
+    viewModel: ReporProdutoViewModel = ReporProdutoViewModel(),
+    datesFromBackend: List<String>
+) {
+    ProductModal(
+        title = "Retirar Produto",
+        buttonColor = Vermelho,
+        buttonText = stringResource(id = R.string.retirar),
+        produto = produto,
+        quantidadeEstoque = quantidadeEstoque,
+        onDismiss = onDismiss,
+        onConfirm = onConfirm,
+        viewModel = viewModel,
+        datesFromBackend = datesFromBackend
     )
 }

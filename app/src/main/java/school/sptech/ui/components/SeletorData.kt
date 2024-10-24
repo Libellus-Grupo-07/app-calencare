@@ -8,7 +8,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -45,13 +44,11 @@ fun SelectableDatesRow(
     selectedDate: String? = null
 ) {
     var currentDate by remember { mutableStateOf(selectedDate) }
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(11.dp)
     ) {
-        // Título e quantidade de produtos
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -61,10 +58,7 @@ fun SelectableDatesRow(
                 fontSize = 16.sp
             )
         }
-
         Spacer(modifier = Modifier.height(8.dp))
-
-        // LazyRow para exibir as datas
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -82,7 +76,6 @@ fun SelectableDatesRow(
         }
     }
 }
-
 @Composable
 fun DateItem(
     date: String,

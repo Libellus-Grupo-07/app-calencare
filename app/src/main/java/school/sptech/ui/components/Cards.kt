@@ -111,8 +111,10 @@ fun CardKpi(titulo:String, valor:String, cor:String, modifier: Modifier = Modifi
 }
 
 @Composable
-fun CardProduto(nome:String, categoria:String, qtdEstoque:Int, isTelaInicio:Boolean, modifier: Modifier = Modifier){
-    var exibirModal by remember { mutableStateOf(false) }
+fun CardProduto(nome: String, categoria: String, qtdEstoque: Int, isTelaInicio: Boolean, modifier: Modifier = Modifier) {
+    var exibirModalRepor by remember { mutableStateOf(false) }
+    var exibirModalRetirar by remember { mutableStateOf(false) } // Controle do modal de retirada
+
     Row(modifier = modifier
         .border(
             width = 1.3.dp,
@@ -126,7 +128,7 @@ fun CardProduto(nome:String, categoria:String, qtdEstoque:Int, isTelaInicio:Bool
         .background(Branco, shape = RoundedCornerShape(20.dp))) {
         Box(modifier = Modifier
             .padding(18.dp)
-        ){
+        ) {
             Column {
                 Text(
                     text = nome,
@@ -153,12 +155,12 @@ fun CardProduto(nome:String, categoria:String, qtdEstoque:Int, isTelaInicio:Bool
 
                 ButtonEstoque(qtdEstoque = qtdEstoque)
 
-                if(isTelaInicio){
+                if (isTelaInicio) {
                     TextButton(
                         modifier = Modifier
                             .fillMaxWidth(),
                         shape = CircleShape,
-                        onClick = { exibirModal = true },
+                        onClick = { exibirModalRepor = true },
                         colors = ButtonDefaults.buttonColors(
                             contentColor = Branco,
                             containerColor = RoxoNubank,
@@ -193,7 +195,7 @@ fun CardProduto(nome:String, categoria:String, qtdEstoque:Int, isTelaInicio:Bool
                                 .weight(0.5f)
                                 .height(36.dp),
                             shape = CircleShape,
-                            onClick = { /*TODO*/ },
+                            onClick = { exibirModalRetirar = true }, // Atualiza o estado para abrir o modal de retirada
                             colors = ButtonDefaults.buttonColors(
                                 contentColor = Cinza,
                                 containerColor = Branco,
@@ -201,7 +203,7 @@ fun CardProduto(nome:String, categoria:String, qtdEstoque:Int, isTelaInicio:Bool
                                 disabledContainerColor = Branco
                             ),
                             enabled = buttonRetirarEnabled,
-                            border = BorderStroke(1.5.dp, if(buttonRetirarEnabled) Cinza else CinzaOpacidade35)
+                            border = BorderStroke(1.5.dp, if (buttonRetirarEnabled) Cinza else CinzaOpacidade35)
                         ) {
                             Text(
                                 text = stringResource(id = R.string.retirar),
@@ -217,7 +219,7 @@ fun CardProduto(nome:String, categoria:String, qtdEstoque:Int, isTelaInicio:Bool
                                 .weight(0.5f)
                                 .height(36.dp),
                             shape = CircleShape,
-                            onClick = { exibirModal = true },
+                            onClick = { exibirModalRepor = true },
                             colors = ButtonDefaults.buttonColors(
                                 contentColor = Branco,
                                 containerColor = RoxoNubank,
@@ -236,16 +238,32 @@ fun CardProduto(nome:String, categoria:String, qtdEstoque:Int, isTelaInicio:Bool
                     }
                 }
             }
-            if (exibirModal) {
-                val datesFromBackend = listOf("20/10/2024") // Example dates, replace with actual data from backend
+
+            // Exibe o modal de reposição de produto
+            if (exibirModalRepor) {
+                val datesFromBackend = listOf("20/10/2024", "21/10/2024", "22/10/2024", "23/10/2024", "24/10/2024", "25/10/2024", "26/10/2024", "27/10/2024", "28/10/2024", "29/10/2024", "30/10/2024", "31/10/2024", "01/11/2024", "02/11/2024")
                 ReporProductModal(
-                    onDismiss = { exibirModal = false },
+                    onDismiss = { exibirModalRepor = false },
                     produto = nome,
                     quantidadeEstoque = qtdEstoque,
                     onConfirm = {
-                        exibirModal = false
+                        exibirModalRepor = false
                     },
-                    datesFromBackend = datesFromBackend // Pass the datesFromBackend parameter here
+                    datesFromBackend = datesFromBackend
+                )
+            }
+
+            // Exibe o modal de retirada de produto
+            if (exibirModalRetirar) {
+                val datesFromBackend = listOf("20/10/2024", "21/10/2024", "22/10/2024", "23/10/2024", "24/10/2024", "25/10/2024", "26/10/2024", "27/10/2024", "28/10/2024", "29/10/2024", "30/10/2024", "31/10/2024", "01/11/2024", "02/11/2024")
+                RetirarProductModal(
+                    produto = nome,
+                    quantidadeEstoque = qtdEstoque,
+                    onDismiss = { exibirModalRetirar = false },
+                    onConfirm = {
+                        exibirModalRetirar = false
+                    },
+                    datesFromBackend = datesFromBackend
                 )
             }
         }
