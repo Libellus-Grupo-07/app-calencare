@@ -117,8 +117,8 @@ fun CardProduto(
     categoria: String,
     qtdEstoque: Int,
     isTelaInicio: Boolean,
-    //onClickReporEstoque: () -> Unit,
-    //onClickRetirarEstoque: () -> Unit,
+    onClickReporEstoque: () -> Unit,
+    onClickRetirarEstoque: () -> Unit,
     onClickCardProduto: () -> Unit,
     modifier: Modifier = Modifier
 ){
