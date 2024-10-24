@@ -1,7 +1,6 @@
 package school.sptech.ui.components
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,22 +14,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,7 +30,6 @@ import school.sptech.R
 import school.sptech.Routes
 import school.sptech.data.model.Movimentos
 import school.sptech.data.model.Produto
-import school.sptech.ui.theme.CinzaOpacidade35
 import school.sptech.ui.theme.CinzaOpacidade7
 import school.sptech.ui.theme.Preto
 import school.sptech.ui.theme.RoxoNubank
@@ -103,7 +93,7 @@ fun BoxKpisEstoque(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun BoxProdutos(produtos: MutableList<Produto>, titulo: String, isTelaInicio: Boolean, modifier: Modifier = Modifier) {
+fun BoxProdutos(navController: NavController, produtos: MutableList<Produto>, titulo: String, isTelaInicio: Boolean, modifier: Modifier = Modifier) {
     Box(modifier = Modifier.fillMaxWidth()) {
         Column {
             Row {
@@ -130,6 +120,11 @@ fun BoxProdutos(produtos: MutableList<Produto>, titulo: String, isTelaInicio: Bo
                         categoria = produtos[i].categoria?.nome ?: "",
                         qtdEstoque = produtos[i].qtdEstoque ?: 0,
                         isTelaInicio = isTelaInicio,
+                        onClickCardProduto = {
+                            navController.navigate(Routes.InformacoesProduto.route)
+                        },
+                        onClickReporEstoque = {},
+                        onClickRetirarEstoque = {},
                         modifier = modifier.weight(1f),
                     )
                 }
