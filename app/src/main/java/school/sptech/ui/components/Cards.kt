@@ -48,6 +48,7 @@ import formatarDecimal
 import school.sptech.R
 import school.sptech.data.model.Despesa
 import school.sptech.data.model.Movimentos
+import school.sptech.data.model.Produto
 import school.sptech.ui.theme.Amarelo
 import school.sptech.ui.theme.Azul
 import school.sptech.ui.theme.AzulOpacidade15
@@ -111,11 +112,9 @@ fun CardKpi(titulo:String, valor:String, cor:String, modifier: Modifier = Modifi
     }
 }
 
-
+@Composable
 fun CardProduto(
-    nome: String,
-    categoria: String,
-    qtdEstoque: Int,
+    produto: Produto,
     isTelaInicio: Boolean,
     onClickReporEstoque: () -> Unit,
     onClickRetirarEstoque: () -> Unit,
@@ -143,7 +142,7 @@ fun CardProduto(
         ) {
             Column {
                 Text(
-                    text = nome,
+                    text = produto.nome ?: "",
                     fontSize = 12.5.sp,
                     lineHeight = 20.sp,
                     color = RoxoNubank,
@@ -155,7 +154,7 @@ fun CardProduto(
                 Spacer(modifier = Modifier.size(8.dp))
 
                 Text(
-                    text = categoria,
+                    text = produto.categoriaProdutoNome ?: "",
                     fontSize = 11.5.sp,
                     fontWeight = FontWeight.Medium,
                     letterSpacing = letterSpacingPrincipal,
@@ -165,7 +164,7 @@ fun CardProduto(
                 )
                 Spacer(modifier = Modifier.size(8.dp))
 
-                ButtonEstoque(qtdEstoque = qtdEstoque)
+                ButtonEstoque(qtdEstoque = produto.qtdEstoque ?: 0)
 
                 if (isTelaInicio) {
                     TextButton(
@@ -195,7 +194,7 @@ fun CardProduto(
                         )
                     }
                 } else {
-                    val buttonRetirarEnabled = qtdEstoque > 0
+                    val buttonRetirarEnabled = produto.qtdEstoque ?: 0 > 0
 
                     Row(
                         modifier = modifier.fillMaxWidth(),
@@ -256,8 +255,8 @@ fun CardProduto(
                 val datesFromBackend = listOf("20/10/2024", "21/10/2024", "22/10/2024", "23/10/2024", "24/10/2024", "25/10/2024", "26/10/2024", "27/10/2024", "28/10/2024", "29/10/2024", "30/10/2024", "31/10/2024", "01/11/2024", "02/11/2024")
                 ReporProductModal(
                     onDismiss = { exibirModalRepor = false },
-                    produto = nome,
-                    quantidadeEstoque = qtdEstoque,
+                    produto = produto.nome?: "",
+                    quantidadeEstoque = produto.qtdEstoque ?: 0,
                     onConfirm = {
                         exibirModalRepor = false
                     },
@@ -269,8 +268,8 @@ fun CardProduto(
             if (exibirModalRetirar) {
                 val datesFromBackend = listOf("20/10/2024", "21/10/2024", "22/10/2024", "23/10/2024", "24/10/2024", "25/10/2024", "26/10/2024", "27/10/2024", "28/10/2024", "29/10/2024", "30/10/2024", "31/10/2024", "01/11/2024", "02/11/2024")
                 RetirarProductModal(
-                    produto = nome,
-                    quantidadeEstoque = qtdEstoque,
+                    produto = produto.nome ?: "",
+                    quantidadeEstoque = produto.qtdEstoque ?: 0,
                     onDismiss = { exibirModalRetirar = false },
                     onConfirm = {
                         exibirModalRetirar = false

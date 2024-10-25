@@ -155,14 +155,14 @@ fun FormButtons(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.End
     ) {
-        ButtonCancelar(onClick = {})
+        ButtonCancelar(onClick = onCancelClick)
 
         Spacer(modifier = Modifier.size(4.dp))
 
         ButtonBackground(
             titulo = stringResource(R.string.adicionar),
             cor = RoxoNubank,
-            onClick = {})
+            onClick = onAddClick)
     }
 }
 

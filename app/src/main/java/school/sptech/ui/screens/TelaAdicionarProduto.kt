@@ -54,7 +54,7 @@ fun TelaAdicionarProdutoScreen(navController: NavHostController = rememberNavCon
             ) {
                 Spacer(modifier = Modifier.height(4.dp))
                 ProductForm()
-                FormButtons()
+                FormButtons(onCancelClick = { navController.popBackStack() })
             }
         }
     }
@@ -68,14 +68,12 @@ fun ProductForm() {
     var category by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
 
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(modifier = Modifier.fillMaxWidth(), Arrangement.spacedBy(16.dp)) {
         FormFieldWithLabel(
             value = name,
             onValueChange = { name = it },
             label = stringResource(R.string.nome)
         )
-
-        Spacer(modifier = Modifier.height(16.dp))
 
         FormFieldWithLabel(
             value = brand,
@@ -83,16 +81,12 @@ fun ProductForm() {
             label = stringResource(R.string.marca)
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
         DropdownFieldWithLabel(
             value = category,
             onValueChange = { category = it },
             label = stringResource(R.string.categoria),
             options = listOf("Unha", "Cabelo", "Maquiagem")
         )
-
-        Spacer(modifier = Modifier.height(16.dp))
 
         FormFieldWithLabel(
             value = description,

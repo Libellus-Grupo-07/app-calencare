@@ -8,6 +8,6 @@ import school.sptech.data.model.Funcionario
 interface FuncionarioService {
     //@POST("/login")
     //suspend fun login(@Body funcionario: Funcionario): Response<Funcionario>
-    @GET("/funcionario/{id}")
+    @GET("/{id}")
     suspend fun getFuncionario(@Path("id") id:Int): Response<Funcionario>
 }

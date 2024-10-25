@@ -32,8 +32,6 @@ class MainActivity : ComponentActivity() {
             CalencareAppTheme {
                 val navController = rememberNavController()
                 var buttonVisible by remember { mutableStateOf(true) }
-                var existTopBar by remember { mutableStateOf(false) }
-                var tituloTopBar by remember { mutableStateOf("") }
 
                 Scaffold(
                     modifier = Modifier
@@ -62,12 +60,6 @@ class MainActivity : ComponentActivity() {
                             navController = navController,
                             onBottomBarVisibleChanged = { isVisible ->
                                 buttonVisible = isVisible
-                            },
-                            onTopBarVisibleChanged = { exist ->
-                                existTopBar = exist
-                            },
-                            onTitleTopBarChanged = { titulo ->
-                                tituloTopBar = titulo
                             }
                         )
                     }

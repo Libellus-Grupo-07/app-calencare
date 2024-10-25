@@ -20,6 +20,8 @@ import school.sptech.ui.theme.CinzaOpacidade35
 import school.sptech.ui.theme.CinzaOpacidade7
 import school.sptech.ui.theme.RoxoNubank
 import school.sptech.ui.theme.RoxoNubankOpacidade15
+import school.sptech.ui.theme.fontFamilyPoppins
+import school.sptech.ui.theme.letterSpacingPrincipal
 
 @Composable
 fun SeletorData(
@@ -47,16 +49,12 @@ fun SelectableDatesRow(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(11.dp)
+            .padding(vertical = 11.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = "Selecione uma data",
-                color = Cinza,
-                fontSize = 16.sp
-            )
+            LabelInput(label = "Selecione uma data")
         }
         Spacer(modifier = Modifier.height(8.dp))
         LazyRow(
@@ -85,6 +83,7 @@ fun DateItem(
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
+            .fillMaxWidth()
             .clickable { onClick() }
             .background(
                 color = if (isSelected) RoxoNubankOpacidade15 else CinzaOpacidade7,
@@ -94,9 +93,11 @@ fun DateItem(
     ) {
         Text(
             text = date,
-            color = if (isSelected) RoxoNubank else CinzaOpacidade35,
+            color = if (isSelected) RoxoNubank else Cinza,
             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-            fontSize = 16.sp,
+            fontSize = 12.sp,
+            fontFamily = fontFamilyPoppins,
+            letterSpacing = letterSpacingPrincipal,
             textAlign = TextAlign.Center
         )
     }

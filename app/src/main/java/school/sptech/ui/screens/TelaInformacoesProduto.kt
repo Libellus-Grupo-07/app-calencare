@@ -25,6 +25,8 @@ import school.sptech.ui.components.ButtonOutline
 import school.sptech.ui.components.DropdownFieldWithLabel
 import school.sptech.ui.components.FormFieldWithLabel
 import school.sptech.ui.components.LabelInput
+import school.sptech.ui.components.ReporProductModal
+import school.sptech.ui.components.RetirarProductModal
 import school.sptech.ui.components.TopBarInformacoesProduto
 import school.sptech.ui.theme.CalencareAppTheme
 import school.sptech.ui.theme.RoxoNubank
@@ -42,10 +44,15 @@ class TelaInformacoesProduto : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TelaInformacoesProdutoScreen(navController: NavHostController) {
+fun TelaInformacoesProdutoScreen(navController: NavHostController, idProduto: Int = 0) {
     var estoque by remember { mutableStateOf(0) }
+    var exibirModalRetirar by remember {
+        mutableStateOf(false)
+    }
+    var exibirModalRepor by remember {
+        mutableStateOf(false)
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
@@ -69,8 +76,46 @@ fun TelaInformacoesProdutoScreen(navController: NavHostController) {
 
                 StockQuantity(estoque)
 
-                BoxButtons(enabledButtonRetirar = getEnabledButtonRetirarEstoque(estoque))
+                BoxButtons(
+                    enabledButtonRetirar = getEnabledButtonRetirarEstoque(estoque),
+                    onRetirarClick = {
+                        exibirModalRetirar = true
+                    },
+                    onReporClick = {
+                        exibirModalRepor = true
+                    }
+                )
             }
+        }
+
+        // Exibe o modal de reposição de produto
+        if (exibirModalRepor) {
+            val datesFromBackend = listOf("20/10/2024", "21/10/2024", "22/10/2024", "23/10/2024", "24/10/2024", "25/10/2024", "26/10/2024", "27/10/2024", "28/10/2024", "29/10/2024", "30/10/2024", "31/10/2024", "01/11/2024", "02/11/2024")
+            val nome = "Produto"
+            ReporProductModal(
+                onDismiss = { exibirModalRepor = false },
+                produto = nome,
+                quantidadeEstoque = 5,
+                onConfirm = {
+                    exibirModalRepor = false
+                },
+                datesFromBackend = datesFromBackend
+            )
+        }
+
+        // Exibe o modal de retirada de produto
+        if (exibirModalRetirar) {
+            val datesFromBackend = listOf("20/10/2024", "21/10/2024", "22/10/2024", "23/10/2024", "24/10/2024", "25/10/2024", "26/10/2024", "27/10/2024", "28/10/2024", "29/10/2024", "30/10/2024", "31/10/2024", "01/11/2024", "02/11/2024")
+            val nome = "Produto"
+            RetirarProductModal(
+                produto = nome,
+                quantidadeEstoque = 5,
+                onDismiss = { exibirModalRetirar = false },
+                onConfirm = {
+                    exibirModalRetirar = false
+                },
+                datesFromBackend = datesFromBackend
+            )
         }
     }
 }
@@ -78,8 +123,8 @@ fun TelaInformacoesProdutoScreen(navController: NavHostController) {
 @Composable
 fun BoxButtons(
     enabledButtonRetirar: Boolean = true,
-    onCancelClick: () -> Unit = { /* TODO: Handle cancel */ },
-    onAddClick: () -> Unit = { /* TODO: Handle add */ }
+    onRetirarClick: () -> Unit = { /* TODO: Handle cancel */ },
+    onReporClick: () -> Unit = { /* TODO: Handle add */ }
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -90,7 +135,7 @@ fun BoxButtons(
             enabledButton = enabledButtonRetirar,
             titulo = stringResource(id = R.string.retirar),
             iconId = R.mipmap.menos,
-            onClick = { /*TODO*/ }
+            onClick = onRetirarClick
         )
 
         Spacer(modifier = Modifier.size(4.dp))
@@ -99,7 +144,7 @@ fun BoxButtons(
             titulo = stringResource(R.string.repor),
             cor = RoxoNubank,
             iconPainter = Icons.Rounded.Add,
-            onClick = { /*TODO*/ }
+            onClick = onReporClick
         )
 
     }

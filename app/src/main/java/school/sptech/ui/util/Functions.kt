@@ -24,6 +24,12 @@ fun formatarData(data: LocalDate): String {
     return formatted
 }
 
+fun formatarDataBd(data: LocalDate): String {
+    val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    val formatted = LocalDate.parse(data.toString()).format(format)
+    return formatted
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 fun formatarDataDatePicker(inputFormat:Boolean = false, data:Long?): String{
     val dateFormatter = DatePickerDefaults.dateFormatter(

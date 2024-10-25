@@ -48,6 +48,7 @@ fun LabelInput(label:String, color: Color = Cinza){
         text = label,
         color = color,
         fontWeight = FontWeight.Bold,
+        letterSpacing = letterSpacingPrincipal,
         fontFamily = fontFamilyPoppins,
         fontSize = 14.sp,
         modifier = Modifier.padding(bottom = 4.dp)

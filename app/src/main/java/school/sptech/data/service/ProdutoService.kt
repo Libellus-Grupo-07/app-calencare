@@ -1,4 +1,6 @@
 package school.sptech.data.service
 
-class ProdutoService {
+import retrofit2.http.GET
+
+interface ProdutoService {
 }

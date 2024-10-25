@@ -26,6 +26,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
@@ -232,17 +233,26 @@ fun ProductModal(
         onDismissRequest = onDismiss,
         containerColor = Branco,
         titleContentColor = buttonColor,
+        properties = DialogProperties(
+            dismissOnBackPress = true,
+            dismissOnClickOutside = true
+        ),
         title = {
             Row(
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 TituloLarge(titulo = title, defaultColor = false)
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(
                     onClick = onDismiss,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(24.dp),
+                    colors = IconButtonDefaults.iconButtonColors(
+                        contentColor = Preto,
+                        containerColor = Color.Transparent,
+                    )
                 ) {
-                    Icon(Icons.Filled.Close, contentDescription = "Fechar", tint = Preto)
+                    Icon(Icons.Filled.Close, contentDescription = "Fechar")
                 }
             }
         },
@@ -250,7 +260,7 @@ fun ProductModal(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(horizontal = 12.dp)
             ) {
                 FormFieldWithLabel(
                     value = produto,
@@ -258,7 +268,7 @@ fun ProductModal(
                     label = "Produto",
                     readOnly = true
                 )
-                Spacer(modifier = Modifier.height(7.dp))
+                Spacer(modifier = Modifier.height(12.dp))
                 if (datesFromBackend.isNotEmpty() && datesFromBackend[0].isNotEmpty()) {
                     SelectableDatesRow(
                         dates = datesFromBackend,

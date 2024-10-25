@@ -31,9 +31,7 @@ class TelaSplash : ComponentActivity() {
                 val navController = rememberNavController()
                 NavigationGraph(
                     navController = navController,
-                    onBottomBarVisibleChanged = { isVisible -> false },
-                    onTopBarVisibleChanged = { exist -> false },
-                    onTitleTopBarChanged = { titulo -> ""}
+                    onBottomBarVisibleChanged = { isVisible -> false }
                 )
             }
         }
