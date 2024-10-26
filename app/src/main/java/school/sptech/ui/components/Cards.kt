@@ -8,8 +8,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -40,11 +42,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import formatarData
 import formatarDecimal
+import formatarValorMonetario
 import school.sptech.R
 import school.sptech.data.model.Despesa
 import school.sptech.data.model.Movimentos
@@ -68,29 +72,34 @@ import school.sptech.ui.theme.Vermelho
 import school.sptech.ui.theme.VermelhoOpacidade15
 import school.sptech.ui.theme.fontFamilyPoppins
 import school.sptech.ui.theme.letterSpacingPrincipal
+import transformarEmLocalDate
 import java.time.LocalDate
 
 @Composable
-fun CardKpi(titulo:String, valor:String, cor:String, modifier: Modifier = Modifier){
+fun CardKpi(titulo: String, valor: String, cor: String, modifier: Modifier = Modifier) {
     var corFundo: Color
     var corTexto: Color
 
-    when(cor.uppercase()){
+    when (cor.uppercase()) {
         "VERMELHO" -> {
             corFundo = VermelhoOpacidade15
             corTexto = Vermelho
         }
+
         "LARANJA" -> {
             corFundo = LaranjaOpacidade15
             corTexto = Laranja
         }
+
         "AZUL" -> {
             corFundo = AzulOpacidade15
             corTexto = Azul
-        } else -> {
-        corFundo = VerdeOpacidade15;
-        corTexto = Verde
-    }
+        }
+
+        else -> {
+            corFundo = VerdeOpacidade15;
+            corTexto = Verde
+        }
     }
 
     Box(modifier = modifier.clip(RoundedCornerShape(16.dp))) {
@@ -120,25 +129,27 @@ fun CardProduto(
     onClickRetirarEstoque: () -> Unit,
     onClickCardProduto: () -> Unit,
     modifier: Modifier = Modifier
-){
+) {
     var exibirModalRepor by remember { mutableStateOf(false) }
     var exibirModalRetirar by remember { mutableStateOf(false) } // Controle do modal de retirada
 
-    Row(modifier = modifier
-        .border(
-            width = 1.3.dp,
-            brush = Brush.linearGradient(
-                colors = listOf(LaranjaDourado, RoxoNubank),
-                start = Offset.Zero,
-                end = Offset.Infinite,
-            ),
-            shape = RoundedCornerShape(20.dp)
-        )
-        .background(Branco, shape = RoundedCornerShape(20.dp))
-        .clickable(onClick = onClickCardProduto)
+    Row(
+        modifier = modifier
+            .border(
+                width = 1.3.dp,
+                brush = Brush.linearGradient(
+                    colors = listOf(LaranjaDourado, RoxoNubank),
+                    start = Offset.Zero,
+                    end = Offset.Infinite,
+                ),
+                shape = RoundedCornerShape(20.dp)
+            )
+            .background(Branco, shape = RoundedCornerShape(20.dp))
+            .clickable(onClick = onClickCardProduto)
     ) {
-        Box(modifier = Modifier
-            .padding(18.dp)
+        Box(
+            modifier = Modifier
+                .padding(18.dp)
         ) {
             Column {
                 Text(
@@ -206,7 +217,9 @@ fun CardProduto(
                                 .weight(0.5f)
                                 .height(36.dp),
                             shape = CircleShape,
-                            onClick = { exibirModalRetirar = true }, // Atualiza o estado para abrir o modal de retirada
+                            onClick = {
+                                exibirModalRetirar = true
+                            }, // Atualiza o estado para abrir o modal de retirada
                             colors = ButtonDefaults.buttonColors(
                                 contentColor = Cinza,
                                 containerColor = Branco,
@@ -214,7 +227,10 @@ fun CardProduto(
                                 disabledContainerColor = Branco
                             ),
                             enabled = buttonRetirarEnabled,
-                            border = BorderStroke(1.5.dp, if (buttonRetirarEnabled) Cinza else CinzaOpacidade35)
+                            border = BorderStroke(
+                                1.5.dp,
+                                if (buttonRetirarEnabled) Cinza else CinzaOpacidade35
+                            )
                         ) {
                             Text(
                                 text = stringResource(id = R.string.retirar),
@@ -252,10 +268,25 @@ fun CardProduto(
 
             // Exibe o modal de reposição de produto
             if (exibirModalRepor) {
-                val datesFromBackend = listOf("20/10/2024", "21/10/2024", "22/10/2024", "23/10/2024", "24/10/2024", "25/10/2024", "26/10/2024", "27/10/2024", "28/10/2024", "29/10/2024", "30/10/2024", "31/10/2024", "01/11/2024", "02/11/2024")
+                val datesFromBackend = listOf(
+                    "20/10/2024",
+                    "21/10/2024",
+                    "22/10/2024",
+                    "23/10/2024",
+                    "24/10/2024",
+                    "25/10/2024",
+                    "26/10/2024",
+                    "27/10/2024",
+                    "28/10/2024",
+                    "29/10/2024",
+                    "30/10/2024",
+                    "31/10/2024",
+                    "01/11/2024",
+                    "02/11/2024"
+                )
                 ReporProductModal(
                     onDismiss = { exibirModalRepor = false },
-                    produto = produto.nome?: "",
+                    produto = produto.nome ?: "",
                     quantidadeEstoque = produto.qtdEstoque ?: 0,
                     onConfirm = {
                         exibirModalRepor = false
@@ -266,7 +297,22 @@ fun CardProduto(
 
             // Exibe o modal de retirada de produto
             if (exibirModalRetirar) {
-                val datesFromBackend = listOf("20/10/2024", "21/10/2024", "22/10/2024", "23/10/2024", "24/10/2024", "25/10/2024", "26/10/2024", "27/10/2024", "28/10/2024", "29/10/2024", "30/10/2024", "31/10/2024", "01/11/2024", "02/11/2024")
+                val datesFromBackend = listOf(
+                    "20/10/2024",
+                    "21/10/2024",
+                    "22/10/2024",
+                    "23/10/2024",
+                    "24/10/2024",
+                    "25/10/2024",
+                    "26/10/2024",
+                    "27/10/2024",
+                    "28/10/2024",
+                    "29/10/2024",
+                    "30/10/2024",
+                    "31/10/2024",
+                    "01/11/2024",
+                    "02/11/2024"
+                )
                 RetirarProductModal(
                     produto = produto.nome ?: "",
                     quantidadeEstoque = produto.qtdEstoque ?: 0,
@@ -285,7 +331,7 @@ fun CardProduto(
 fun CardMovimentos(
     movimentos: Movimentos,
     modifier: Modifier = Modifier
-){
+) {
     Column(modifier = modifier
         .fillMaxWidth()
         .drawBehind {
@@ -333,16 +379,17 @@ fun CardMovimentos(
                 color = RoxoNubank
             )
 
-            Text(text = stringResource(
+            Text(
+                text = stringResource(
                     id = R.string.valorMovimentos,
-                    if(isDespesa) "-" else "+",
+                    if (isDespesa) "-" else "+",
                     formatarDecimal(movimentos.valor.toFloat())
                 ),
                 fontSize = 15.sp,
                 fontWeight = FontWeight.ExtraBold,
                 fontFamily = fontFamilyPoppins,
                 letterSpacing = letterSpacingPrincipal,
-                color = if(isDespesa) Vermelho else Azul
+                color = if (isDespesa) Vermelho else Azul
             )
         }
     }
@@ -361,7 +408,7 @@ fun CardDespesa(despesa: Despesa, corTexto: Color) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(14.dp),
+                .padding(horizontal = 12.dp, vertical = 18.dp),
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -374,39 +421,56 @@ fun CardDespesa(despesa: Despesa, corTexto: Color) {
                         .size(75.dp)
                         .padding(8.dp)
                 )
-                Column {
+                Column(
+                    modifier = Modifier.padding(start = 12.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = despesa.categoriaDespesaNome?.uppercase() ?: "",
+                            fontSize = 12.5.sp,
+                            color = Cinza,
+                            fontWeight = FontWeight.Bold,
+                        )
+                        TextButton(
+                            modifier = Modifier.height(28.dp),
+                            colors = ButtonDefaults.textButtonColors(
+                                containerColor = VerdeOpacidade15,
+                                contentColor = Verde
+                            ),
+                            contentPadding = PaddingValues(
+                               horizontal = 12.dp,
+                            ),
+                            onClick = { /*TODO*/ }
+                        ) {
+                            Text(text = despesa.dtPagamento?.let { formatarData(it) } ?: "",
+            //                text = despesa.dtPagamento ?: "",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 11.sp,
+                                fontFamily = fontFamilyPoppins
+                            )
+                        }
+                    }
+
                     Text(
-                        text = despesa.categoriaDespesa?.nome ?: "",
-                        fontSize = 13.sp,
-                        color = Preto,
-                    )
-                    Text(
-                        text = despesa.nome ?: "",
+                        text = despesa.nome?.capitalize() ?: "",
                         fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp,
+                        fontSize = 16.sp,
                         color = corTexto,
-                        modifier = Modifier.padding(top = 15.dp)
                     )
+
                     Text(
-                        text = despesa.valor ?: "",
-                        fontSize = 18.sp,
+                        text = despesa.valor?.let { formatarValorMonetario(it.toFloat()) } ?: "",
+                        fontSize = 16.sp,
                         color = Vermelho,
-                        modifier = Modifier.padding(top = 8.dp),
                         fontWeight = FontWeight.Bold
                     )
                 }
             }
-            Text(
-                text = formatarData(despesa.dtCriacao ?: LocalDate.now()),
-                fontWeight = FontWeight.Bold,
-                fontSize = 12.sp,
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .border(1.dp, Verde, RoundedCornerShape(15.dp))
-                    .background(VerdeOpacidade15, shape = RoundedCornerShape(10.dp))
-                    .padding(4.dp),
-                color = Verde
-            )
         }
     }
 }

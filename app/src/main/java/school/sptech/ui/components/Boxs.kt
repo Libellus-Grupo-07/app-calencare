@@ -116,9 +116,10 @@ fun BoxProdutos(navController: NavController, produtos: MutableList<Produto>, ti
             ) {
                 repeat(2 * (produtos.size / 2)) { i ->
                     CardProduto(
-                        nome = produtos[i].nome ?: "" ,
-                        categoria = produtos[i].categoria?.nome ?: "",
-                        qtdEstoque = produtos[i].qtdEstoque ?: 0,
+                        produto = produtos[i],
+//                        nome = produtos[i].nome ?: "" ,
+//                        categoria = produtos[i].categoriaProdutoNome ?: "",
+//                        qtdEstoque = produtos[i].qtdEstoque ?: 0,
                         isTelaInicio = isTelaInicio,
                         onClickCardProduto = {
                             navController.navigate(Routes.InformacoesProduto.route)

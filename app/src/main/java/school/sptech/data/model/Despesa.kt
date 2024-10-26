@@ -3,11 +3,15 @@ package school.sptech.data.model
 import java.time.LocalDate
 
 data class Despesa(
-    val id:Int? = null,
-    val nome: String? = null,
-    val descricao:String? = null,
-    val valor: String? = null,
-    val dtCriacao: LocalDate? = null,
-    val empresa: Empresa? = null,
-    val categoriaDespesa: CategoriaDespesa? = null
+    var id:Int? = null,
+    var nome: String? = null,
+    var observacao:String? = null,
+    var valor: String? = null,
+    var formaPagamento:String? = null,
+    var dtPagamento: String? = null,
+    var dtCriacao: String? = null,
+    var categoriaDespesaNome: String? = null,
+    var categoriaDespesaId: Int? = null,
+    var empresaId: Int? = null
 )
+

@@ -14,7 +14,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import formatarDecimal
-import formatarValorMonetario
 import school.sptech.ui.theme.CalencareAppTheme
 import school.sptech.R
 import school.sptech.ui.components.Background
@@ -22,6 +21,11 @@ import school.sptech.ui.components.DropdownFieldWithLabel
 import school.sptech.ui.components.FormButtons
 import school.sptech.ui.components.FormFieldWithLabel
 import school.sptech.ui.components.TopBarVoltar
+import school.sptech.ui.viewModel.DespesaViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import formatarData
+import school.sptech.ui.components.AlertError
+import java.time.LocalDate
 
 class TelaAdicionarDespesa : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,7 +40,14 @@ class TelaAdicionarDespesa : ComponentActivity() {
 }
 
 @Composable
-fun TelaAddDespesa(navController: NavHostController = rememberNavController()) {
+fun TelaAddDespesa(
+    viewModel: DespesaViewModel = viewModel(),
+    navController: NavHostController = rememberNavController()
+) {
+    viewModel.getCategoriasDespesa()
+    var deuRuim by remember { mutableStateOf(viewModel.deuErro) }
+    var msg by remember { mutableStateOf(viewModel.erro) }
+
     Scaffold(
         topBar = {
             TopBarVoltar(
@@ -55,59 +66,85 @@ fun TelaAddDespesa(navController: NavHostController = rememberNavController()) {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Spacer(modifier = Modifier.height(4.dp))
-            DespesaForm()
-            FormButtons()
+            DespesaForm(viewModel)
+            FormButtons(
+                onCancelClick = { navController.popBackStack() },
+                onAddClick = {
+                    viewModel.adicionarDespesa()
+                    deuRuim = viewModel.deuErro
+                    msg = viewModel.erro
+
+                    if (!deuRuim) {
+                        navController.popBackStack()
+                    }
+                }
+            )
         }
+    }
+
+    if (deuRuim) {
+        AlertError(msg = msg)
     }
 }
 
 @Composable
-fun DespesaForm() {
-    var name by remember { mutableStateOf("") }
-    var category by remember { mutableStateOf("") }
-    var valor by remember { mutableStateOf(0.0) }
-    var formaPagamento by remember { mutableStateOf("") }
-    var dataPagamento by remember { mutableStateOf("") }
-
-    val categories = listOf("Alimentação", "Transporte", "Lazer") // Categories list
+fun DespesaForm(viewModel: DespesaViewModel) {
     val formasPagamento = listOf("Dinheiro", "Cartão", "Pix") // Payment methods list
 
     Column(modifier = Modifier.fillMaxWidth(), Arrangement.spacedBy(16.dp)) {
 
         // Name Field
         FormFieldWithLabel(
-            value = name,
-            onValueChange = { name = it },
+            value = viewModel.despesa.nome ?: "",
+            onValueChange = {
+                viewModel.despesa = viewModel.despesa.copy(nome = it)
+            },
             label = stringResource(R.string.nome),
+        )
+        
+     // Name Field
+        FormFieldWithLabel(
+            value = viewModel.despesa.observacao ?: "",
+            onValueChange = { viewModel.despesa = viewModel.despesa.copy(observacao = it) },
+            label = stringResource(R.string.observacao),
         )
 
         // Category Dropdown
         DropdownFieldWithLabel(
-            value = category,
-            onValueChange = { category = it },
+            value = viewModel.categoriaDespesa.nome ?: "",
+            onValueChange = {
+                viewModel.categoriaDespesa = viewModel.categoriaDespesa.copy(nome = it)
+            },
             label = stringResource(R.string.categoria),
-            options = categories
+            options = viewModel.listaCategoriasDespesa.map { it.nome ?: "" }
         )
 
         // Value Field
         FormFieldWithLabel(
-            value = if(valor == 0.0) "" else formatarDecimal(valor.toFloat()),
+            value = viewModel.despesa.valor ?: "0,00",
             isNumericInput = true,
-            onValueChange = { valor = it.toDoubleOrNull() ?: 0.0 },
+            onValueChange = {
+                val valor = it.toString().replace(",", "").replace(".", "")
+//                val valorFormatado = valor.toString()
+                val valorFormatado = formatarDecimal(valor.toDouble(), isValueInput = true)
+                viewModel.despesa = viewModel.despesa.copy(valor = valorFormatado)
+            },
             label = stringResource(R.string.valor),
         )
 
         // Payment Method Dropdown
         DropdownFieldWithLabel(
-            value = formaPagamento,
-            onValueChange = { formaPagamento = it },
+            value = viewModel.despesa.formaPagamento ?: "",
+            onValueChange = { viewModel.despesa = viewModel.despesa.copy(formaPagamento = it) },
             label = stringResource(R.string.forma_pagamento),
             options = formasPagamento
         )
 
         FormFieldWithLabel(
-            value = dataPagamento,
-            onValueChange = { dataPagamento = it },
+            value = viewModel.despesa.dtPagamento ?: "",
+            onValueChange = {
+                viewModel.despesa = viewModel.despesa.copy(dtPagamento = it)
+            },
             isDateInput = true,
             label = stringResource(R.string.data_pagamento),
         )

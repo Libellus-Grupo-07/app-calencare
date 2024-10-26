@@ -63,7 +63,7 @@ fun TelaConta(
 ) {
     usuarioViewModel.getFuncionario(1)
     val usuario = usuarioViewModel.usuario
-    empresaViewModel.getEmpresa(usuario.empresaId ?: 1)
+    empresaViewModel.getEmpresa(usuario.empresa?.id ?: 1)
     val empresa = empresaViewModel.empresa
 
     var telaAtual by remember {

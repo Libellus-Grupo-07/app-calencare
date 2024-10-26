@@ -29,7 +29,7 @@ fun NavigationGraph(
     NavHost(navController, startDestination = Routes.Splash.route) {
         composable(Routes.Splash.route) {
             onBottomBarVisibleChanged(false)
-            SplashScreen(navController)
+            SplashScreen(navController = navController)
         }
 
         composable(Routes.Login.route) {
@@ -49,12 +49,12 @@ fun NavigationGraph(
 
         composable(NavBar.Estoque.route) {
             onBottomBarVisibleChanged(true)
-            TelaEstoque(navController)
+            TelaEstoque(navController = navController)
         }
 
         composable(NavBar.Financas.route) {
             onBottomBarVisibleChanged(true)
-            TelaFinancas(navController)
+            TelaFinancas(navController = navController)
         }
 
         composable(NavBar.Dashboard.route) {
@@ -64,12 +64,12 @@ fun NavigationGraph(
 
         composable(Routes.AdicionarProduto.route) {
             onBottomBarVisibleChanged(false)
-            TelaAdicionarProdutoScreen(navController)
+            TelaAdicionarProdutoScreen(navController = navController)
         }
 
         composable(Routes.AdicionarDespesa.route) {
             onBottomBarVisibleChanged(false)
-            TelaAddDespesa(navController)
+            TelaAddDespesa(navController = navController)
         }
 
         composable(Routes.DadosPessoais.route) {
@@ -79,12 +79,13 @@ fun NavigationGraph(
 
         composable(
             Routes.InformacoesProduto.route,
-            arguments = listOf(navArgument("produtoId") { type = NavType.IntType })
+//            arguments = listOf(navArgument("produtoId") { type = NavType.IntType })
         ) {backStackEntry ->
             onBottomBarVisibleChanged(false)
             TelaInformacoesProdutoScreen(
                 navController = navController,
-                idProduto = backStackEntry.arguments?.getInt("produtoId") ?: 0
+//                idProduto = backStackEntry.arguments?.getInt("produtoId") ?: 0
+                idProduto = 1
             )
         }
     }

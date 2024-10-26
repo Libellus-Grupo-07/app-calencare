@@ -5,6 +5,6 @@ import retrofit2.http.GET
 import school.sptech.data.model.CategoriaProduto
 
 interface CategoriaProdutoService {
-    @GET
+    @GET("/categoria-produto")
     suspend fun getAllCategoriaProduto(): Response<List<CategoriaProduto>>
 }

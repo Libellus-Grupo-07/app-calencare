@@ -1,13 +1,13 @@
 package school.sptech.data.model
 
 data class Produto(
-    val id: Int? = null,
-    val nome: String? = null,
-    val descricao: String? = null,
-    val marca: String? = null,
-    val qtdEstoque: Int? = null,
-    val catagoriaProdutoId: Int? = null,
-    val categoriaProdutoNome:String? = null,
-    val empresaId:Int? = null,
-    val empresa: Empresa? = null
+    var id: Int? = null,
+    var nome: String? = null,
+    var descricao: String? = null,
+    var marca: String? = null,
+    var qtdEstoque: Int? = null,
+    var catagoriaProdutoId: Int? = null,
+    var categoriaProdutoNome:String? = null,
+    var empresaId:Int? = null,
+    var empresa: Empresa? = null
 )

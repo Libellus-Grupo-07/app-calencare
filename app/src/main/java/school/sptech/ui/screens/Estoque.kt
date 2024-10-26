@@ -41,12 +41,12 @@ fun TelaEstoque(navController: NavController){
 
     val listaProdutos = remember {
         mutableListOf(
-            Produto(nome = "Esmalte Azul Metálico Risqué 8ml", categoria = categoriaUnha, qtdEstoque = 0),
-            Produto(nome ="Shampoo Mais Lisos Wella 350ml", categoria = categoriaCabelo, qtdEstoque = 1),
-            Produto(nome ="Condicionador Wella 350ml", categoria = categoriaCabelo, qtdEstoque = 1),
-            Produto(nome ="Máscara de Cílios Volume Up Vult 8g", categoria = categoriaMaquiagem, qtdEstoque = 3),
-            Produto(nome ="Spray Keune Style Dry Texturizer 300ml", categoria = categoriaCabelo, qtdEstoque = 4),
-            Produto(nome ="Base Líquida Estée Lauder  SFS-10", categoria = categoriaMaquiagem, qtdEstoque = 6),
+            Produto(nome = "Esmalte Azul Metálico Risqué 8ml", categoriaProdutoNome = categoriaUnha.nome, qtdEstoque = 0),
+            Produto(nome ="Shampoo Mais Lisos Wella 350ml", categoriaProdutoNome = categoriaCabelo.nome, qtdEstoque = 1),
+            Produto(nome ="Condicionador Wella 350ml", categoriaProdutoNome = categoriaCabelo.nome, qtdEstoque = 1),
+            Produto(nome ="Máscara de Cílios Volume Up Vult 8g", categoriaProdutoNome = categoriaMaquiagem.nome, qtdEstoque = 3),
+            Produto(nome ="Spray Keune Style Dry Texturizer 300ml", categoriaProdutoNome = categoriaCabelo.nome, qtdEstoque = 4),
+            Produto(nome ="Base Líquida Estée Lauder  SFS-10", categoriaProdutoNome = categoriaMaquiagem.nome, qtdEstoque = 6),
         )
     }
 

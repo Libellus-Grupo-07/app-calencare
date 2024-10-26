@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -23,17 +24,22 @@ import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,6 +51,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import formatarDataDatePicker
+import kotlinx.coroutines.launch
 import school.sptech.R
 import school.sptech.ui.theme.Branco
 import school.sptech.ui.theme.Cinza
@@ -374,5 +381,36 @@ fun RetirarProductModal(
         onConfirm = onConfirm,
         viewModel = viewModel,
         datesFromBackend = datesFromBackend
+    )
+}
+
+@Composable
+fun AlertError(msg:String){
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    ExtendedFloatingActionButton(
+        text = { Text("Deu merda!!! erro => $msg") },
+        icon = { Icon(Icons.Filled.Clear, contentDescription = "") },
+        onClick = {
+            scope.launch {
+                val result = snackbarHostState
+                    .showSnackbar(
+                        message = "Snackbar",
+                        actionLabel = "Action",
+                        // Defaults to SnackbarDuration.Short
+                        duration = SnackbarDuration.Indefinite
+                    )
+                when (result) {
+                    SnackbarResult.ActionPerformed -> {
+                        /* Handle snackbar action performed */
+                    }
+
+                    SnackbarResult.Dismissed -> {
+                        /* Handle snackbar dismissed */
+                    }
+                }
+            }
+        }
     )
 }

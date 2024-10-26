@@ -21,24 +21,26 @@ class UsuarioViewModel : ViewModel() {
         usuarioService = RetrofitService.getClientFuncionario()
     }
 
-//    fun logar(){
-//        GlobalScope.launch {
-//            try {
-//                var response = usuarioService.login(usuario)
-//
-//                if(response.isSuccessful && response.body() != null){
-//                    usuario = response.body()!!
-//                    deuErro = false
-//                } else {
-//                    Log.e("api", "Erro ao tentar logar ${response.errorBody()?.string()}")
-//                    deuErro = true
-//                }
-//            } catch (ex: Exception){
-//                Log.e("api", "Erro ao tentar logar", ex)
-//                deuErro = true
-//            }
-//        }
-//    }
+    fun logar(){
+        GlobalScope.launch {
+            try {
+                var response = usuarioService.login(usuario)
+
+                if(response.isSuccessful && response.body() != null){
+                    usuario = response.body()!!
+                    deuErro = false
+                } else {
+                    Log.e("api", "Erro ao tentar logar ${response.errorBody()?.string()}")
+                    deuErro = true
+                    erro = if(response.code().equals(401)) "Email e/ou senha incorretos" else "Erro desconhecido"
+                }
+            } catch (ex: Exception){
+                Log.e("api", "Erro ao tentar logar", ex)
+                deuErro = true
+                erro = ex.message ?: "Erro desconhecido"
+            }
+        }
+    }
 
     fun getFuncionario(id: Int){
         if(usuario.id == null){
@@ -46,7 +48,9 @@ class UsuarioViewModel : ViewModel() {
                 try {
                     val response = usuarioService.getFuncionario(id)
 
-                    if(response.isSuccessful && response.body() != null){
+                    if(response.isSuccessful){
+                        val a = response.body()!!
+                        erro = a.nome?:""
                         usuario = response.body()!!
                         deuErro = false
                     } else {

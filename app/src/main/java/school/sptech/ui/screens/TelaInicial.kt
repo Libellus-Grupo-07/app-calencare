@@ -39,7 +39,6 @@ import school.sptech.ui.components.BoxKpisEstoque
 import school.sptech.ui.components.BoxProdutos
 import school.sptech.ui.components.TopBarInicio
 import school.sptech.ui.theme.CalencareAppTheme
-import school.sptech.ui.viewModel.EmpresaViewModel
 import school.sptech.ui.viewModel.UsuarioViewModel
 
 class TelaInicial : ComponentActivity() {
@@ -55,15 +54,12 @@ class TelaInicial : ComponentActivity() {
 
 @Composable
 fun TelaInicio(
-    empresaViewModel: EmpresaViewModel = viewModel(),
     usuarioViewModel: UsuarioViewModel = viewModel(),
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
-   usuarioViewModel.getFuncionario(1)
+    usuarioViewModel.getFuncionario(1)
     val usuario = usuarioViewModel.usuario
-    empresaViewModel.getEmpresa(usuario.empresaId ?: 1)
-    usuario.empresa = empresaViewModel.empresa
 
     val categoriaUnha = CategoriaProduto(nome = "Unha")
     val categoriaCabelo = CategoriaProduto(nome = "Cabelo")
@@ -71,12 +67,36 @@ fun TelaInicio(
 
     val listaProdutos = remember {
         mutableListOf(
-            Produto(nome = "Esmalte Azul Metálico Risqué 8ml", categoria = categoriaUnha, qtdEstoque = 0),
-            Produto(nome ="Shampoo Mais Lisos Wella 350ml", categoria = categoriaCabelo, qtdEstoque = 1),
-            Produto(nome ="Condicionador Wella 350ml", categoria = categoriaCabelo, qtdEstoque = 1),
-            Produto(nome ="Máscara de Cílios Volume Up Vult 8g", categoria = categoriaMaquiagem, qtdEstoque = 3),
-            Produto(nome ="Spray Keune Style Dry Texturizer 300ml", categoria = categoriaCabelo, qtdEstoque = 4),
-            Produto(nome ="Base Líquida Estée Lauder  SFS-10", categoria = categoriaMaquiagem, qtdEstoque = 6),
+            Produto(
+                nome = "Esmalte Azul Metálico Risqué 8ml",
+                categoriaProdutoNome = categoriaUnha.nome,
+                qtdEstoque = 0
+            ),
+            Produto(
+                nome = "Shampoo Mais Lisos Wella 350ml",
+                categoriaProdutoNome = categoriaCabelo.nome,
+                qtdEstoque = 1
+            ),
+            Produto(
+                nome = "Condicionador Wella 350ml",
+                categoriaProdutoNome = categoriaCabelo.nome,
+                qtdEstoque = 1
+            ),
+            Produto(
+                nome = "Máscara de Cílios Volume Up Vult 8g",
+                categoriaProdutoNome = categoriaMaquiagem.nome,
+                qtdEstoque = 3
+            ),
+            Produto(
+                nome = "Spray Keune Style Dry Texturizer 300ml",
+                categoriaProdutoNome = categoriaCabelo.nome,
+                qtdEstoque = 4
+            ),
+            Produto(
+                nome = "Base Líquida Estée Lauder  SFS-10",
+                categoriaProdutoNome = categoriaMaquiagem.nome,
+                qtdEstoque = 6
+            ),
         )
     }
 
@@ -138,6 +158,6 @@ fun TelaInicio(
 @Composable
 fun TelaInicialPreview() {
     CalencareAppTheme {
-        TelaInicio(navController =  rememberNavController())
+        TelaInicio(navController = rememberNavController())
     }
 }

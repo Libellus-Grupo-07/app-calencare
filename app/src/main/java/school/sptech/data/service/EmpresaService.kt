@@ -6,6 +6,6 @@ import retrofit2.http.Path
 import school.sptech.data.model.Empresa
 
 interface EmpresaService {
-    @GET("/{id}")
+    @GET("/empresas/{id}")
     suspend fun getEmpresa(@Path("id") id: Int): Response<Empresa>
 }

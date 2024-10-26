@@ -18,6 +18,10 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -34,16 +38,22 @@ import androidx.compose.ui.unit.sp
 import school.sptech.R
 import school.sptech.ui.theme.Branco
 import school.sptech.ui.theme.Cinza
+import school.sptech.ui.theme.CinzaOpacidade15
+import school.sptech.ui.theme.CinzaOpacidade35
+import school.sptech.ui.theme.CinzaOpacidade7
 import school.sptech.ui.theme.Laranja
 import school.sptech.ui.theme.Preto
 import school.sptech.ui.theme.RoxoNubank
+import school.sptech.ui.theme.Vermelho
 import school.sptech.ui.theme.fontFamilyPoppins
 import school.sptech.ui.theme.letterSpacingPrincipal
+import school.sptech.ui.theme.letterSpacingSecundaria
 
 @Composable
 fun InputIcon(
     value: String,
     onValueChange: (String) -> Unit,
+    error: Boolean = false,
     leadingIcon: Int,
     label: String,
     visualTransformation: VisualTransformation = VisualTransformation.None,
@@ -78,18 +88,45 @@ fun InputIcon(
         singleLine = true,
         visualTransformation = visualTransformation,
         shape = RoundedCornerShape(100.dp),
+        isError = error,
+        supportingText = {
+            if(error){
+                Text(
+                    text = stringResource(id = R.string.campo_obrigatorio),
+                    color = Vermelho,
+                    fontSize = 9.5.sp,
+                    fontWeight = FontWeight.Medium,
+                    fontFamily = fontFamilyPoppins,
+                    letterSpacing = letterSpacingSecundaria
+                )
+            }
+        },
         colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = RoxoNubank,
             focusedTextColor = Preto,
             focusedLabelColor = RoxoNubank,
             focusedLeadingIconColor = RoxoNubank,
             focusedTrailingIconColor = RoxoNubank,
+
             unfocusedLabelColor = Cinza,
             unfocusedLeadingIconColor = Cinza,
             unfocusedTrailingIconColor = Cinza,
             unfocusedBorderColor = Cinza,
             unfocusedTextColor = Preto,
-            cursorColor = RoxoNubank
+
+            cursorColor = RoxoNubank,
+
+            errorCursorColor = Vermelho,
+            errorLeadingIconColor = Vermelho,
+            errorBorderColor = Vermelho,
+            errorLabelColor = Vermelho,
+            errorTextColor = Vermelho,
+            errorTrailingIconColor = Vermelho,
+
+            selectionColors = TextSelectionColors(
+                handleColor = RoxoNubank,
+                backgroundColor = CinzaOpacidade15,
+            )
         )
     )
 }
@@ -159,7 +196,7 @@ fun InputMedium(
         textStyle = textStyle,
         readOnly = readOnly,
         onValueChange = onValueChange,
-        keyboardOptions = if(isNumericInput) KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number) else KeyboardOptions.Default,
+        keyboardOptions = if(isNumericInput) KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal) else KeyboardOptions.Default,
         colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = Preto,
             focusedTextColor = Preto,
@@ -168,10 +205,10 @@ fun InputMedium(
             unfocusedBorderColor = Cinza,
             unfocusedPlaceholderColor = Cinza,
             unfocusedTrailingIconColor = Cinza,
-            cursorColor = RoxoNubank,
+            cursorColor = Preto,
             selectionColors = TextSelectionColors(
                 handleColor = RoxoNubank,
-                backgroundColor = RoxoNubank,
+                backgroundColor = CinzaOpacidade15,
             )
         ),
         trailingIcon = trailingIcon?.let { { trailingIcon() } },
