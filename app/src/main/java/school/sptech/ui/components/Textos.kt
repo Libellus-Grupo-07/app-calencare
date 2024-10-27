@@ -13,7 +13,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import school.sptech.ui.theme.Cinza
 import school.sptech.ui.theme.Preto
-import school.sptech.ui.theme.Verde
 import school.sptech.ui.theme.fontFamilyPoppins
 import school.sptech.ui.theme.letterSpacingPrincipal
 import school.sptech.ui.theme.letterSpacingSecundaria

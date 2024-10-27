@@ -2,6 +2,6 @@
 <network-security-config>
     <domain-config cleartextTrafficPermitted="true">
         <!-- Permite comunicação HTTP com o endereço IP especificado -->
-        <domain includeSubdomains="true">75.101.226.188</domain>
+        <domain includeSubdomains="true"> 50.19.177.178 </domain>
     </domain-config>
 </network-security-config>

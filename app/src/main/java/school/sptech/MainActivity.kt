@@ -19,14 +19,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
+import school.sptech.helper.PreferencesHelper
 import school.sptech.ui.components.BottomBar
 import school.sptech.navigation.NavigationGraph
+import school.sptech.network.RetrofitService
 import school.sptech.ui.theme.BrancoFundo
 import school.sptech.ui.theme.CalencareAppTheme
+
+lateinit var preferencesHelper: PreferencesHelper
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        preferencesHelper = PreferencesHelper(this)
+
         enableEdgeToEdge()
         setContent {
             CalencareAppTheme {
@@ -57,6 +63,7 @@ class MainActivity : ComponentActivity() {
                                 bottom = innerPadding.calculateBottomPadding(),
                         )) {
                         NavigationGraph(
+                            preferencesHelper = preferencesHelper,
                             navController = navController,
                             onBottomBarVisibleChanged = { isVisible ->
                                 buttonVisible = isVisible

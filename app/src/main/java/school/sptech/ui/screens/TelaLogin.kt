@@ -24,6 +24,7 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,8 +57,10 @@ import school.sptech.ui.theme.fontFamilyPoppins
 import school.sptech.ui.theme.letterSpacingPrincipal
 import school.sptech.ui.viewModel.UsuarioViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import school.sptech.data.model.Funcionario
+import school.sptech.preferencesHelper
 import school.sptech.ui.components.AlertError
 
 class TelaLogin : ComponentActivity() {
@@ -85,7 +88,7 @@ fun LoginScreen(
     var emailPreenchido by remember { mutableStateOf(true) }
     var senhaPreenchida by remember { mutableStateOf(true) }
     var passwordVisibility by remember { mutableStateOf(false) }
-    var deuRuim by remember { mutableStateOf(false) }
+    var deuRuim by remember { mutableStateOf(viewModel.deuErro) }
     var msg by remember { mutableStateOf("") }
 
     Box(
@@ -176,7 +179,7 @@ fun LoginScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -201,12 +204,15 @@ fun LoginScreen(
                     emailPreenchido = viewModel.usuario.email?.isNotBlank() == true
                     senhaPreenchida = viewModel.usuario.senha?.isNotBlank() == true
 
-                    if(emailPreenchido && senhaPreenchida) {
+                    if (emailPreenchido && senhaPreenchida) {
                         viewModel.logar()
                         deuRuim = viewModel.deuErro
                         msg = viewModel.erro
 
-                        if (!viewModel.deuErro) {
+                        if (!deuRuim && msg.isNotBlank()) {
+                            preferencesHelper.saveIdUsuario(
+                                viewModel.usuario.id ?: 0
+                            )
                             navController.navigate(NavBar.Inicio.route)
                         }
                     }
@@ -223,32 +229,16 @@ fun LoginScreen(
                 TextoButtonExtraLarge(texto = stringResource(R.string.entrar))
             }
 
-            if (deuRuim) {
-                AlertError(msg = msg)
-//                ExtendedFloatingActionButton(
-//                    text = { Text("Deu merda!!! erro => $msg") },
-//                    icon = { Icon(Icons.Filled.Clear, contentDescription = "") },
-//                    onClick = {
-//                        scope.launch {
-//                            val result = snackbarHostState
-//                                .showSnackbar(
-//                                    message = "Snackbar",
-//                                    actionLabel = "Action",
-//                                    // Defaults to SnackbarDuration.Short
-//                                    duration = SnackbarDuration.Indefinite
-//                                )
-//                            when (result) {
-//                                SnackbarResult.ActionPerformed -> {
-//                                    /* Handle snackbar action performed */
-//                                }
-//
-//                                SnackbarResult.Dismissed -> {
-//                                    /* Handle snackbar dismissed */
-//                                }
-//                            }
-//                        }
-//                    }
-//                )
+
+            if (deuRuim || msg.isNotBlank()) {
+                AlertError(
+                    msg = msg
+                )
+            }
+
+            LaunchedEffect("login"){
+                delay(5000)
+                deuRuim = false
             }
 
             Spacer(modifier = Modifier.height(16.dp))

@@ -87,6 +87,7 @@ dependencies {
     // Room - Banco de Dados Local
     implementation("androidx.room:room-runtime:2.4.0")
     implementation("androidx.room:room-ktx:2.4.0")
+//    implementation(libs.androidx.compose.material3)
 //    kapt("androidx.room:room-compiler:2.4.0")
 
     testImplementation(libs.junit)

@@ -19,6 +19,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.delay
 import school.sptech.R
+import school.sptech.Routes
+import school.sptech.navigation.NavBar
 import school.sptech.navigation.NavigationGraph
 import school.sptech.ui.theme.CalencareAppTheme
 
@@ -39,7 +41,11 @@ class TelaSplash : ComponentActivity() {
 }
 
 @Composable
-fun SplashScreen(navController: NavHostController, modifier: Modifier = Modifier) {
+fun SplashScreen(
+    userLogado:Boolean = false,
+    navController: NavHostController,
+    modifier: Modifier = Modifier
+) {
     var visible by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
@@ -47,7 +53,9 @@ fun SplashScreen(navController: NavHostController, modifier: Modifier = Modifier
         delay(3000) // 3 segundos de delay
         visible = false // Inicia a animação de saída
         // O delay antes da navegação foi removido para que a tela de login apareça imediatamente após a animação
-        navController.navigate("login") {
+        navController.navigate(
+            if(userLogado) NavBar.Inicio.route else Routes.Login.route
+        ) {
             popUpTo("splash") { inclusive = true }
         }
     }

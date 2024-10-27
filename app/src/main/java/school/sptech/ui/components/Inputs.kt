@@ -2,6 +2,7 @@ package school.sptech.ui.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -219,7 +220,9 @@ fun InputMedium(
         ) },
         modifier = modifier
             .fillMaxWidth()
-            .let { if (isMultiline) it.height(124.dp) else it.height(52.dp) },
+            .let {
+                if (isMultiline) it.height(124.dp) else it.height(52.dp)
+         },
         shape = RoundedCornerShape(shapeSize),
         singleLine = !isMultiline,
         maxLines = if (isMultiline) Int.MAX_VALUE else 1

@@ -2,10 +2,18 @@ import android.icu.text.DecimalFormat
 import androidx.compose.material3.CalendarLocale
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.graphics.Color
+import school.sptech.ui.theme.Amarelo
+import school.sptech.ui.theme.Laranja
+import school.sptech.ui.theme.Verde
+import school.sptech.ui.theme.Vermelho
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.Month
 import java.time.format.DateTimeFormatter
+import java.time.format.TextStyle
 import java.util.Date
+import java.util.Locale
 
 fun transformarEmLocalDate(data: String): LocalDate {
     val ano = data.substring(6, 10).toInt()
@@ -84,3 +92,26 @@ fun getEnabledButtonRetirarEstoque(qtdEstoque: Int): Boolean {
     return qtdEstoque > 0
 }
 
+fun getEnabledInputDataValidade(descricaoValidade:String): Boolean{
+    return !descricaoValidade.equals("Indefinido")
+}
+
+fun getColorTextEstoque(qtdEstoque: Int): Color {
+    return when{
+        qtdEstoque == 0 -> Vermelho
+        qtdEstoque in 1..5 -> Laranja
+        qtdEstoque in 6 until 15-> Amarelo
+        else -> Verde
+    }
+}
+
+fun getMonthInt(month:String) : Month?{
+    Month.values().forEach{ mes ->
+        val nomeEmLocale = mes.getDisplayName(TextStyle.FULL, Locale("pt", "BR"));
+        if (nomeEmLocale.equals(month, ignoreCase = true)) {
+            return mes;
+        }
+    }
+
+    return null
+}

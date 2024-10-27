@@ -15,9 +15,13 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import school.sptech.ui.theme.Cinza
-import school.sptech.ui.theme.CinzaOpacidade35
 import school.sptech.ui.theme.CinzaOpacidade7
+import school.sptech.ui.theme.Preto
 import school.sptech.ui.theme.RoxoNubank
 import school.sptech.ui.theme.RoxoNubankOpacidade15
 import school.sptech.ui.theme.fontFamilyPoppins
@@ -39,10 +43,13 @@ fun SeletorData(
         }
     )
 }
+
 @Composable
 fun SelectableDatesRow(
     dates: List<String>,
     onDateSelected: (String) -> Unit,
+    qtdEstoqueData: Int = 0,
+    isRepor: Boolean = false,
     selectedDate: String? = null
 ) {
     var currentDate by remember { mutableStateOf(selectedDate) }
@@ -52,10 +59,59 @@ fun SelectableDatesRow(
             .padding(vertical = 11.dp)
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            LabelInput(label = "Selecione uma data")
+            LabelInput(label = "Data de Validade")
+
+            if(isRepor){
+                TextButton(
+                    onClick = { /*TODO*/ },
+                    contentPadding = PaddingValues(horizontal = 4.dp),
+                ) {
+                    Text(
+                        text = "Adicionar Data",
+                        fontFamily = fontFamilyPoppins,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 10.sp,
+                        letterSpacing = letterSpacingPrincipal,
+                        color = Preto
+                    )
+                }
+            }
+
         }
+
+        Row(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                buildAnnotatedString {
+                     withStyle(
+                         SpanStyle(
+                             color = RoxoNubank,
+                             fontFamily = fontFamilyPoppins,
+                             letterSpacing = letterSpacingPrincipal,
+                             fontSize = 10.5.sp,
+                             fontWeight = FontWeight.ExtraBold
+                         )
+                    ) {
+                        append("$qtdEstoqueData ${if (qtdEstoqueData == 1) "produto" else "produtos"} ")
+                    }
+                    withStyle(SpanStyle(
+                        color = Cinza,
+                        fontFamily = fontFamilyPoppins,
+                        letterSpacing = letterSpacingPrincipal,
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 10.5.sp,
+                    )
+                    ) {
+                        append("com a data de validade selecionada.")
+                    }
+                },
+            )
+
+        }
+
         Spacer(modifier = Modifier.height(8.dp))
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
@@ -74,6 +130,7 @@ fun SelectableDatesRow(
         }
     }
 }
+
 @Composable
 fun DateItem(
     date: String,

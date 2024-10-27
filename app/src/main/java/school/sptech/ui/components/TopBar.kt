@@ -314,6 +314,7 @@ fun TopBarInformacoesProduto(onClickVoltar: () -> Unit, onClickSalvar: () -> Uni
 fun TopBarConta(
     enabledButtonSalvar: Boolean,
     onClickSalvar: () -> Unit,
+    onClickSair: () -> Unit,
     navController: NavController
 ) {
     Row(
@@ -330,7 +331,7 @@ fun TopBarConta(
             titulo = stringResource(id = R.string.sairconta),
             iconId = R.mipmap.logout,
             isMediumButton = true,
-            onClick = { /*TODO*/ }
+            onClick = onClickSair
         )
 
         Spacer(modifier = Modifier.width(4.dp))

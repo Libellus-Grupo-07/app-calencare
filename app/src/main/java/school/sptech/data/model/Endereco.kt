@@ -9,5 +9,5 @@ data class Endereco(
     var bairro: String? = null,
     var cidade: String? = null,
     var uf: String? = null,
-    var empresa: Empresa
+    var empresa: Empresa? = null
 )

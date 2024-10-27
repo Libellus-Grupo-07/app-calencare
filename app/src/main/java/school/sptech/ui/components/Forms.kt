@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -16,6 +17,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MenuItemColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,10 +29,13 @@ import androidx.compose.ui.unit.dp
 import formatarDataDatePicker
 import school.sptech.R
 import school.sptech.data.model.Empresa
+import school.sptech.data.model.Endereco
 import school.sptech.data.model.Funcionario
 import school.sptech.ui.theme.Branco
 import school.sptech.ui.theme.Cinza
 import school.sptech.ui.theme.RoxoNubank
+import school.sptech.ui.viewModel.EmpresaViewModel
+import school.sptech.ui.viewModel.EnderecoViewModel
 
 @Composable
 fun FormFieldWithLabel(
@@ -43,12 +48,15 @@ fun FormFieldWithLabel(
     isNumericInput: Boolean = false
 ) {
     var enabledDatePicker by remember { mutableStateOf(false) }
-    val dateValue: Long = if(isDateInput && value.isNotEmpty()) value.toLong() else 0L
+    val dateValue: Long = if (isDateInput && value.isNotEmpty()) value.toLong() else 0L
 
     Column(modifier = Modifier.fillMaxWidth()) {
         LabelInput(label = label)
         InputMedium(
-            value = if(isDateInput && value.isNotBlank()) formatarDataDatePicker(inputFormat = true, data = dateValue) else value,
+            value = if (isDateInput && value.isNotBlank()) formatarDataDatePicker(
+                inputFormat = true,
+                data = dateValue
+            ) else value,
             onValueChange = onValueChange,
             label = label,
             readOnly = readOnly,
@@ -65,15 +73,15 @@ fun FormFieldWithLabel(
                     }
                 }
             },
-            modifier = Modifier.clickable(enabled = isDateInput) {
+            modifier = Modifier
+                .clickable(enabled = isDateInput, onClick =  {
                 enabledDatePicker = true
-            }
+            })
         )
     }
 
     if (isDateInput) {
         if (enabledDatePicker) {
-
             DatePickerModal(
                 dateSelected = dateValue,
                 onDismiss = { enabledDatePicker = false },
@@ -162,7 +170,8 @@ fun FormButtons(
         ButtonBackground(
             titulo = stringResource(R.string.adicionar),
             cor = RoxoNubank,
-            onClick = onAddClick)
+            onClick = onAddClick
+        )
     }
 }
 
@@ -200,16 +209,25 @@ fun FormDadosPessoais(usuario: Funcionario) {
 
 
 @Composable
-fun FormDadosEmpresa(empresa: Empresa) {
+fun FormDadosEmpresa(
+    empresaViewModel: EmpresaViewModel,
+    enderecoViewModel: EnderecoViewModel,
+    empresa: Empresa,
+    endereco: Endereco
+) {
     FormFieldWithLabel(
-        value = empresa.razaoSocial ?: "" ,  // Valor alterado
-        onValueChange = {},
+        value = empresa.razaoSocial ?: "",  // Valor alterado
+        onValueChange = {
+            empresaViewModel.empresa = empresaViewModel.empresa.copy(razaoSocial = it)
+        },
         label = stringResource(id = R.string.razaoSocial)
     )
 
     FormFieldWithLabel(
-        value = empresa.cnpj ?: "" ,  // Valor alterado
-        onValueChange = {},
+        value = empresa.cnpj ?: "",  // Valor alterado
+        onValueChange = {
+            empresaViewModel.empresa = empresaViewModel.empresa.copy(cnpj = it)
+        },
         label = stringResource(id = R.string.cnpj)
     )
 
@@ -217,20 +235,26 @@ fun FormDadosEmpresa(empresa: Empresa) {
 
     FormFieldWithLabel(
         value = empresa.telefonePrincipal ?: "",  // Valor alterado
-        onValueChange = {},
+        onValueChange = {
+            empresaViewModel.empresa = empresaViewModel.empresa.copy(telefonePrincipal = it)
+        },
         label = stringResource(id = R.string.telefone)
     )
 
     // CEP
     FormFieldWithLabel(
-        value = "01454-000",
-        onValueChange = {},
+        value = endereco.cep ?: "",  // Valor alterado
+        onValueChange = {
+            enderecoViewModel.endereco = enderecoViewModel.endereco.copy(cep = it)
+        },
         label = stringResource(id = R.string.cep)
     )
 
     FormFieldWithLabel(
-        value = "Rua da Beleza Eterna",  // Valor alterado
-        onValueChange = {},
+        value = endereco.logradouro ?: "",  // Valor alterado
+        onValueChange = {
+            enderecoViewModel.endereco = enderecoViewModel.endereco.copy(logradouro = it)
+        },
         label = stringResource(id = R.string.logradouro)
     )
 
@@ -240,8 +264,11 @@ fun FormDadosEmpresa(empresa: Empresa) {
     ) {
         Column(modifier = Modifier.weight(0.3f)) {
             FormFieldWithLabel(
-                value = "456",  // Valor alterado
-                onValueChange = {},
+                value = endereco.numero.toString() ?: "",  // Valor alterado
+                onValueChange = {
+                    enderecoViewModel.endereco = enderecoViewModel.endereco.copy(numero = it)
+                },
+                isNumericInput = true,
                 label = stringResource(id = R.string.numero)
             )
         }
@@ -250,8 +277,10 @@ fun FormDadosEmpresa(empresa: Empresa) {
 
         Column(modifier = Modifier.weight(0.5f)) {
             FormFieldWithLabel(
-                value = " ",  // Valor alterado
-                onValueChange = {},
+                value = endereco.complemento ?: "",  // Valor alterado
+                onValueChange = {
+                    enderecoViewModel.endereco = enderecoViewModel.endereco.copy(complemento = it)
+                },
                 label = stringResource(id = R.string.complemento)
             )
         }

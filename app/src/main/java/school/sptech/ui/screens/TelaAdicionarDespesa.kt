@@ -24,6 +24,8 @@ import school.sptech.ui.components.TopBarVoltar
 import school.sptech.ui.viewModel.DespesaViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import formatarData
+import school.sptech.Routes
+import school.sptech.navigation.NavBar
 import school.sptech.ui.components.AlertError
 import java.time.LocalDate
 
@@ -74,16 +76,21 @@ fun TelaAddDespesa(
                     deuRuim = viewModel.deuErro
                     msg = viewModel.erro
 
-                    if (!deuRuim) {
-                        navController.popBackStack()
+                    if (!deuRuim && msg.isNotBlank()) {
+                        navController.navigate(NavBar.Financas.route){
+                            popUpTo(Routes.AdicionarDespesa.route) {
+                                inclusive = true
+                            }
+                            launchSingleTop = true
+                        }
                     }
                 }
             )
         }
     }
 
-    if (deuRuim) {
-        AlertError(msg = msg)
+    if (deuRuim || msg.isNotBlank()) {
+        AlertError(msg = viewModel.erro)
     }
 }
 
@@ -101,8 +108,8 @@ fun DespesaForm(viewModel: DespesaViewModel) {
             },
             label = stringResource(R.string.nome),
         )
-        
-     // Name Field
+
+        // Name Field
         FormFieldWithLabel(
             value = viewModel.despesa.observacao ?: "",
             onValueChange = { viewModel.despesa = viewModel.despesa.copy(observacao = it) },

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,15 +27,19 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import okhttp3.Route
 import school.sptech.Routes
 import school.sptech.data.model.Funcionario
+import school.sptech.preferencesHelper
 import school.sptech.ui.components.Background
 import school.sptech.ui.components.BoxPerfil
 import school.sptech.ui.components.FormDadosEmpresa
 import school.sptech.ui.components.FormDadosPessoais
+import school.sptech.ui.components.ModalConfirmarSair
 import school.sptech.ui.components.TopBarConta
 import school.sptech.ui.theme.CalencareAppTheme
 import school.sptech.ui.viewModel.EmpresaViewModel
+import school.sptech.ui.viewModel.EnderecoViewModel
 import school.sptech.ui.viewModel.UsuarioViewModel
 
 class Conta : ComponentActivity() {
@@ -57,14 +62,21 @@ class Conta : ComponentActivity() {
 @Composable
 fun TelaConta(
     usuarioViewModel: UsuarioViewModel = viewModel(),
+    enderecoViewModel: EnderecoViewModel = viewModel(),
     empresaViewModel: EmpresaViewModel = viewModel(),
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
-    usuarioViewModel.getFuncionario(1)
+    LaunchedEffect(Unit) {
+        usuarioViewModel.getFuncionario(preferencesHelper.getIdUsuario())
+        empresaViewModel.getEmpresa(preferencesHelper.getIdEmpresa())
+        enderecoViewModel.getEndereco(preferencesHelper.getIdEmpresa())
+    }
+
     val usuario = usuarioViewModel.usuario
-    empresaViewModel.getEmpresa(usuario.empresa?.id ?: 1)
     val empresa = empresaViewModel.empresa
+    val endereco = enderecoViewModel.endereco
+    var exibirModal by remember { mutableStateOf(false) }
 
     var telaAtual by remember {
         mutableStateOf(navController.currentBackStackEntry?.destination?.route)
@@ -84,6 +96,9 @@ fun TelaConta(
 
             TopBarConta(
                 onClickSalvar = {},
+                onClickSair = {
+                    exibirModal = true
+                },
                 navController = navController,
                 enabledButtonSalvar = enabledButtonSalvar
             )
@@ -100,23 +115,47 @@ fun TelaConta(
             AnimatedContent(
                 telaAtual,
             ) { targetState ->
-            Column(
-                modifier = Modifier
-                    .padding(horizontal = 8.dp)
-                    .verticalScroll(ScrollState(1)),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                when (targetState) {
-                    Routes.DadosEmpresa.route -> {
-                        FormDadosEmpresa(empresa)
-                    }
+                Column(
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .verticalScroll(ScrollState(1)),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    when (targetState) {
+                        Routes.DadosEmpresa.route -> {
+                            FormDadosEmpresa(
+                                empresaViewModel = empresaViewModel,
+                                enderecoViewModel = enderecoViewModel,
+                                empresa = empresa,
+                                endereco = endereco
+                            )
+                        }
 
-                    else -> {
-                        FormDadosPessoais(usuario)
+                        else -> {
+                            FormDadosPessoais(usuario)
+                        }
                     }
                 }
             }
         }
+
+        if(exibirModal){
+            ModalConfirmarSair(
+                onConfirm = {
+                    preferencesHelper.saveIdEmpresa(-1)
+                    preferencesHelper.saveIdUsuario(-1)
+                    exibirModal = false
+                    navController.navigate(Routes.Login.route) {
+                        popUpTo(0) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    }
+                },
+                onDismiss = {
+                    exibirModal = false
+                }
+            )
         }
     }
 }

@@ -44,6 +44,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import formatarData
@@ -125,13 +126,12 @@ fun CardKpi(titulo: String, valor: String, cor: String, modifier: Modifier = Mod
 fun CardProduto(
     produto: Produto,
     isTelaInicio: Boolean,
-    onClickReporEstoque: () -> Unit,
-    onClickRetirarEstoque: () -> Unit,
     onClickCardProduto: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var exibirModalRepor by remember { mutableStateOf(false) }
     var exibirModalRetirar by remember { mutableStateOf(false) } // Controle do modal de retirada
+    val listaValidades = produto.validades?.map { it.dtValidade ?: "" } ?: listOf()
 
     Row(
         modifier = modifier
@@ -145,13 +145,14 @@ fun CardProduto(
                 shape = RoundedCornerShape(20.dp)
             )
             .background(Branco, shape = RoundedCornerShape(20.dp))
+            .height(200.dp)
             .clickable(onClick = onClickCardProduto)
     ) {
         Box(
             modifier = Modifier
                 .padding(18.dp)
         ) {
-            Column {
+            Column() {
                 Text(
                     text = produto.nome ?: "",
                     fontSize = 12.5.sp,
@@ -159,7 +160,9 @@ fun CardProduto(
                     color = RoxoNubank,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = letterSpacingPrincipal,
-                    fontFamily = fontFamilyPoppins
+                    fontFamily = fontFamilyPoppins,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.fillMaxHeight(0.25f)
                 )
 
                 Spacer(modifier = Modifier.size(8.dp))
@@ -268,22 +271,6 @@ fun CardProduto(
 
             // Exibe o modal de reposição de produto
             if (exibirModalRepor) {
-                val datesFromBackend = listOf(
-                    "20/10/2024",
-                    "21/10/2024",
-                    "22/10/2024",
-                    "23/10/2024",
-                    "24/10/2024",
-                    "25/10/2024",
-                    "26/10/2024",
-                    "27/10/2024",
-                    "28/10/2024",
-                    "29/10/2024",
-                    "30/10/2024",
-                    "31/10/2024",
-                    "01/11/2024",
-                    "02/11/2024"
-                )
                 ReporProductModal(
                     onDismiss = { exibirModalRepor = false },
                     produto = produto.nome ?: "",
@@ -291,28 +278,13 @@ fun CardProduto(
                     onConfirm = {
                         exibirModalRepor = false
                     },
-                    datesFromBackend = datesFromBackend
+                    datesFromBackend = listaValidades
                 )
             }
 
             // Exibe o modal de retirada de produto
             if (exibirModalRetirar) {
-                val datesFromBackend = listOf(
-                    "20/10/2024",
-                    "21/10/2024",
-                    "22/10/2024",
-                    "23/10/2024",
-                    "24/10/2024",
-                    "25/10/2024",
-                    "26/10/2024",
-                    "27/10/2024",
-                    "28/10/2024",
-                    "29/10/2024",
-                    "30/10/2024",
-                    "31/10/2024",
-                    "01/11/2024",
-                    "02/11/2024"
-                )
+
                 RetirarProductModal(
                     produto = produto.nome ?: "",
                     quantidadeEstoque = produto.qtdEstoque ?: 0,
@@ -320,7 +292,7 @@ fun CardProduto(
                     onConfirm = {
                         exibirModalRetirar = false
                     },
-                    datesFromBackend = datesFromBackend
+                    datesFromBackend = listaValidades
                 )
             }
         }

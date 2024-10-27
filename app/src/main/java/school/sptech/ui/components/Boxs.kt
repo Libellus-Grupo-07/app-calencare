@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,6 +14,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,6 +27,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -93,7 +98,13 @@ fun BoxKpisEstoque(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun BoxProdutos(navController: NavController, produtos: MutableList<Produto>, titulo: String, isTelaInicio: Boolean, modifier: Modifier = Modifier) {
+fun BoxProdutos(
+    navController: NavController,
+    produtos: List<Produto>,
+    titulo: String,
+    isTelaInicio: Boolean,
+    modifier: Modifier = Modifier
+) {
     Box(modifier = Modifier.fillMaxWidth()) {
         Column {
             Row {
@@ -108,37 +119,66 @@ fun BoxProdutos(navController: NavController, produtos: MutableList<Produto>, ti
             }
 
             Spacer(modifier = modifier.size(21.dp))
-            FlowRow(
-                modifier = modifier,
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                maxItemsInEachRow = 2
-            ) {
-                repeat(2 * (produtos.size / 2)) { i ->
-                    CardProduto(
-                        produto = produtos[i],
-//                        nome = produtos[i].nome ?: "" ,
-//                        categoria = produtos[i].categoriaProdutoNome ?: "",
-//                        qtdEstoque = produtos[i].qtdEstoque ?: 0,
-                        isTelaInicio = isTelaInicio,
-                        onClickCardProduto = {
-                            navController.navigate(Routes.InformacoesProduto.route)
-                        },
-                        onClickReporEstoque = {},
-                        onClickRetirarEstoque = {},
-                        modifier = modifier.weight(1f),
-                    )
+
+            if (produtos.isEmpty()) {
+                Text(
+                    modifier = modifier.fillMaxSize(),
+                    text = "Nenhum produto encontrado",
+                    textAlign = TextAlign.Center,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = fontFamilyPoppins,
+                    letterSpacing = letterSpacingPrincipal,
+                    color = Preto
+                )
+            } else {
+                LazyVerticalGrid(
+                    columns = GridCells.FixedSize(166.dp),
+                    modifier = modifier,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(produtos) { produto ->
+                        CardProduto(
+                            produto = produto,
+                            isTelaInicio = isTelaInicio,
+                            onClickCardProduto = {
+                                navController.navigate("${Routes.InformacoesProduto.route}/${produto.id}")
+                            },
+                            modifier = modifier.fillMaxSize(1f)
+                        )
+                    }
                 }
+
+//                FlowRow(
+//                    modifier = modifier,
+//                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+//                    verticalArrangement = Arrangement.spacedBy(12.dp),
+//                    maxItemsInEachRow = 2
+//                ) {
+//                    repeat(produtos.size) { i ->
+//                        CardProduto(
+//                            produto = produtos[i],
+//                            isTelaInicio = isTelaInicio,
+//                            onClickCardProduto = {
+//                                navController.navigate("${Routes.InformacoesProduto.route}/${produtos[i].id}")
+//                            },
+//                            modifier = modifier.weight(1f),
+//                        )
+//                    }
+//                }
             }
         }
     }
 }
 
 @Composable
-fun BoxMovimentos(movimentos:List<Movimentos>){
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(vertical = 16.dp, horizontal = 8.dp)){
+fun BoxMovimentos(movimentos: List<Movimentos>) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(vertical = 16.dp, horizontal = 8.dp)
+    ) {
         TituloLarge(titulo = stringResource(id = R.string.movimentos))
 
         LazyColumn {
@@ -150,7 +190,7 @@ fun BoxMovimentos(movimentos:List<Movimentos>){
 }
 
 @Composable
-fun BoxPerfil(telaAtual:String, onChangeTelaAtual: (String) -> Unit) {
+fun BoxPerfil(telaAtual: String, onChangeTelaAtual: (String) -> Unit) {
     // Imagem de perfil centralizada
     Box(
         contentAlignment = Alignment.Center,
@@ -175,11 +215,11 @@ fun BoxPerfil(telaAtual:String, onChangeTelaAtual: (String) -> Unit) {
         horizontalArrangement = Arrangement.Center,
         Alignment.CenterVertically,
 
-    ) {
+        ) {
         ButtonBackground(
             titulo = stringResource(R.string.dadosEmpresa),
             onClick = { onChangeTelaAtual(Routes.DadosEmpresa.route) },
-            cor = if(telaAtual == Routes.DadosEmpresa.route) RoxoNubank else CinzaOpacidade7,
+            cor = if (telaAtual == Routes.DadosEmpresa.route) RoxoNubank else CinzaOpacidade7,
             enabledIcon = false
         )
 
@@ -188,7 +228,7 @@ fun BoxPerfil(telaAtual:String, onChangeTelaAtual: (String) -> Unit) {
         ButtonBackground(
             titulo = stringResource(R.string.dadosPessoais),
             onClick = { onChangeTelaAtual(Routes.DadosPessoais.route) },
-            cor = if(telaAtual == Routes.DadosPessoais.route) RoxoNubank else CinzaOpacidade7,
+            cor = if (telaAtual == Routes.DadosPessoais.route) RoxoNubank else CinzaOpacidade7,
             enabledIcon = false
         )
     }

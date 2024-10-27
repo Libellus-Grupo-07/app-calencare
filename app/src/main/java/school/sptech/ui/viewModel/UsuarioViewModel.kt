@@ -27,8 +27,10 @@ class UsuarioViewModel : ViewModel() {
                 var response = usuarioService.login(usuario)
 
                 if(response.isSuccessful && response.body() != null){
-                    usuario = response.body()!!
+                    val usuarioResponse = response.body()!!
+                    usuario.id = usuarioResponse.userId
                     deuErro = false
+                    erro = "Logado com sucesso"
                 } else {
                     Log.e("api", "Erro ao tentar logar ${response.errorBody()?.string()}")
                     deuErro = true

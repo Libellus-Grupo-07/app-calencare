@@ -14,15 +14,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import formatarDecimal
+import getMonthInt
 import school.sptech.R
 import school.sptech.Routes
 import school.sptech.data.model.Despesa
+import school.sptech.preferencesHelper
 import school.sptech.ui.components.Background
 import school.sptech.ui.components.CardDespesa
 import school.sptech.ui.components.CardKpi
@@ -33,6 +36,9 @@ import school.sptech.ui.components.TopBarComSelecaoData
 import school.sptech.ui.theme.*
 import school.sptech.ui.viewModel.DespesaViewModel
 import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.TextStyle
+import java.util.Locale
 
 class TelaFinancasActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,35 +53,33 @@ class TelaFinancasActivity : ComponentActivity() {
 }
 
 @Composable
-fun TelaFinancas(despesaViewModel: DespesaViewModel = viewModel(), navController: NavController = rememberNavController()) {
+fun TelaFinancas(
+    despesaViewModel: DespesaViewModel = viewModel(),
+    navController: NavController = rememberNavController()
+) {
     val receitas = remember { mutableStateOf(3669.91) }
     val despesasTotais = remember { mutableStateOf(11080.00) }
     val faturamento = remember { mutableStateOf(14749.91) }
     val comissoes = remember { mutableStateOf(8000.00) }
-    var mesSelecionado by remember { mutableStateOf("Setembro") }
-    var anoSelecionado by remember { mutableStateOf(2024) }
+    var mesSelecionado by remember {
+        mutableStateOf(
+            LocalDate.now().month.getDisplayName(
+                TextStyle.FULL,
+                Locale.getDefault()
+            ).replaceFirstChar {
+                if (it.isLowerCase()) it.titlecase(
+                    Locale.getDefault()
+                ) else it.toString()
+            }
+        )
+    }
+    var anoSelecionado by remember { mutableStateOf(LocalDate.now().year) }
     var mostrarSeletorData by remember { mutableStateOf(false) }
-    despesaViewModel.getDespesas(1, LocalDate.now())
-    val despesas = despesaViewModel.listaDespesas.toList()
+    val despesas = despesaViewModel.listaDespesas
 
-//    LaunchedEffect(Unit) {
-//        despesas.addAll(
-//            listOf(
-//                Despesa(
-//                    nome = "Despesa 1",
-//                    valor = "150.00",
-//                    dtCriacao = "2024-09-01",
-//                    categoriaDespesaNome = "Categoria A"
-//                ),
-//                Despesa(
-//                    nome = "Despesa 2",
-//                    valor = "300.00",
-//                    dtCriacao = "2024-09-15",
-//                    categoriaDespesaNome = "Categoria B"
-//                )
-//            )
-//        )
-//    }
+    LaunchedEffect(Unit) {
+        despesaViewModel.getDespesas()
+    }
 
     if (mostrarSeletorData) {
         SeletorData(
@@ -86,6 +90,8 @@ fun TelaFinancas(despesaViewModel: DespesaViewModel = viewModel(), navController
                 mesSelecionado = mes
                 anoSelecionado = ano
                 mostrarSeletorData = false
+
+                despesaViewModel.atualizarDespesas(anoSelecionado, getMonthInt(mesSelecionado)?.value ?: 0)
             }
         )
     }
@@ -210,7 +216,7 @@ fun ListaDespesas(despesas: List<Despesa>, corTexto: Color, adicionarDespesa: (D
                 onClick = {
                     adicionarDespesa(
                         Despesa(
-                            nome ="Nova Despesa",
+                            nome = "Nova Despesa",
                             valor = "100.00",
                             dtCriacao = "2024-10-01",
                             categoriaDespesaNome = "Categoria C"

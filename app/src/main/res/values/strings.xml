@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Calencare</string>
+    <string name="domain_name" translatable="false"> 3.80.26.91 </string>
     <string name="title_activity_tela_financas" translatable="false">TelaFinancas</string>
     <string name="title_activity_tela_login" translatable="false">TelaLogin</string>
     <string name="title_activity_main" translatable="false">MainActivity</string>

@@ -14,20 +14,15 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import school.sptech.R
-import school.sptech.data.model.CategoriaProduto
+import school.sptech.Routes
+import school.sptech.navigation.NavBar
 import school.sptech.ui.components.AlertError
 import school.sptech.ui.components.Background
 import school.sptech.ui.components.DropdownFieldWithLabel
 import school.sptech.ui.components.FormButtons
 import school.sptech.ui.components.FormFieldWithLabel
-import school.sptech.ui.components.LabelInput
 import school.sptech.ui.components.TopBarVoltar
-import school.sptech.ui.theme.Branco
 import school.sptech.ui.theme.CalencareAppTheme
-import school.sptech.ui.theme.Cinza
-import school.sptech.ui.theme.CinzaOpacidade35
-import school.sptech.ui.theme.CinzaOpacidade7
-import school.sptech.ui.theme.Preto
 import school.sptech.ui.viewModel.ProdutoViewModel
 
 class TelaAdicionarProduto : ComponentActivity() {
@@ -46,7 +41,10 @@ fun TelaAdicionarProdutoScreen(
     viewModel: ProdutoViewModel = viewModel(),
     navController: NavHostController = rememberNavController()
 ) {
-    viewModel.getCategoriasProduto()
+    LaunchedEffect(Unit) {
+        viewModel.getCategoriasProduto()
+    }
+
     var deuRuim by remember { mutableStateOf(viewModel.deuErro) }
     var msg by remember { mutableStateOf(viewModel.erro) }
 
@@ -76,8 +74,14 @@ fun TelaAdicionarProdutoScreen(
                         deuRuim = viewModel.deuErro
                         msg = viewModel.erro
 
-                        if (!deuRuim) {
-                            navController.popBackStack()
+                        if (!deuRuim ) {
+                            navController.navigate(NavBar.Estoque.route){
+                                popUpTo(Routes.AdicionarProduto.route){
+                                    inclusive = true
+                                }
+                                launchSingleTop = true
+                            }
+                            msg = viewModel.erro
                         }
                     },
                     onCancelClick = { navController.popBackStack() }
@@ -87,7 +91,13 @@ fun TelaAdicionarProdutoScreen(
     }
 
     if (deuRuim) {
-        AlertError(msg = msg)
+        AlertError(msg = """
+            ${viewModel.produto.nome}
+            ${viewModel.produto.descricao}
+            ${viewModel.produto.marca}
+            ${viewModel.produto.categoriaProdutoId}
+            ${viewModel.produto.empresaId}
+        """.trimIndent())
     }
 }
 
@@ -121,25 +131,6 @@ fun ProductForm(viewModel: ProdutoViewModel) {
             label = stringResource(R.string.descricao),
             isMultiline = true
         )
-
-        Row(modifier = Modifier.fillMaxWidth(), Arrangement.spacedBy(8.dp)) {
-            LabelInput(label = stringResource(R.string.possui_validade))
-            Checkbox(
-                modifier = Modifier.size(24.dp),
-                checked = viewModel.validade.enabledValidade ?: false,
-                onCheckedChange = {
-                    viewModel.validade = viewModel.validade.copy(enabledValidade = it)
-                },
-                colors = CheckboxDefaults.colors(
-                    checkedColor = Preto,
-                    uncheckedColor = Cinza,
-                    checkmarkColor = Branco,
-                    disabledCheckedColor = CinzaOpacidade35,
-                    disabledUncheckedColor = CinzaOpacidade7,
-                    disabledIndeterminateColor = CinzaOpacidade7
-                )
-            )
-        }
     }
 }
 

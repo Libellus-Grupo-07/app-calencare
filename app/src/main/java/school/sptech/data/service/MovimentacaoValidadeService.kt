@@ -8,8 +8,12 @@ import retrofit2.http.Path
 import school.sptech.data.model.MovimentacaoValidade
 
 interface MovimentacaoValidadeService {
-    @GET("/quantidade/produto/{produtoId}")
-    suspend fun getQuantidadeTodasValidades(@Path("produtoId") produtoId:Int): Response<Int>
-    @POST
+    @GET("/movimentacao-validade/quantidade/produto/{produtoId}")
+    suspend fun getTotalEstoque(@Path("produtoId") produtoId: Int): Response<Int>
+
+    @GET("/movimentacao-validade/quantidade/{validadeId}")
+    suspend fun getQuantidadePorValidade(@Path("validadeId") validadeId: Int): Response<Int>
+
+    @POST("/movimentacao-validade")
     suspend fun postMovimentacaoValidade(@Body movimentacaoValidade: MovimentacaoValidade): Response<MovimentacaoValidade>
 }

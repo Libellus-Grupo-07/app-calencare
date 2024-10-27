@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import school.sptech.R
 import school.sptech.Routes
+import school.sptech.helper.PreferencesHelper
 import school.sptech.ui.screens.TelaConta
 import school.sptech.ui.screens.LoginScreen
 import school.sptech.ui.screens.SplashScreen
@@ -23,13 +24,17 @@ import school.sptech.ui.screens.TelaNotificacoes
 
 @Composable
 fun NavigationGraph(
+    preferencesHelper:PreferencesHelper? = null,
     navController: NavHostController,
     onBottomBarVisibleChanged: (Boolean) -> Unit,
 ) {
     NavHost(navController, startDestination = Routes.Splash.route) {
         composable(Routes.Splash.route) {
             onBottomBarVisibleChanged(false)
-            SplashScreen(navController = navController)
+            SplashScreen(
+                userLogado = preferencesHelper?.getIdUsuario() != -1,
+                navController = navController
+            )
         }
 
         composable(Routes.Login.route) {
@@ -78,14 +83,14 @@ fun NavigationGraph(
         }
 
         composable(
-            Routes.InformacoesProduto.route,
-//            arguments = listOf(navArgument("produtoId") { type = NavType.IntType })
+            "${Routes.InformacoesProduto.route}/{produtoId}",
+            arguments = listOf(navArgument("produtoId") { type = NavType.IntType })
         ) {backStackEntry ->
             onBottomBarVisibleChanged(false)
             TelaInformacoesProdutoScreen(
                 navController = navController,
-//                idProduto = backStackEntry.arguments?.getInt("produtoId") ?: 0
-                idProduto = 1
+                idProduto = backStackEntry.arguments?.getInt("produtoId") ?: 0
+//                idProduto = 1
             )
         }
     }

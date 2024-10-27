@@ -1,7 +1,6 @@
 package school.sptech.ui.components
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,13 +11,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
@@ -29,7 +29,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
@@ -51,23 +50,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import formatarDataDatePicker
+import getColorTextEstoque
 import kotlinx.coroutines.launch
 import school.sptech.R
 import school.sptech.ui.theme.Branco
 import school.sptech.ui.theme.Cinza
-import school.sptech.ui.theme.Laranja
+import school.sptech.ui.theme.CinzaOpacidade35
+import school.sptech.ui.theme.CinzaOpacidade7
 import school.sptech.ui.theme.Preto
 import school.sptech.ui.theme.PretoOpacidade25
 import school.sptech.ui.theme.RoxoNubank
 import school.sptech.ui.theme.Verde
 import school.sptech.ui.theme.VerdeOpacidade15
 import school.sptech.ui.theme.Vermelho
-import school.sptech.ui.theme.VermelhoOpacidade15
 import school.sptech.ui.theme.fontFamilyPoppins
 import school.sptech.ui.theme.letterSpacingPrincipal
 import school.sptech.ui.viewModel.ReporProdutoViewModel
+import school.sptech.ui.viewModel.ValidadeViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomMonthYearPickerDialog(
     mesSelecionado: String,
@@ -221,7 +221,6 @@ fun DatePickerModal(dateSelected: Long, onDismiss: () -> Unit, onDateSelected: (
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductModal(
     title: String,
@@ -229,15 +228,21 @@ fun ProductModal(
     buttonText: String,
     produto: String,
     quantidadeEstoque: Int,
+    onDateSelected: (String?) -> Unit = {},
+    onQuantidadeChanged: (Int?) -> Unit = {},
     onDismiss: () -> Unit,
     onConfirm: (Int) -> Unit,
     viewModel: ReporProdutoViewModel = ReporProdutoViewModel(),
-    datesFromBackend: List<String>
+    datesFromBackend: List<String>,
+    isRepor: Boolean = false
 ) {
     var data by remember { mutableStateOf("") }
+//    viewModel.setQuantidadeInicial(0)
 
     AlertDialog(
-        onDismissRequest = onDismiss,
+        onDismissRequest = {
+            onDismiss()
+        },
         containerColor = Branco,
         titleContentColor = buttonColor,
         properties = DialogProperties(
@@ -275,21 +280,55 @@ fun ProductModal(
                     label = "Produto",
                     readOnly = true
                 )
-                Spacer(modifier = Modifier.height(12.dp))
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+//                if(isRepor){
+//                    Row(modifier = Modifier.fillMaxWidth(), Arrangement.spacedBy(8.dp)) {
+//                        LabelInput(label = stringResource(R.string.possui_validade))
+//                        Checkbox(
+//                            modifier = Modifier.size(24.dp),
+//                            checked = produto.? : false,
+//                            onCheckedChange = {
+//                                viewModel.validade = viewModel.validade.copy(enabledValidade = it)
+//                            },
+//                            colors = CheckboxDefaults.colors(
+//                                checkedColor = Preto,
+//                                uncheckedColor = Cinza,
+//                                checkmarkColor = Branco,
+//                                disabledCheckedColor = CinzaOpacidade35,
+//                                disabledUncheckedColor = CinzaOpacidade7,
+//                                disabledIndeterminateColor = CinzaOpacidade7
+//                            )
+//                        )
+//                    }
+//                }
+
                 if (datesFromBackend.isNotEmpty() && datesFromBackend[0].isNotEmpty()) {
                     SelectableDatesRow(
                         dates = datesFromBackend,
-                        onDateSelected = { data = it }
+                        onDateSelected = {
+                            data = it
+                            onDateSelected(it)
+                        },
+                        qtdEstoqueData = viewModel.quantidadeEstoqueData.value
+//                        quantidadeEstoque = viewModel.getQuantidadeMaxima()
                     )
                 }
-                Spacer(modifier = Modifier.height(16.dp))
+
+                Spacer(modifier = Modifier.height(12.dp))
                 LabelInput(label = "Quantidade")
                 Spacer(modifier = Modifier.height(4.dp))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    IconButton(onClick = { viewModel.diminuirQuantidade() }) {
+                    IconButton(onClick = {
+                        viewModel.diminuirQuantidade()
+                        onQuantidadeChanged(viewModel.quantidade.value)
+                    }
+
+                    ) {
                         Image(
                             bitmap = ImageBitmap.imageResource(id = R.mipmap.image_remover_menos),
                             contentDescription = "Remover Produto"
@@ -303,7 +342,10 @@ fun ProductModal(
                         letterSpacing = letterSpacingPrincipal
                     )
                     IconButton(
-                        onClick = { viewModel.aumentarQuantidade() },
+                        onClick = {
+                            viewModel.aumentarQuantidade()
+                            onQuantidadeChanged(viewModel.quantidade.value)
+                        },
                         colors = IconButtonColors(
                             containerColor = VerdeOpacidade15,
                             contentColor = Verde,
@@ -317,12 +359,14 @@ fun ProductModal(
                         )
                     }
                 }
+
                 Spacer(modifier = Modifier.height(16.dp))
+
                 Row() {
                     LabelInput(label = "Total em Estoque: ")
                     LabelInput(
                         label = "$quantidadeEstoque produtos",
-                        color = Laranja
+                        color = getColorTextEstoque(quantidadeEstoque)
                     )
                 }
             }
@@ -345,6 +389,8 @@ fun ReporProductModal(
     produto: String,
     quantidadeEstoque: Int,
     onDismiss: () -> Unit,
+    onDateSelected: (String?) -> Unit = {},
+    onQuantidadeChanged: (Int?) -> Unit = {},
     onConfirm: (Int) -> Unit,
     viewModel: ReporProdutoViewModel = ReporProdutoViewModel(),
     datesFromBackend: List<String>
@@ -355,10 +401,13 @@ fun ReporProductModal(
         buttonText = stringResource(id = R.string.repor),
         produto = produto,
         quantidadeEstoque = quantidadeEstoque,
-        onDismiss = onDismiss,
         onConfirm = onConfirm,
+        onDateSelected = onDateSelected,
+        onQuantidadeChanged = onQuantidadeChanged,
+        onDismiss = onDismiss,
         viewModel = viewModel,
-        datesFromBackend = datesFromBackend
+        datesFromBackend = datesFromBackend,
+        isRepor = true
     )
 }
 
@@ -368,6 +417,8 @@ fun RetirarProductModal(
     quantidadeEstoque: Int,
     onDismiss: () -> Unit,
     onConfirm: (Int) -> Unit,
+    onDateSelected: (String?) -> Unit = {},
+    onQuantidadeChanged: (Int?) -> Unit = {},
     viewModel: ReporProdutoViewModel = ReporProdutoViewModel(),
     datesFromBackend: List<String>
 ) {
@@ -377,6 +428,8 @@ fun RetirarProductModal(
         buttonText = stringResource(id = R.string.retirar),
         produto = produto,
         quantidadeEstoque = quantidadeEstoque,
+        onDateSelected = onDateSelected,
+        onQuantidadeChanged = onQuantidadeChanged,
         onDismiss = onDismiss,
         onConfirm = onConfirm,
         viewModel = viewModel,
@@ -385,7 +438,61 @@ fun RetirarProductModal(
 }
 
 @Composable
-fun AlertError(msg:String){
+fun ModalConfirmarSair(
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            ButtonBackground(titulo = "Confirmar", cor = RoxoNubank, onClick = onConfirm)
+        },
+        modifier = Modifier,
+        dismissButton = {
+            ButtonCancelar(onClick = onDismiss)
+        },
+        title = {
+            Row {
+                TituloLarge(titulo = "Sair da Conta")
+                Spacer(modifier = Modifier.weight(1f))
+                IconButton(
+                    onClick = onDismiss,
+                    modifier = Modifier.size(24.dp),
+                    colors = IconButtonDefaults.iconButtonColors(
+                        contentColor = Preto,
+                        containerColor = Color.Transparent,
+                    )
+                ) {
+                    Icon(Icons.Filled.Close, contentDescription = "Fechar")
+                }
+            }
+        },
+        text = {
+            Row(
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Deseja realmente sair da conta?",
+                    fontFamily = fontFamilyPoppins,
+                    color = Preto,
+                    fontWeight = FontWeight.Normal,
+                    letterSpacing = letterSpacingPrincipal
+                )
+            }
+        },
+        shape = RoundedCornerShape(20.dp),
+        containerColor = Branco,
+        titleContentColor =  Preto,
+        properties = DialogProperties(
+            dismissOnBackPress = true,
+            dismissOnClickOutside = true
+        )
+    )
+}
+
+@Composable
+fun AlertError(msg: String) {
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
