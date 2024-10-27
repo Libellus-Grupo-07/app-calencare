@@ -7,19 +7,28 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,7 +57,11 @@ import school.sptech.ui.theme.fontFamilyPoppins
 import school.sptech.ui.theme.letterSpacingPrincipal
 import school.sptech.ui.viewModel.UsuarioViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import school.sptech.data.model.Funcionario
+import school.sptech.preferencesHelper
+import school.sptech.ui.components.AlertError
 
 class TelaLogin : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,15 +85,17 @@ fun LoginScreen(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
-    var email by remember { mutableStateOf("") }
-    var senha by remember { mutableStateOf("") }
+    var emailPreenchido by remember { mutableStateOf(true) }
+    var senhaPreenchida by remember { mutableStateOf(true) }
     var passwordVisibility by remember { mutableStateOf(false) }
+    var deuRuim by remember { mutableStateOf(viewModel.deuErro) }
+    var msg by remember { mutableStateOf("") }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            //.background(Color(0xFFF5F5F5))
-            //.then(modifier)
+        //.background(Color(0xFFF5F5F5))
+        //.then(modifier)
     ) {
         Background()
         Column(
@@ -118,32 +133,36 @@ fun LoginScreen(
             )
 
             Spacer(modifier = Modifier.height(24.dp))
-            Column{
+            Column {
                 // Campo de Email
                 InputIcon(
-                    value = email, //viewModel.usuario.email ?: "",
+                    value = viewModel.usuario.email ?: "",
                     onValueChange = {
-                        //viewModel.usuario.email = it
-                        email = it
+                        viewModel.usuario = viewModel.usuario.copy(email = it)
+                        emailPreenchido = viewModel.usuario?.email?.isNotEmpty() ?: false
+//                        email = it
                     },
+                    error = !emailPreenchido,
                     leadingIcon = R.mipmap.icone_email,
                     label = stringResource(R.string.email),
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(4.dp))
 
                 // Campo de Senha
                 InputIcon(
-                    value = senha, //viewModel.usuario.senha ?: "",
+                    value = viewModel.usuario.senha ?: "",
                     onValueChange = {
-                        //viewModel.usuario.senha = it
-                        senha = it
+                        viewModel.usuario = viewModel.usuario.copy(senha = it)
+                        senhaPreenchida = viewModel.usuario?.senha?.isNotEmpty() ?: false
+//                        senha = it
                     },
-                    leadingIcon =  R.mipmap.icone_senha,
+                    error = !senhaPreenchida,
+                    leadingIcon = R.mipmap.icone_senha,
                     trailingIcon = {
                         IconButton(
                             onClick = { passwordVisibility = !passwordVisibility }
-                        ){
+                        ) {
                             Icon(
                                 painter = painterResource(
                                     id = if (passwordVisibility)
@@ -152,7 +171,6 @@ fun LoginScreen(
                                 ),
                                 contentDescription = "Visibilidade",
                                 modifier = Modifier.size(18.dp),
-                                tint = Color.Gray,
                             )
                         }
                     },
@@ -161,7 +179,7 @@ fun LoginScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -183,8 +201,21 @@ fun LoginScreen(
             // Botão "Entrar"
             Button(
                 onClick = {
-                    viewModel.getFuncionario(1)
-                    navController.navigate(NavBar.Inicio.route)
+                    emailPreenchido = viewModel.usuario.email?.isNotBlank() == true
+                    senhaPreenchida = viewModel.usuario.senha?.isNotBlank() == true
+
+                    if (emailPreenchido && senhaPreenchida) {
+                        viewModel.logar()
+                        deuRuim = viewModel.deuErro
+                        msg = viewModel.erro
+
+                        if (!deuRuim && msg.isNotBlank()) {
+                            preferencesHelper.saveIdUsuario(
+                                viewModel.usuario.id ?: 0
+                            )
+                            navController.navigate(NavBar.Inicio.route)
+                        }
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -196,6 +227,18 @@ fun LoginScreen(
                 )
             ) {
                 TextoButtonExtraLarge(texto = stringResource(R.string.entrar))
+            }
+
+
+            if (deuRuim || msg.isNotBlank()) {
+                AlertError(
+                    msg = msg
+                )
+            }
+
+            LaunchedEffect("login"){
+                delay(5000)
+                deuRuim = false
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -238,7 +281,7 @@ fun LoginScreen(
                     containerColor = Color.Transparent,
                     contentColor = Cinza,
 
-                ),
+                    ),
                 shape = RoundedCornerShape(100.dp),
                 border = BorderStroke(
                     width = 1.dp,

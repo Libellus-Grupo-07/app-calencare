@@ -2,13 +2,47 @@ import android.icu.text.DecimalFormat
 import androidx.compose.material3.CalendarLocale
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.graphics.Color
+import school.sptech.ui.theme.Amarelo
+import school.sptech.ui.theme.Laranja
+import school.sptech.ui.theme.Verde
+import school.sptech.ui.theme.Vermelho
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.Month
 import java.time.format.DateTimeFormatter
+import java.time.format.TextStyle
 import java.util.Date
+import java.util.Locale
 
-fun formatarDecimal(valor: Float): String {
+fun transformarEmLocalDate(data: String): LocalDate {
+    val ano = data.substring(6, 10).toInt()
+    val mes = data.substring(3, 5).toInt()
+    val dia = data.substring(0, 2).toInt()
+
+    val dataParse = LocalDate.of(
+        ano, mes, dia
+    )
+
+    return dataParse
+}
+
+fun transformarEmLocalDateTime(data: String): LocalDateTime {
+    val ano = data.substring(6, 10).toInt()
+    val mes = data.substring(3, 5).toInt()
+    val dia = data.substring(0, 2).toInt()
+
+    val dateTimeParse = LocalDateTime.of(
+        ano, mes, dia, 0, 0, 0
+    )
+
+    return dateTimeParse
+}
+
+
+fun formatarDecimal(valor: Number, isValueInput:Boolean = false): String {
     val format = DecimalFormat("#,##0.00")
-    val formatted = format.format(valor)
+    val formatted = format.format(valor.toDouble() / if(isValueInput) 100 else 1)
     return formatted
 }
 
@@ -24,17 +58,60 @@ fun formatarData(data: LocalDate): String {
     return formatted
 }
 
+fun formatarData(data: String): String {
+    val format = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+    val formatted = LocalDateTime.parse(data).format(format)
+    return formatted
+}
+
+fun formatarDataBd(data: LocalDate): String {
+    val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    val formatted = LocalDate.parse(data.toString()).format(format)
+    return formatted
+}
+
+fun formatarDoubleBd(valor: String): String {
+    val format = valor.replace(".", "").replace(",", ".")
+    return format
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
-fun formatarDataDatePicker(inputFormat:Boolean = false, data:Long?): String{
+fun formatarDataDatePicker(inputFormat: Boolean = false, data: Long?): String {
     val dateFormatter = DatePickerDefaults.dateFormatter(
-        selectedDateSkeleton = if(inputFormat) "dd MM yyyy" else "dd MMMM yyyy",
+        selectedDateSkeleton = if (inputFormat) "dd MM yyyy" else "dd MMMM yyyy",
     )
 
     return dateFormatter
         .formatDate(
             dateMillis = data ?: Date().time,
-            locale = CalendarLocale.getDefault()).toString()
+            locale = CalendarLocale.getDefault()
+        ).toString()
 }
 
-fun getEnabledButtonRetirarEstoque (qtdEstoque: Int):Boolean { return qtdEstoque > 0 }
+fun getEnabledButtonRetirarEstoque(qtdEstoque: Int): Boolean {
+    return qtdEstoque > 0
+}
 
+fun getEnabledInputDataValidade(descricaoValidade:String): Boolean{
+    return !descricaoValidade.equals("Indefinido")
+}
+
+fun getColorTextEstoque(qtdEstoque: Int): Color {
+    return when{
+        qtdEstoque == 0 -> Vermelho
+        qtdEstoque in 1..5 -> Laranja
+        qtdEstoque in 6 until 15-> Amarelo
+        else -> Verde
+    }
+}
+
+fun getMonthInt(month:String) : Month?{
+    Month.values().forEach{ mes ->
+        val nomeEmLocale = mes.getDisplayName(TextStyle.FULL, Locale("pt", "BR"));
+        if (nomeEmLocale.equals(month, ignoreCase = true)) {
+            return mes;
+        }
+    }
+
+    return null
+}

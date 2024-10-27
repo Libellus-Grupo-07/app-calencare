@@ -1,5 +1,6 @@
 package school.sptech.ui.screens
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -18,7 +19,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -30,17 +30,21 @@ import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+
 import school.sptech.R
-import school.sptech.data.model.CategoriaProduto
 import school.sptech.data.model.Produto
+import school.sptech.preferencesHelper
 import school.sptech.ui.components.Background
 import school.sptech.ui.components.BoxKpisEstoque
 import school.sptech.ui.components.BoxProdutos
 import school.sptech.ui.components.TopBarInicio
 import school.sptech.ui.theme.CalencareAppTheme
-import school.sptech.ui.viewModel.EmpresaViewModel
+import school.sptech.ui.theme.Preto
+import school.sptech.ui.viewModel.ProdutoViewModel
 import school.sptech.ui.viewModel.UsuarioViewModel
+import school.sptech.ui.viewModel.ValidadeViewModel
 
 class TelaInicial : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,33 +57,37 @@ class TelaInicial : ComponentActivity() {
     }
 }
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun TelaInicio(
-    empresaViewModel: EmpresaViewModel = viewModel(),
     usuarioViewModel: UsuarioViewModel = viewModel(),
+    produtoViewModel: ProdutoViewModel = viewModel(),
+    validadeViewModel: ValidadeViewModel = viewModel(),
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
-   usuarioViewModel.getFuncionario(1)
-    val usuario = usuarioViewModel.usuario
-    empresaViewModel.getEmpresa(usuario.empresaId ?: 1)
-    usuario.empresa = empresaViewModel.empresa
+    LaunchedEffect(Unit) {
+        // Inicializa o usuário e a empresa
+        usuarioViewModel.getFuncionario(preferencesHelper.getIdUsuario())
+        val idEmpresa = preferencesHelper.getIdEmpresa()
 
-    val categoriaUnha = CategoriaProduto(nome = "Unha")
-    val categoriaCabelo = CategoriaProduto(nome = "Cabelo")
-    val categoriaMaquiagem = CategoriaProduto(nome = "Maquiagem")
+        if (idEmpresa == -1 || idEmpresa == 0) {
+            preferencesHelper.saveIdEmpresa(usuarioViewModel.usuario.empresa?.id ?: 0)
+        }
 
-    val listaProdutos = remember {
-        mutableListOf(
-            Produto(nome = "Esmalte Azul Metálico Risqué 8ml", categoria = categoriaUnha, qtdEstoque = 0),
-            Produto(nome ="Shampoo Mais Lisos Wella 350ml", categoria = categoriaCabelo, qtdEstoque = 1),
-            Produto(nome ="Condicionador Wella 350ml", categoria = categoriaCabelo, qtdEstoque = 1),
-            Produto(nome ="Máscara de Cílios Volume Up Vult 8g", categoria = categoriaMaquiagem, qtdEstoque = 3),
-            Produto(nome ="Spray Keune Style Dry Texturizer 300ml", categoria = categoriaCabelo, qtdEstoque = 4),
-            Produto(nome ="Base Líquida Estée Lauder  SFS-10", categoria = categoriaMaquiagem, qtdEstoque = 6),
-        )
+        // Obtém a lista de produtos com base no id da empresa do usuário
+//        val produtos = produtoViewModel.getProdutos(usuarioViewModel.usuario?.empresa?.id ?: 0)
+
+        // Atualiza cada produto com suas respectivas validades e quantidade em estoque
+//        produtos.forEach { produto ->
+//            produto.validades = validadeViewModel.getValidades(produto.id!!)
+//            produto.qtdEstoque = validadeViewModel.getTotalEstoqueProduto(produto.id!!)
+//        }
     }
 
+    val listaProdutos = produtoViewModel.getProdutos(usuarioViewModel.usuario?.empresa?.id ?: 0)
+    val usuario = usuarioViewModel.usuario
+    
     if (usuarioViewModel.deuErro) {
         Box(
             modifier = Modifier
@@ -99,11 +107,6 @@ fun TelaInicio(
                 )
             }
         }
-        // agenda o "fechamento" da janela de mensagem para daqui a 7 segundos
-        LaunchedEffect("alerta-topo") { // o texto do argumento é o "nome", a "chave" do timer
-            delay(7000)
-            usuarioViewModel.deuErro = false
-        }
     }
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -112,10 +115,10 @@ fun TelaInicio(
             Column(
                 modifier = modifier
                     .padding(horizontal = 24.dp, vertical = 8.dp)
-                    .verticalScroll(state = ScrollState(1))
             ) {
                 TopBarInicio(usuario, navController = navController)
                 Spacer(modifier = Modifier.size(21.dp))
+
                 BoxKpisEstoque(
                     qtdProdutosEstoqueAlto = 25,
                     qtdProdutosSemEstoque = 1,
@@ -138,6 +141,6 @@ fun TelaInicio(
 @Composable
 fun TelaInicialPreview() {
     CalencareAppTheme {
-        TelaInicio(navController =  rememberNavController())
+        TelaInicio(navController = rememberNavController())
     }
 }

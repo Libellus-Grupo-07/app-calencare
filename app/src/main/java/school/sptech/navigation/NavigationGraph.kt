@@ -3,10 +3,13 @@ package school.sptech.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import school.sptech.R
 import school.sptech.Routes
+import school.sptech.helper.PreferencesHelper
 import school.sptech.ui.screens.TelaConta
 import school.sptech.ui.screens.LoginScreen
 import school.sptech.ui.screens.SplashScreen
@@ -21,80 +24,74 @@ import school.sptech.ui.screens.TelaNotificacoes
 
 @Composable
 fun NavigationGraph(
+    preferencesHelper:PreferencesHelper? = null,
     navController: NavHostController,
     onBottomBarVisibleChanged: (Boolean) -> Unit,
-    onTopBarVisibleChanged: (Boolean) -> Unit,
-    onTitleTopBarChanged: (String) -> Unit
 ) {
     NavHost(navController, startDestination = Routes.Splash.route) {
         composable(Routes.Splash.route) {
             onBottomBarVisibleChanged(false)
-            onTopBarVisibleChanged(false)
-            onTitleTopBarChanged("")
-            SplashScreen(navController)
+            SplashScreen(
+                userLogado = preferencesHelper?.getIdUsuario() != -1,
+                navController = navController
+            )
         }
 
         composable(Routes.Login.route) {
             onBottomBarVisibleChanged(false)
-            onTopBarVisibleChanged(false)
-            onTitleTopBarChanged("")
             LoginScreen(navController = navController)
         }
 
         composable(NavBar.Inicio.route) {
             onBottomBarVisibleChanged(true)
-            onTopBarVisibleChanged(false)
-            onTitleTopBarChanged("")
             TelaInicio(navController = navController)
         }
 
         composable(Routes.Notificacoes.route) {
             onBottomBarVisibleChanged(false)
-            onTopBarVisibleChanged(true)
-            onTitleTopBarChanged(stringResource(id = R.string.notificacoes))
             TelaNotificacoes(navController = navController)
         }
 
         composable(NavBar.Estoque.route) {
             onBottomBarVisibleChanged(true)
-            onTopBarVisibleChanged(false)
-            TelaEstoque(navController)
+            TelaEstoque(navController = navController)
         }
 
         composable(NavBar.Financas.route) {
             onBottomBarVisibleChanged(true)
-            onTopBarVisibleChanged(false)
-            TelaFinancas(navController)
+            TelaFinancas(navController = navController)
         }
 
         composable(NavBar.Dashboard.route) {
             onBottomBarVisibleChanged(true)
-            onTopBarVisibleChanged(false)
             TelaDashboard()
         }
 
         composable(Routes.AdicionarProduto.route) {
             onBottomBarVisibleChanged(false)
-            onTopBarVisibleChanged(true)
-            TelaAdicionarProdutoScreen(navController)
+            TelaAdicionarProdutoScreen(navController = navController)
         }
 
         composable(Routes.AdicionarDespesa.route) {
             onBottomBarVisibleChanged(false)
-            onTopBarVisibleChanged(true)
-            TelaAddDespesa(navController)
+            TelaAddDespesa(navController = navController)
         }
 
         composable(Routes.DadosPessoais.route) {
             onBottomBarVisibleChanged(false)
-            onTopBarVisibleChanged(false)
             TelaConta(navController =  navController)
         }
 
-        composable(Routes.InformacoesProduto.route) {
+        composable(
+            "${Routes.InformacoesProduto.route}/{produtoId}",
+            arguments = listOf(navArgument("produtoId") { type = NavType.IntType })
+        ) {backStackEntry ->
             onBottomBarVisibleChanged(false)
-            onTopBarVisibleChanged(true)
-            TelaInformacoesProdutoScreen(navController = navController)
+            TelaInformacoesProdutoScreen(
+                navController = navController,
+                idProduto = backStackEntry.arguments?.getInt("produtoId") ?: 0
+//                idProduto = 1
+            )
         }
     }
 }

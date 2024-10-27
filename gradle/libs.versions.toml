@@ -14,6 +14,7 @@ appcompat = "1.6.1"
 material = "1.10.0"
 activity = "1.9.1"
 constraintlayout = "2.1.4"
+composeMaterial3 = "1.0.0-alpha27"
 #viewModel = "2.8.6"
 
 [libraries]
@@ -37,6 +38,7 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+androidx-compose-material3 = { group = "androidx.wear.compose", name = "compose-material3", version.ref = "composeMaterial3" }
 #viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "viewModel" }
 
 [plugins]

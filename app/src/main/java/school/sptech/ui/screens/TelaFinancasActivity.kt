@@ -4,33 +4,28 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import formatarDecimal
+import getMonthInt
 import school.sptech.R
 import school.sptech.Routes
-import school.sptech.data.model.CategoriaDespesa
 import school.sptech.data.model.Despesa
+import school.sptech.preferencesHelper
 import school.sptech.ui.components.Background
 import school.sptech.ui.components.CardDespesa
 import school.sptech.ui.components.CardKpi
@@ -39,7 +34,11 @@ import school.sptech.ui.components.TextoButtonMedium
 import school.sptech.ui.components.TituloLarge
 import school.sptech.ui.components.TopBarComSelecaoData
 import school.sptech.ui.theme.*
+import school.sptech.ui.viewModel.DespesaViewModel
 import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.TextStyle
+import java.util.Locale
 
 class TelaFinancasActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,33 +53,32 @@ class TelaFinancasActivity : ComponentActivity() {
 }
 
 @Composable
-fun TelaFinancas(navController: NavController = rememberNavController()) {
-    val despesas = remember { mutableStateListOf<Despesa>() }
+fun TelaFinancas(
+    despesaViewModel: DespesaViewModel = viewModel(),
+    navController: NavController = rememberNavController()
+) {
     val receitas = remember { mutableStateOf(3669.91) }
     val despesasTotais = remember { mutableStateOf(11080.00) }
     val faturamento = remember { mutableStateOf(14749.91) }
     val comissoes = remember { mutableStateOf(8000.00) }
-    var mesSelecionado by remember { mutableStateOf("Setembro") }
-    var anoSelecionado by remember { mutableStateOf(2024) }
+    var mesSelecionado by remember {
+        mutableStateOf(
+            LocalDate.now().month.getDisplayName(
+                TextStyle.FULL,
+                Locale.getDefault()
+            ).replaceFirstChar {
+                if (it.isLowerCase()) it.titlecase(
+                    Locale.getDefault()
+                ) else it.toString()
+            }
+        )
+    }
+    var anoSelecionado by remember { mutableStateOf(LocalDate.now().year) }
     var mostrarSeletorData by remember { mutableStateOf(false) }
+    val despesas = despesaViewModel.listaDespesas
 
     LaunchedEffect(Unit) {
-        despesas.addAll(
-            listOf(
-                Despesa(
-                    nome = "Despesa 1",
-                    valor = "R$ 150,00",
-                    dtCriacao = LocalDate.parse("2024-09-01"),
-                    categoriaDespesa = CategoriaDespesa(nome = "Categoria A")
-                ),
-                Despesa(
-                    nome = "Despesa 2",
-                    valor = "R$ 300,00",
-                    dtCriacao = LocalDate.parse("2024-09-15"),
-                    categoriaDespesa = CategoriaDespesa(nome = "Categoria B")
-                )
-            )
-        )
+        despesaViewModel.getDespesas()
     }
 
     if (mostrarSeletorData) {
@@ -92,6 +90,8 @@ fun TelaFinancas(navController: NavController = rememberNavController()) {
                 mesSelecionado = mes
                 anoSelecionado = ano
                 mostrarSeletorData = false
+
+                despesaViewModel.atualizarDespesas(anoSelecionado, getMonthInt(mesSelecionado)?.value ?: 0)
             }
         )
     }
@@ -158,7 +158,11 @@ fun ResumoFinanceiro(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(0.5f)) {
-                CardKpi("Total em Receitas", "R$ + ${formatarDecimal(receitas.toFloat())}", "VERDE")
+                CardKpi(
+                    "Total em Receitas",
+                    "R$ + ${formatarDecimal(receitas.toFloat())}",
+                    "AZUL"
+                )
             }
 
             Spacer(modifier = Modifier.width(8.dp))
@@ -177,9 +181,9 @@ fun ResumoFinanceiro(
         ) {
             Column(modifier = Modifier.weight(0.4f)) {
                 CardKpi(
-                    "Total em Faturamento",
+                    "Total em Lucro",
                     "R$ + ${formatarDecimal(faturamento.toFloat())}",
-                    "AZUL"
+                    "VERDE"
                 )
             }
 
@@ -212,10 +216,10 @@ fun ListaDespesas(despesas: List<Despesa>, corTexto: Color, adicionarDespesa: (D
                 onClick = {
                     adicionarDespesa(
                         Despesa(
-                            nome ="Nova Despesa",
-                            valor = "R$ 100,00",
-                            dtCriacao = LocalDate.parse("2024-10-01"),
-                            categoriaDespesa = CategoriaDespesa(nome = "Categoria C")
+                            nome = "Nova Despesa",
+                            valor = "100.00",
+                            dtCriacao = "2024-10-01",
+                            categoriaDespesaNome = "Categoria C"
                         )
                     )
                 },
