@@ -15,24 +15,43 @@ class MovimentacaoValidadeViewModel : ViewModel() {
     private val movimentacaoValidadeService:MovimentacaoValidadeService
     var deuErro by mutableStateOf(false)
     var erro by mutableStateOf("")
-    private val empresaId = preferencesHelper.getIdEmpresa()
-    var qtdProdutosSemEstoque by mutableStateOf(0)
-    var qtdProdutosEstoqueBaixo by mutableStateOf(0)
-    var qtdProdutosEstoqueAlto by mutableStateOf(0)
-    var qtdProdutosRepostosNoDia by mutableStateOf(0)
+    private var qtdProdutosSemEstoque by mutableStateOf(0)
+    private var qtdProdutosEstoqueBaixo by mutableStateOf(0)
+    private var qtdProdutosEstoqueAlto by mutableStateOf(0)
+    private var qtdProdutosRepostosNoDia by mutableStateOf(0)
 
     init {
         movimentacaoValidadeService = RetrofitService.getClientMovimentacaoValidade()
     }
 
-    fun getKpisEstoque(){
-        getProdutosSemEstoque()
-        getProdutosEstoqueBaixo()
-        getProdutosEstoqueAlto()
-        getProdutosRepostosNoDia()
+    fun getKpisEstoque(empresaId: Int){
+        getProdutosSemEstoque(empresaId)
+        getProdutosEstoqueBaixo(empresaId)
+        getProdutosEstoqueAlto(empresaId)
+        getProdutosRepostosNoDia(empresaId)
     }
 
-    fun getProdutosSemEstoque() {
+    fun getQuantidadeProdutosSemEstoque(empresaId: Int): Int {
+        getProdutosSemEstoque(empresaId)
+        return qtdProdutosSemEstoque
+    }
+
+    fun getQuantidadeProdutosEstoqueBaixo(empresaId: Int): Int {
+        getProdutosEstoqueBaixo(empresaId)
+        return qtdProdutosEstoqueBaixo
+    }
+
+    fun getQuantidadeProdutosEstoqueAlto(empresaId: Int): Int {
+        getProdutosEstoqueAlto(empresaId)
+        return qtdProdutosEstoqueAlto
+    }
+
+    fun getQuantidadeProdutosRepostosNoDia(empresaId: Int): Int {
+        getProdutosRepostosNoDia(empresaId)
+        return qtdProdutosRepostosNoDia
+    }
+
+    private fun getProdutosSemEstoque(empresaId:Int) {
         GlobalScope.launch {
             try {
                 val response = movimentacaoValidadeService.getProdutosSemEstoque(empresaId)
@@ -52,7 +71,7 @@ class MovimentacaoValidadeViewModel : ViewModel() {
         }
     }
 
-    fun getProdutosEstoqueBaixo() {
+    fun getProdutosEstoqueBaixo(empresaId: Int) {
         GlobalScope.launch {
             try {
                 val response = movimentacaoValidadeService.getProdutosEstoqueAbaixo(empresaId)
@@ -72,7 +91,7 @@ class MovimentacaoValidadeViewModel : ViewModel() {
         }
     }
 
-    fun getProdutosEstoqueAlto() {
+    fun getProdutosEstoqueAlto(empresaId: Int) {
         GlobalScope.launch {
             try {
                 val response = movimentacaoValidadeService.getProdutosEstoqueAlto(empresaId)
@@ -92,7 +111,7 @@ class MovimentacaoValidadeViewModel : ViewModel() {
         }
     }
 
-    fun getProdutosRepostosNoDia() {
+    fun getProdutosRepostosNoDia(empresaId: Int) {
         GlobalScope.launch {
             try {
                 val response = movimentacaoValidadeService.getProdutosRepostosNoDia(empresaId)

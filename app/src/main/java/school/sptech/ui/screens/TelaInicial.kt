@@ -70,18 +70,14 @@ fun TelaInicio(
     usuarioViewModel: UsuarioViewModel = viewModel(),
     produtoViewModel: ProdutoViewModel = viewModel(),
     movimentacaoValidadeViewModel: MovimentacaoValidadeViewModel = viewModel(),
-    validadeViewModel: ValidadeViewModel = viewModel(),
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
-    var listaProdutos = produtoViewModel.getProdutos(preferencesHelper.getIdEmpresa())
-
-
     LaunchedEffect(Unit) {
         // Inicializa o usuário e a empresa
         usuarioViewModel.getFuncionario(preferencesHelper.getIdUsuario())
         produtoViewModel.getProdutos(preferencesHelper.getIdEmpresa())
-        movimentacaoValidadeViewModel.getKpisEstoque()
+//        movimentacaoValidadeViewModel.getKpisEstoque(preferencesHelper.getIdEmpresa())
     }
 
     val idEmpresa = usuarioViewModel.usuario.empresa?.id ?: preferencesHelper.getIdEmpresa()
@@ -100,18 +96,16 @@ fun TelaInicio(
                 Spacer(modifier = Modifier.size(21.dp))
 
                 BoxKpisEstoque(
-                    qtdProdutosEstoqueAlto = movimentacaoValidadeViewModel.qtdProdutosEstoqueAlto
-                        ?: 0,
-                    qtdProdutosSemEstoque = movimentacaoValidadeViewModel.qtdProdutosSemEstoque
-                        ?: 0,
-                    qtdProdutosRepostosNoDia = movimentacaoValidadeViewModel.qtdProdutosRepostosNoDia
-                        ?: 0,
-                    qtdProdutosEstoqueBaixo = movimentacaoValidadeViewModel.qtdProdutosEstoqueBaixo
-                        ?: 0,
+                    qtdProdutosEstoqueAlto = movimentacaoValidadeViewModel.getQuantidadeProdutosEstoqueAlto(idEmpresa),
+                    qtdProdutosSemEstoque = movimentacaoValidadeViewModel.getQuantidadeProdutosSemEstoque(idEmpresa),
+                    qtdProdutosRepostosNoDia = movimentacaoValidadeViewModel.getQuantidadeProdutosRepostosNoDia(idEmpresa),
+                    qtdProdutosEstoqueBaixo = movimentacaoValidadeViewModel.getQuantidadeProdutosSemEstoque(idEmpresa)
                 )
+
                 Spacer(modifier = Modifier.size(21.dp))
+
                 BoxProdutos(
-                    produtos = listaProdutos,
+                    produtos = produtoViewModel.getListaProdutos(),
                     titulo = stringResource(id = R.string.produtosComQuantidadeBaixa),
                     isTelaInicio = true,
                     navController = navController

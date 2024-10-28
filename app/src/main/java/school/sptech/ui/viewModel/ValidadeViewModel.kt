@@ -82,12 +82,16 @@ class ValidadeViewModel : ViewModel() {
     }
 
     fun getTotalEstoqueProduto(produtoId: Int): Int {
-        this.produtoId = produtoId
-        getTotalEstoqueProduto()
+//        this.produtoId = produtoId
+
+//        if(quantidadeTotalEstoque == 0){
+//            getTotalEstoqueProdutoById(produtoId)
+//        }
+
         return quantidadeTotalEstoque
     }
 
-    private fun getTotalEstoqueProduto() {
+    private fun getTotalEstoqueProdutoById(produtoId: Int) {
         GlobalScope.launch {
             try {
                 val response = movimentacaoValidadeService.getTotalEstoque(produtoId)
@@ -107,13 +111,11 @@ class ValidadeViewModel : ViewModel() {
         }
     }
 
-    fun getQuantidadeEstoqueValidade(validadeId: Int): Int {
-        validade.id = validadeId
-        getQuantidadeEstoquePorValidade()
+    fun getQuantidadeEstoqueDaValidade(): Int {
         return quantidadeEstoqueValidade
     }
 
-    private fun getQuantidadeEstoquePorValidade(){
+    fun getQuantidadeEstoquePorValidade(validadeId: Int){
         GlobalScope.launch {
             try {
                 val response = movimentacaoValidadeService.getQuantidadePorValidade(validadeId = validade.id!!)

@@ -15,17 +15,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import formatarData
 import formatarDataDatePicker
 import getColorTextEstoque
 import getEnabledButtonRetirarEstoque
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import school.sptech.R
@@ -47,7 +44,6 @@ import school.sptech.ui.components.RetirarProductModal
 import school.sptech.ui.components.TopBarInformacoesProduto
 import school.sptech.ui.theme.CalencareAppTheme
 import school.sptech.ui.theme.RoxoNubank
-import school.sptech.ui.theme.Vermelho
 import school.sptech.ui.theme.fontFamilyPoppins
 import school.sptech.ui.viewModel.ProdutoViewModel
 import school.sptech.ui.viewModel.ReporProdutoViewModel
@@ -161,7 +157,7 @@ fun TelaInformacoesProdutoScreen(
 
                     validadeViewModel.validade = validade!!
                     reporProdutoViewModel.quantidadeEstoqueData.value =
-                        validadeViewModel.getQuantidadeEstoqueValidade(validade.id!!)
+                        validadeViewModel.getQuantidadeEstoqueDaValidade()
 
                     reporProdutoViewModel.setQuantidadeMaxima(0)
 
@@ -255,7 +251,7 @@ fun TelaInformacoesProdutoScreen(
                     }
                     validadeViewModel.validade = validade!!
 
-                    val qtdMaxima = validadeViewModel.getQuantidadeEstoqueValidade(validade.id!!)
+                    val qtdMaxima = validadeViewModel.getQuantidadeEstoqueDaValidade()
 
                     reporProdutoViewModel.quantidadeEstoqueData.value = qtdMaxima
                     reporProdutoViewModel.setQuantidadeMaxima(qtdMaxima)
