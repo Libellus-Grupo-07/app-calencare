@@ -210,8 +210,7 @@ fun TopBarEstoque(navController: NavController, modifier: Modifier = Modifier) {
                 focusedLeadingIconColor = RoxoNubank
             ),
             singleLine = true,
-
-            )
+        )
 
         Row(
             modifier = modifier,
@@ -226,7 +225,6 @@ fun TopBarEstoque(navController: NavController, modifier: Modifier = Modifier) {
                     Icons.Rounded.Add,
                     "Ícone de Adicionar",
                     modifier = modifier.size(64.dp)
-
                 )
             }
 

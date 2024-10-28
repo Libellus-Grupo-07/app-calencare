@@ -111,15 +111,15 @@ fun LoginScreen(
                 painter = painterResource(id = R.mipmap.imagem_logo_calencare),
                 contentDescription = "Logo",
                 modifier = Modifier
-                    .width(180.dp)
-                    .padding(16.dp)
+                    .width(220.dp)
+                    .padding(12.dp)
             )
 
             // Imagem de login
             Image(
                 painter = painterResource(id = R.mipmap.imagem_login),
                 contentDescription = "Imagem",
-                modifier = Modifier.size(230.dp)
+                modifier = Modifier.size(390.dp)
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -127,7 +127,7 @@ fun LoginScreen(
             // Título "Entrar"
             Text(
                 text = stringResource(R.string.entrar),
-                fontSize = 24.sp,
+                fontSize = 30.sp,
                 fontWeight = FontWeight.Bold,
                 color = Preto
             )
@@ -179,9 +179,9 @@ fun LoginScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(4.dp))
+          //Spacer(modifier = Modifier.height(4.dp))
 
-            Row(
+            /*Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
@@ -194,9 +194,9 @@ fun LoginScreen(
                         fontWeight = FontWeight.Normal
                     )
                 }
-            }
+            }*/
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(15.dp))
 
             // Botão "Entrar"
             Button(
@@ -239,61 +239,6 @@ fun LoginScreen(
             LaunchedEffect("login"){
                 delay(5000)
                 deuRuim = false
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // "OU"
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                HorizontalDivider(
-                    modifier = Modifier.weight(1f),
-                    thickness = 1.dp,
-                    color = Color.Gray
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = stringResource(R.string.ou),
-                    color = Cinza,
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 12.sp,
-                    fontFamily = fontFamilyPoppins,
-                    letterSpacing = letterSpacingPrincipal
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                HorizontalDivider(
-                    modifier = Modifier.weight(1f),
-                    thickness = 1.dp,
-                    color = Color.Gray
-                )
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Botão "Continuar com Google"
-            OutlinedButton(
-                onClick = { /* Ação de login com Google */ },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(54.dp),
-                colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = Color.Transparent,
-                    contentColor = Cinza,
-
-                    ),
-                shape = RoundedCornerShape(100.dp),
-                border = BorderStroke(
-                    width = 1.dp,
-                    color = Cinza
-                )
-            ) {
-                Image(
-                    painter = painterResource(id = R.mipmap.continuar_com_google1),
-                    contentDescription = "Google",
-                    modifier = modifier.fillMaxSize(0.75f),
-                    alignment = Alignment.Center
-                )
             }
         }
     }
