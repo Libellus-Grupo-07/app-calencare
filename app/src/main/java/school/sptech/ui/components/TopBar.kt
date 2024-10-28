@@ -152,6 +152,8 @@ fun TopBarVoltar(navController: NavController, titulo: String) {
 @Composable
 fun TopBarEstoque(navController: NavController, modifier: Modifier = Modifier) {
     var text by remember { mutableStateOf("") }
+    var selectedCategories by remember { mutableStateOf(listOf<String>()) }
+    var showFilterModal by remember { mutableStateOf(false) }
 
     Row(
         modifier = modifier
@@ -210,8 +212,7 @@ fun TopBarEstoque(navController: NavController, modifier: Modifier = Modifier) {
                 focusedLeadingIconColor = RoxoNubank
             ),
             singleLine = true,
-
-            )
+        )
 
         Row(
             modifier = modifier,
@@ -226,12 +227,11 @@ fun TopBarEstoque(navController: NavController, modifier: Modifier = Modifier) {
                     Icons.Rounded.Add,
                     "Ícone de Adicionar",
                     modifier = modifier.size(64.dp)
-
                 )
             }
 
             IconButton(
-                onClick = { /*TODO*/ },
+                onClick = { showFilterModal = true },
                 colors = IconButtonDefaults.iconButtonColors(
                     contentColor = Preto
                 )
@@ -244,6 +244,21 @@ fun TopBarEstoque(navController: NavController, modifier: Modifier = Modifier) {
             }
         }
     }
+/*
+    if (showFilterModal) {
+        FilterModal(
+            selectedCategories = selectedCategories,
+            onCategorySelected = { category ->
+                selectedCategories = selectedCategories.toMutableList().apply {
+                    if (contains(category)) remove(category) else add(category)
+                }
+            },
+            onDismiss = { showFilterModal = false },
+            onConfirm = { showFilterModal = false }
+        )
+    }
+    */
+
 }
 
 @Composable
