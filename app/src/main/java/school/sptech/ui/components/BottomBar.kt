@@ -22,6 +22,7 @@ import school.sptech.navigation.NavBar
 import school.sptech.ui.theme.Branco
 import school.sptech.ui.theme.Cinza
 import school.sptech.ui.theme.RoxoNubank
+import school.sptech.ui.theme.RoxoNubankOpacidade15
 import school.sptech.ui.theme.fontFamilyPoppins
 
 @Composable
@@ -80,7 +81,7 @@ fun BottomBar(
                     unselectedTextColor = Cinza,
                     selectedIconColor = RoxoNubank,
                     selectedTextColor = RoxoNubank,
-                    indicatorColor = Color.Transparent,
+                    indicatorColor = RoxoNubankOpacidade15,
 
                 )
             )
