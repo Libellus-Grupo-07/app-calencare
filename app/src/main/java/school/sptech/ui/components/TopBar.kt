@@ -298,7 +298,7 @@ fun TopBarInformacoesProduto(onClickVoltar: () -> Unit, onClickSalvar: () -> Uni
         )
 
 
-        IconButton(onClick = { /*TODO*/ }) {
+        IconButton(onClick = onClickSalvar) {
             Icon(
                 painter = painterResource(id = R.mipmap.check),
                 contentDescription = "Check",

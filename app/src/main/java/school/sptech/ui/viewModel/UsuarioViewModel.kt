@@ -21,12 +21,12 @@ class UsuarioViewModel : ViewModel() {
         usuarioService = RetrofitService.getClientFuncionario()
     }
 
-    fun logar(){
+    fun logar() {
         GlobalScope.launch {
             try {
                 var response = usuarioService.login(usuario)
 
-                if(response.isSuccessful && response.body() != null){
+                if (response.isSuccessful && response.body() != null) {
                     val usuarioResponse = response.body()!!
                     usuario.id = usuarioResponse.userId
                     deuErro = false
@@ -34,9 +34,11 @@ class UsuarioViewModel : ViewModel() {
                 } else {
                     Log.e("api", "Erro ao tentar logar ${response.errorBody()?.string()}")
                     deuErro = true
-                    erro = if(response.code().equals(401)) "Email e/ou senha incorretos" else "Erro desconhecido"
+                    erro = if (response.code()
+                            .equals(401)
+                    ) "Email e/ou senha incorretos" else "Erro desconhecido"
                 }
-            } catch (ex: Exception){
+            } catch (ex: Exception) {
                 Log.e("api", "Erro ao tentar logar", ex)
                 deuErro = true
                 erro = ex.message ?: "Erro desconhecido"
@@ -44,29 +46,29 @@ class UsuarioViewModel : ViewModel() {
         }
     }
 
-    fun getFuncionario(id: Int){
-        if(usuario.id == null){
-            GlobalScope.launch {
-                try {
-                    val response = usuarioService.getFuncionario(id)
+    fun getFuncionario(id: Int) {
+        GlobalScope.launch {
+            try {
+                val response = usuarioService.getFuncionario(id)
 
-                    if(response.isSuccessful){
-                        val a = response.body()!!
-                        erro = a.nome?:""
-                        usuario = response.body()!!
-                        deuErro = false
-                    } else {
-                        Log.e("api", "Erro ao tentar buscar funcionario ${response.errorBody()?.string()}")
-                        erro = response.errorBody()?.string() ?: "Erro desconhecido"
-                        deuErro = true
-                    }
-                } catch (ex: Exception){
-                    Log.e("api", "Erro ao tentar buscar funcionario", ex)
+                if (response.isSuccessful) {
+                    val a = response.body()!!
+                    erro = a.nome ?: ""
+                    usuario = response.body()!!
+                    deuErro = false
+                } else {
+                    Log.e(
+                        "api",
+                        "Erro ao tentar buscar funcionario ${response.errorBody()?.string()}"
+                    )
+                    erro = response.errorBody()?.string() ?: "Erro desconhecido"
                     deuErro = true
-                    erro = ex.message ?: "Erro desconhecido"
                 }
+            } catch (ex: Exception) {
+                Log.e("api", "Erro ao tentar buscar funcionario", ex)
+                deuErro = true
+                erro = ex.message ?: "Erro desconhecido"
             }
         }
-
     }
 }

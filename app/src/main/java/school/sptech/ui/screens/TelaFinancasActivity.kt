@@ -22,10 +22,12 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import formatarDecimal
 import getMonthInt
+import kotlinx.coroutines.delay
 import school.sptech.R
 import school.sptech.Routes
 import school.sptech.data.model.Despesa
 import school.sptech.preferencesHelper
+import school.sptech.ui.components.AlertError
 import school.sptech.ui.components.Background
 import school.sptech.ui.components.CardDespesa
 import school.sptech.ui.components.CardKpi
@@ -57,6 +59,7 @@ fun TelaFinancas(
     despesaViewModel: DespesaViewModel = viewModel(),
     navController: NavController = rememberNavController()
 ) {
+
     val receitas = remember { mutableStateOf(3669.91) }
     val despesasTotais = remember { mutableStateOf(11080.00) }
     val faturamento = remember { mutableStateOf(14749.91) }
@@ -73,13 +76,26 @@ fun TelaFinancas(
             }
         )
     }
+
     var anoSelecionado by remember { mutableStateOf(LocalDate.now().year) }
     var mostrarSeletorData by remember { mutableStateOf(false) }
-    val despesas = despesaViewModel.listaDespesas
+    val idEmpresa = preferencesHelper.getIdEmpresa()
+
+    var deuErro by remember { mutableStateOf(false) }
+    var erro by remember { mutableStateOf("") }
+    var despesas = despesaViewModel.listaDespesas
 
     LaunchedEffect(Unit) {
-        despesaViewModel.getDespesas()
+        despesaViewModel.getDespesas(
+            empresaId = idEmpresa,
+            ano = anoSelecionado,
+            mes = getMonthInt(mesSelecionado)?.value ?: 0
+        )
     }
+
+    deuErro = despesaViewModel.deuErro
+    erro = despesaViewModel.erro
+
 
     if (mostrarSeletorData) {
         SeletorData(
@@ -91,7 +107,11 @@ fun TelaFinancas(
                 anoSelecionado = ano
                 mostrarSeletorData = false
 
-                despesaViewModel.atualizarDespesas(anoSelecionado, getMonthInt(mesSelecionado)?.value ?: 0)
+                despesaViewModel.getDespesas(
+                    empresaId = idEmpresa,
+                    ano = anoSelecionado,
+                    mes = getMonthInt(mesSelecionado)?.value ?: 0
+                )
             }
         )
     }
@@ -108,6 +128,15 @@ fun TelaFinancas(
         corTitulo = Preto,
         adicionarDespesa = { navController.navigate(Routes.AdicionarDespesa.route) }
     )
+
+    if(despesaViewModel.deuErro){
+        AlertError(msg = despesaViewModel.erro)
+
+        LaunchedEffect("error") {
+            delay(6000)
+            despesaViewModel.deuErro = false
+        }
+    }
 }
 
 @Composable
@@ -123,6 +152,8 @@ fun ConteudoTelaFinancas(
     corTitulo: Color,
     adicionarDespesa: (Despesa) -> Unit
 ) {
+
+
     Background()
     Column(
         modifier = Modifier
@@ -136,6 +167,7 @@ fun ConteudoTelaFinancas(
             anoSelecionado,
             aoClicarSeletorData
         )
+
         ResumoFinanceiro(receitas, despesasTotais, faturamento, comissoes)
         Spacer(modifier = Modifier.height(16.dp))
         ListaDespesas(despesas, corTitulo, adicionarDespesa)

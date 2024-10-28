@@ -12,14 +12,17 @@ import school.sptech.data.model.Validade
 import school.sptech.data.service.ValidadeService
 import school.sptech.data.service.MovimentacaoValidadeService
 import school.sptech.network.RetrofitService
+import java.time.LocalDateTime
 
 class ValidadeViewModel : ViewModel() {
     private val validadeService: ValidadeService;
     private val movimentacaoValidadeService: MovimentacaoValidadeService;
 
-    private var listaValidades = mutableStateListOf<Validade>()
+    var listaValidades = mutableStateListOf<Validade>()
     private var produtoId by mutableStateOf(0)
-    var validade by mutableStateOf(Validade())
+    var validade by mutableStateOf(Validade(
+        dtCriacao = LocalDateTime.now().toString()
+    ))
     var movimentacaoValidade by mutableStateOf(MovimentacaoValidade())
     var quantidadeEstoqueValidade by mutableStateOf(0)
     var quantidadeTotalEstoque by mutableStateOf(0)
@@ -29,6 +32,26 @@ class ValidadeViewModel : ViewModel() {
     init {
         validadeService = RetrofitService.getClientValidade()
         movimentacaoValidadeService = RetrofitService.getClientMovimentacaoValidade()
+    }
+
+    fun adicionarValidade(){
+        GlobalScope.launch {
+            try {
+                val response = validadeService.adicionarValidade(validade)
+
+                if(response.isSuccessful){
+                    deuErro = false
+                    erro = "Validade cadastrada com sucesso"
+                    validade = Validade()
+                } else {
+                    deuErro = true
+                    erro = response.errorBody()?.string() ?: "Erro desconhecido"
+                }
+            } catch (ex: Exception){
+                deuErro = true
+                erro = ex.message ?: "Erro desconhecido"
+            }
+        }
     }
 
     fun getValidades(produtoId: Int): List<Validade> {
@@ -46,7 +69,6 @@ class ValidadeViewModel : ViewModel() {
                     listaValidades.clear()
                     listaValidades.addAll(response.body() ?: listOf())
                     deuErro = false
-                    erro = "Deveria dar certo"
                 } else {
                     deuErro = true
                     erro = response.errorBody()?.string() ?: "Erro desconhecido"
@@ -72,7 +94,6 @@ class ValidadeViewModel : ViewModel() {
                 if (response.isSuccessful) {
                     quantidadeTotalEstoque = response.body()!!
                     deuErro = false
-                    erro = "Deveria dar certo"
                 } else {
                     deuErro = true
                     erro = response.errorBody()?.string() ?: "Erro desconhecido"

@@ -44,11 +44,8 @@ fun TelaEstoque(
     produtoViewModel: ProdutoViewModel = viewModel(),
     navController: NavController
 ) {
-    LaunchedEffect(Unit) {
-        produtoViewModel.getProdutos(preferencesHelper.getIdEmpresa())
-    }
 
-    val listaProdutos = produtoViewModel.getListaProdutos()
+    val listaProdutos = produtoViewModel.getProdutos(preferencesHelper.getIdEmpresa())
 
     Background()
 

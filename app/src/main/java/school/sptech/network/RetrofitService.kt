@@ -1,23 +1,20 @@
 package school.sptech.network
 
-import android.content.Context
-import androidx.compose.ui.res.stringResource
-import androidx.core.content.ContextCompat.getString
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import school.sptech.R
 import school.sptech.data.service.CategoriaDespesaService
 import school.sptech.data.service.CategoriaProdutoService
 import school.sptech.data.service.DespesaService
 import school.sptech.data.service.EmpresaService
 import school.sptech.data.service.EnderecoService
+import school.sptech.data.service.FinancasService
 import school.sptech.data.service.FuncionarioService
 import school.sptech.data.service.MovimentacaoValidadeService
 import school.sptech.data.service.ProdutoService
 import school.sptech.data.service.ValidadeService
 
 object RetrofitService{
-    private val ipAws = "50.19.177.178"
+    private val ipAws = "54.88.201.60"
     private val BASE_URL_API = "http://$ipAws/"
 //    private val BASE_URL_API = "https://6715378f33bc2bfe40b9caae.mockapi.io/api/v1/"
 
@@ -106,6 +103,16 @@ object RetrofitService{
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(EnderecoService::class.java)
+
+        return client
+    }
+
+    fun getClientFinancas(): FinancasService {
+        val client = Retrofit.Builder()
+            .baseUrl(BASE_URL_API)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(FinancasService::class.java)
 
         return client
     }

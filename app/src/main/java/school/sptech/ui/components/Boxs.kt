@@ -65,7 +65,7 @@ fun BoxKpisEstoque(
                 Column(modifier = modifier.weight(0.4f)) {
                     CardKpi(
                         titulo = stringResource(id = R.string.produtoSemEstoque),
-                        valor = "$qtdProdutosSemEstoque produto",
+                        valor = "$qtdProdutosSemEstoque produtos",
                         cor = "Vermelho"
                     )
                 }
@@ -133,9 +133,9 @@ fun BoxProdutos(
                 )
             } else {
                 LazyVerticalGrid(
-                    columns = GridCells.FixedSize(166.dp),
+                    columns = GridCells.Fixed(2),
                     modifier = modifier,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(produtos) { produto ->

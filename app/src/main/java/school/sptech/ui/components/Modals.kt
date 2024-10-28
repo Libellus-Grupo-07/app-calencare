@@ -1,12 +1,14 @@
 package school.sptech.ui.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -14,24 +16,25 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.FloatingActionButtonElevation
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
@@ -45,28 +48,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.zIndex
 import formatarDataDatePicker
 import getColorTextEstoque
 import kotlinx.coroutines.launch
 import school.sptech.R
 import school.sptech.ui.theme.Branco
 import school.sptech.ui.theme.Cinza
-import school.sptech.ui.theme.CinzaOpacidade35
-import school.sptech.ui.theme.CinzaOpacidade7
 import school.sptech.ui.theme.Preto
 import school.sptech.ui.theme.PretoOpacidade25
 import school.sptech.ui.theme.RoxoNubank
 import school.sptech.ui.theme.Verde
 import school.sptech.ui.theme.VerdeOpacidade15
 import school.sptech.ui.theme.Vermelho
+import school.sptech.ui.theme.VermelhoOpacidade15
 import school.sptech.ui.theme.fontFamilyPoppins
 import school.sptech.ui.theme.letterSpacingPrincipal
 import school.sptech.ui.viewModel.ReporProdutoViewModel
-import school.sptech.ui.viewModel.ValidadeViewModel
 
 @Composable
 fun CustomMonthYearPickerDialog(
@@ -229,6 +232,7 @@ fun ProductModal(
     produto: String,
     quantidadeEstoque: Int,
     onDateSelected: (String?) -> Unit = {},
+    onClickAdicionarData: () -> Unit = {},
     onQuantidadeChanged: (Int?) -> Unit = {},
     onDismiss: () -> Unit,
     onConfirm: (Int) -> Unit,
@@ -283,8 +287,8 @@ fun ProductModal(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-//                if(isRepor){
-//                    Row(modifier = Modifier.fillMaxWidth(), Arrangement.spacedBy(8.dp)) {
+                if (isRepor) {
+                    Row(modifier = Modifier.fillMaxWidth(), Arrangement.spacedBy(8.dp)) {
 //                        LabelInput(label = stringResource(R.string.possui_validade))
 //                        Checkbox(
 //                            modifier = Modifier.size(24.dp),
@@ -301,20 +305,22 @@ fun ProductModal(
 //                                disabledIndeterminateColor = CinzaOpacidade7
 //                            )
 //                        )
-//                    }
-//                }
-
-                if (datesFromBackend.isNotEmpty() && datesFromBackend[0].isNotEmpty()) {
-                    SelectableDatesRow(
-                        dates = datesFromBackend,
-                        onDateSelected = {
-                            data = it
-                            onDateSelected(it)
-                        },
-                        qtdEstoqueData = viewModel.quantidadeEstoqueData.value
-//                        quantidadeEstoque = viewModel.getQuantidadeMaxima()
-                    )
+                    }
                 }
+
+//                if (datesFromBackend.isNotEmpty() && datesFromBackend[0].isNotEmpty()) {
+                SelectableDatesRow(
+                    dates = datesFromBackend,
+                    onDateSelected = {
+                        data = it
+                        onDateSelected(it)
+                    },
+                    onClickAdicionarData = onClickAdicionarData,
+                    isRepor = isRepor,
+                    qtdEstoqueData = viewModel.quantidadeEstoqueData.value
+//                        quantidadeEstoque = viewModel.getQuantidadeMaxima()
+                )
+//                }
 
                 Spacer(modifier = Modifier.height(12.dp))
                 LabelInput(label = "Quantidade")
@@ -391,6 +397,7 @@ fun ReporProductModal(
     onDismiss: () -> Unit,
     onDateSelected: (String?) -> Unit = {},
     onQuantidadeChanged: (Int?) -> Unit = {},
+    onClickAdicionarData: () -> Unit = {},
     onConfirm: (Int) -> Unit,
     viewModel: ReporProdutoViewModel = ReporProdutoViewModel(),
     datesFromBackend: List<String>
@@ -402,9 +409,10 @@ fun ReporProductModal(
         produto = produto,
         quantidadeEstoque = quantidadeEstoque,
         onConfirm = onConfirm,
+        onDismiss = onDismiss,
+        onClickAdicionarData = onClickAdicionarData,
         onDateSelected = onDateSelected,
         onQuantidadeChanged = onQuantidadeChanged,
-        onDismiss = onDismiss,
         viewModel = viewModel,
         datesFromBackend = datesFromBackend,
         isRepor = true
@@ -483,7 +491,7 @@ fun ModalConfirmarSair(
         },
         shape = RoundedCornerShape(20.dp),
         containerColor = Branco,
-        titleContentColor =  Preto,
+        titleContentColor = Preto,
         properties = DialogProperties(
             dismissOnBackPress = true,
             dismissOnClickOutside = true
@@ -496,28 +504,99 @@ fun AlertError(msg: String) {
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    ExtendedFloatingActionButton(
-        text = { Text("Deu merda!!! erro => $msg") },
-        icon = { Icon(Icons.Filled.Clear, contentDescription = "") },
-        onClick = {
-            scope.launch {
-                val result = snackbarHostState
-                    .showSnackbar(
-                        message = "Snackbar",
-                        actionLabel = "Action",
-                        // Defaults to SnackbarDuration.Short
-                        duration = SnackbarDuration.Indefinite
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .zIndex(1f)
+            .padding(top = 64.dp),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        ExtendedFloatingActionButton(
+            modifier = Modifier
+                .border(
+                    width = 1.dp,
+                    color = VermelhoOpacidade15,
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .fillMaxWidth(0.86f),
+            text = {
+                Text(
+                    text = if (msg.isEmpty()) "Ops! Houve um erro inesperado. Tente novamente mais tarde." else msg,
+                    color = Vermelho,
+                    fontFamily = fontFamilyPoppins,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = letterSpacingPrincipal,
+                    modifier = Modifier.padding(vertical = 15.dp, horizontal = 2.dp)
+                )
+            },
+            contentColor = Vermelho,
+            containerColor = Color(0xFFF1C5CF),
+            elevation = FloatingActionButtonDefaults.elevation(
+                defaultElevation = 24.dp,
+                pressedElevation = 24.dp,
+                hoveredElevation = 24.dp,
+                focusedElevation = 24.dp
+            ),
+            icon = {
+                Icon(
+                    painter = painterResource(id = R.mipmap.orangealert),
+                    contentDescription = "",
+                    modifier = Modifier.size(18.dp)
+                )
+            },
+            onClick = {
+                scope.launch {
+                    snackbarHostState.showSnackbar(
+                        message = "Erro!!! $msg",
+                        duration = SnackbarDuration.Short
                     )
-                when (result) {
-                    SnackbarResult.ActionPerformed -> {
-                        /* Handle snackbar action performed */
-                    }
-
-                    SnackbarResult.Dismissed -> {
-                        /* Handle snackbar dismissed */
-                    }
                 }
+            },
+        )
+    }
+}
+
+@Composable
+fun AlertSuccess(msg: String) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .zIndex(1f)
+            .padding(top = 64.dp),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        ExtendedFloatingActionButton(
+            shape = RoundedCornerShape(16.dp),
+            contentColor = Verde,
+            containerColor = Color(0xFFD8F1D2),
+            modifier = Modifier
+                .border(
+                    width = 1.dp,
+                    color = VerdeOpacidade15,
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .fillMaxWidth(0.86f),
+            elevation = FloatingActionButtonDefaults.elevation(
+                defaultElevation = 24.dp,
+                pressedElevation = 24.dp,
+                hoveredElevation = 24.dp,
+                focusedElevation = 24.dp
+            ),
+            text = {
+                Text(
+                    text = msg,
+                    color = Verde,
+                    fontFamily = fontFamilyPoppins,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = letterSpacingPrincipal
+                )
+            },
+            icon = { Icon(Icons.Filled.Check, contentDescription = "") },
+            onClick = {
             }
-        }
-    )
+        )
+    }
 }

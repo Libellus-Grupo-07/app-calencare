@@ -28,6 +28,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,12 +43,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import formatarData
+import formatarDataDatePicker
 import formatarDecimal
 import formatarValorMonetario
 import school.sptech.R
@@ -73,8 +75,8 @@ import school.sptech.ui.theme.Vermelho
 import school.sptech.ui.theme.VermelhoOpacidade15
 import school.sptech.ui.theme.fontFamilyPoppins
 import school.sptech.ui.theme.letterSpacingPrincipal
-import transformarEmLocalDate
-import java.time.LocalDate
+import school.sptech.ui.viewModel.ValidadeViewModel
+import transformarEmLocalDateTime
 
 @Composable
 fun CardKpi(titulo: String, valor: String, cor: String, modifier: Modifier = Modifier) {
@@ -124,6 +126,7 @@ fun CardKpi(titulo: String, valor: String, cor: String, modifier: Modifier = Mod
 
 @Composable
 fun CardProduto(
+    validadeViewModel: ValidadeViewModel = viewModel(),
     produto: Produto,
     isTelaInicio: Boolean,
     onClickCardProduto: () -> Unit,
@@ -131,7 +134,8 @@ fun CardProduto(
 ) {
     var exibirModalRepor by remember { mutableStateOf(false) }
     var exibirModalRetirar by remember { mutableStateOf(false) } // Controle do modal de retirada
-    val listaValidades = produto.validades?.map { it.dtValidade ?: "" } ?: listOf()
+    var exibirModalAdicionarData by remember { mutableStateOf(false) } // Controle do modal de retirada
+    var dateValue by remember { mutableStateOf(0L) }
 
     Row(
         modifier = modifier
@@ -146,7 +150,10 @@ fun CardProduto(
             )
             .background(Branco, shape = RoundedCornerShape(20.dp))
             .height(200.dp)
-            .clickable(onClick = onClickCardProduto)
+            .clickable(
+                onClick = onClickCardProduto
+
+            )
     ) {
         Box(
             modifier = Modifier
@@ -269,16 +276,29 @@ fun CardProduto(
                 }
             }
 
+
+            LaunchedEffect(Unit) {
+                produto.validades = validadeViewModel.getValidades(produto.id ?: 0)
+            }
+
             // Exibe o modal de reposição de produto
             if (exibirModalRepor) {
+                LaunchedEffect("exibirModalRepor") {
+                    validadeViewModel.getTotalEstoqueProduto(produto.id ?: 0)
+                }
+
+                produto.validades = validadeViewModel.getValidades(produto.id ?: 0)
+                produto.qtdEstoque = validadeViewModel.quantidadeTotalEstoque
+
                 ReporProductModal(
                     onDismiss = { exibirModalRepor = false },
                     produto = produto.nome ?: "",
                     quantidadeEstoque = produto.qtdEstoque ?: 0,
+                    onClickAdicionarData = { exibirModalAdicionarData = true },
                     onConfirm = {
                         exibirModalRepor = false
                     },
-                    datesFromBackend = listaValidades
+                    datesFromBackend = produto.validades!!.map { it.dtValidade ?: "" } ?: listOf()
                 )
             }
 
@@ -292,7 +312,35 @@ fun CardProduto(
                     onConfirm = {
                         exibirModalRetirar = false
                     },
-                    datesFromBackend = listaValidades
+                    datesFromBackend = produto.validades?.map { it.dtValidade ?: "" } ?: listOf()
+                )
+            }
+
+            if(exibirModalAdicionarData){
+                exibirModalRepor = false
+
+                DatePickerModal(
+                    dateSelected = dateValue,
+                    onDismiss = {
+                        exibirModalAdicionarData = false
+                        exibirModalRepor = true
+                    },
+                    onDateSelected = { date ->
+                        validadeViewModel.validade = validadeViewModel.validade.copy(idProduto = produto.id ?: 0)
+                        validadeViewModel.validade = validadeViewModel.validade.copy(
+                            dtValidade = transformarEmLocalDateTime(
+                                formatarDataDatePicker(
+                                    inputFormat = true,
+                                    data = date
+                                )
+                            ).toString()
+                        )
+
+                        validadeViewModel.adicionarValidade()
+
+                        exibirModalAdicionarData = false
+                        exibirModalRepor = true
+                    }
                 )
             }
         }

@@ -13,10 +13,15 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import school.sptech.R
 import school.sptech.Routes
 import school.sptech.navigation.NavBar
 import school.sptech.ui.components.AlertError
+import school.sptech.ui.components.AlertSuccess
 import school.sptech.ui.components.Background
 import school.sptech.ui.components.DropdownFieldWithLabel
 import school.sptech.ui.components.FormButtons
@@ -24,6 +29,7 @@ import school.sptech.ui.components.FormFieldWithLabel
 import school.sptech.ui.components.TopBarVoltar
 import school.sptech.ui.theme.CalencareAppTheme
 import school.sptech.ui.viewModel.ProdutoViewModel
+import kotlin.coroutines.cancellation.CancellationException
 
 class TelaAdicionarProduto : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,9 +50,6 @@ fun TelaAdicionarProdutoScreen(
     LaunchedEffect(Unit) {
         viewModel.getCategoriasProduto()
     }
-
-    var deuRuim by remember { mutableStateOf(viewModel.deuErro) }
-    var msg by remember { mutableStateOf(viewModel.erro) }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
@@ -71,18 +74,6 @@ fun TelaAdicionarProdutoScreen(
                 FormButtons(
                     onAddClick = {
                         viewModel.adicionarProduto()
-                        deuRuim = viewModel.deuErro
-                        msg = viewModel.erro
-
-                        if (!deuRuim ) {
-                            navController.navigate(NavBar.Estoque.route){
-                                popUpTo(Routes.AdicionarProduto.route){
-                                    inclusive = true
-                                }
-                                launchSingleTop = true
-                            }
-                            msg = viewModel.erro
-                        }
                     },
                     onCancelClick = { navController.popBackStack() }
                 )
@@ -90,14 +81,39 @@ fun TelaAdicionarProdutoScreen(
         }
     }
 
-    if (deuRuim) {
-        AlertError(msg = """
-            ${viewModel.produto.nome}
-            ${viewModel.produto.descricao}
-            ${viewModel.produto.marca}
-            ${viewModel.produto.categoriaProdutoId}
-            ${viewModel.produto.empresaId}
-        """.trimIndent())
+    if (viewModel.deuErro) {
+        AlertError(msg = viewModel.erro)
+
+        LaunchedEffect("error") {   
+            delay(6000)
+            viewModel.deuErro = false
+        }
+    }
+
+    if (!viewModel.deuErro && viewModel.erro.isNotEmpty()) {
+        AlertSuccess("Produto adicionado com sucesso!")
+
+        DisposableEffect(key1 = "Sucess") {
+            val job = CoroutineScope(Dispatchers.Main).launch {
+                try {
+                    delay(3000)
+                    viewModel.erro = ""
+                    navController.navigate(NavBar.Estoque.route) {
+                        popUpTo(Routes.AdicionarProduto.route) {
+                            inclusive = true
+                        }
+
+                        launchSingleTop = true
+                    }
+
+                } catch (e: CancellationException) {
+                    throw e
+                }
+            }
+            onDispose {
+                job.cancel()
+            }
+        }
     }
 }
 

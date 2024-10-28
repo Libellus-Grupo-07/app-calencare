@@ -1,6 +1,7 @@
 package school.sptech.ui.viewModel
 
 import android.util.Log
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -28,18 +29,14 @@ class DespesaViewModel : ViewModel() {
     var listaCategoriasDespesa by mutableStateOf(listOf<CategoriaDespesa>())
 
     var despesa by mutableStateOf(Despesa())
-
     //    private var novaDespesa by mutableStateOf(Despesa())
     var categoriaDespesa by mutableStateOf(CategoriaDespesa())
 
     var deuErro by mutableStateOf(false)
     var erro by mutableStateOf("")
 
-    private var mesAtual by mutableStateOf(0)
-    private var anoAtual by mutableStateOf(0)
-
-    var mes by mutableStateOf(LocalDate.now().monthValue)
-    var ano by mutableStateOf(LocalDate.now().year)
+    private var mes by mutableStateOf(LocalDate.now().monthValue)
+    private var ano by mutableStateOf(LocalDate.now().year)
 
     init {
         despesaService = RetrofitService.getClientDespesa()
@@ -71,18 +68,27 @@ class DespesaViewModel : ViewModel() {
         }
     }
 
-    fun atualizarDespesas(mes: Int, ano: Int) {
-        this.mes = mes
-        this.ano = ano
+//    fun atualizarDespesas(mes: Int, ano: Int) {
+//        this.mes = mes
+//        this.ano = ano
+//
+//        getDespesas()
+//    }
 
-        getDespesas()
+    fun getListaDespesas() : List<Despesa>{
+        return listaDespesas.toList()
     }
 
-    fun getDespesas() {
+    fun getDespesas(empresaId:Int, mes: Int, ano: Int) : List<Despesa>{
+        getDespesasByMesAndAno(empresaId, mes, ano)
+        return listaDespesas
+    }
+
+    private fun getDespesasByMesAndAno(empresaId: Int, mes: Int = this.mes, ano: Int = this.ano) {
         GlobalScope.launch {
             try {
                 val response = despesaService.getAllDespesasByEmpresaIdAndMesAndAno(
-                    empresaId = preferencesHelper.getIdEmpresa(),
+                    empresaId = empresaId,
                     mes = mes,
                     ano = ano
                 )
@@ -91,6 +97,7 @@ class DespesaViewModel : ViewModel() {
                     listaDespesas.clear()
                     listaDespesas.addAll(response.body() ?: listOf())
                     deuErro = false
+                    erro = response.message()
                 } else {
                     Log.e("api", "Erro ao buscar despesas => ${response.errorBody()?.string()}")
                     deuErro = true
@@ -104,7 +111,8 @@ class DespesaViewModel : ViewModel() {
         }
     }
 
-    fun adicionarDespesa() {
+    fun adicionarDespesa(
+    ) {
         GlobalScope.launch {
             try {
                 val novaDespesa = Despesa(
@@ -112,7 +120,7 @@ class DespesaViewModel : ViewModel() {
                     observacao = despesa.observacao,
                     valor = formatarDoubleBd(despesa.valor ?: "0,00"),
                     formaPagamento = despesa.formaPagamento,
-                    empresaId = despesa.empresaId,
+                    empresaId = preferencesHelper.getIdEmpresa(),
                     categoriaDespesaId = listaCategoriasDespesa.find {
                         it.nome.equals(categoriaDespesa.nome)
                     }?.id,
@@ -134,7 +142,7 @@ class DespesaViewModel : ViewModel() {
 
                 if (response.isSuccessful) {
                     deuErro = false
-                    erro = "Despesa adicionada com sucesso!"
+                    erro = "${response.message()} - OK"
                 } else {
                     Log.e("api", "Erro ao adicionar despesa => ${response.errorBody()?.string()}")
                     deuErro = true

@@ -6,5 +6,6 @@ data class Validade(
     var dtValidade:String? = null,
     var dtCriacao:String? = null,
     var produtoId: Int? = null,
+    var idProduto: Int? = null,
     var enabledValidade: Boolean? = null
 )
