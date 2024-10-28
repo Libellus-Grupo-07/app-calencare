@@ -7,17 +7,17 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import school.sptech.data.model.Financas
-import school.sptech.data.service.FinancasService
+import school.sptech.data.service.MovimentacoesService
 import school.sptech.network.RetrofitService
 
-class FinancasViewModel : ViewModel() {
-    private val financasService:FinancasService
+class MovimentacoesViewModel : ViewModel() {
+    private val movimentacoesService:MovimentacoesService
     var deuErro by mutableStateOf(false)
     var erro by mutableStateOf("")
     var financas = mutableListOf<Financas>()
 
     init {
-        financasService = RetrofitService.getClientFinancas()
+        movimentacoesService = RetrofitService.getClientFinancas()
     }
 
     fun getFinancas(empresaId: Int, mes: Int, ano: Int) : List<Financas> {
@@ -28,7 +28,7 @@ class FinancasViewModel : ViewModel() {
     private fun getFinancasByMes(empresaId: Int, mes: Int, ano: Int) {
         GlobalScope.launch {
             try {
-                val response = financasService.getFinancas(empresaId, mes, ano)
+                val response = movimentacoesService.getFinancas(empresaId, mes, ano)
                 if (response.isSuccessful) {
                     financas.clear()
                     financas.addAll(response.body() ?: listOf())

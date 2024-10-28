@@ -29,8 +29,10 @@ class DespesaViewModel : ViewModel() {
     var listaCategoriasDespesa by mutableStateOf(listOf<CategoriaDespesa>())
 
     var despesa by mutableStateOf(Despesa())
+
     //    private var novaDespesa by mutableStateOf(Despesa())
     var categoriaDespesa by mutableStateOf(CategoriaDespesa())
+    var totalDespesas by mutableStateOf(0.0)
 
     var deuErro by mutableStateOf(false)
     var erro by mutableStateOf("")
@@ -75,11 +77,11 @@ class DespesaViewModel : ViewModel() {
 //        getDespesas()
 //    }
 
-    fun getListaDespesas() : List<Despesa>{
+    fun getListaDespesas(): List<Despesa> {
         return listaDespesas.toList()
     }
 
-    fun getDespesas(empresaId:Int, mes: Int, ano: Int) : List<Despesa>{
+    fun getDespesas(empresaId: Int, mes: Int, ano: Int): List<Despesa> {
         getDespesasByMesAndAno(empresaId, mes, ano)
         return listaDespesas
     }
@@ -153,6 +155,41 @@ class DespesaViewModel : ViewModel() {
                 Log.e("api", "Erro ao adicionar despesa => ${ex.message}")
                 deuErro = true
                 erro = (ex.message) ?: "Erro desconhecido"
+            }
+        }
+    }
+
+    fun getTotalDespesasMes(mes: Int, ano: Int): Double {
+        getTotalDespesasByMes(mes, ano)
+        return totalDespesas
+    }
+
+
+    fun getTotalDespesasByMes(mes: Int, ano: Int) {
+        GlobalScope.launch {
+            try {
+                val response = despesaService.getTotalDespesasByEmpresaIdAndMesAndAno(
+                    empresaId = preferencesHelper.getIdEmpresa(),
+                    mes = mes,
+                    ano = ano
+                )
+
+                if (response.isSuccessful) {
+                    deuErro = false
+                    erro = ""
+                    totalDespesas = response.body() ?: 0.0
+                } else {
+                    Log.e(
+                        "api",
+                        "Erro ao buscar total de despesas => ${response.errorBody()?.string()}"
+                    )
+                    deuErro = true
+                    erro = response.errorBody()?.string() ?: "Erro desconhecido"
+                }
+            } catch (ex: Exception) {
+                Log.e("api", "Erro ao buscar total de despesas => ${ex.message}")
+                deuErro = true
+                erro = ex.message ?: "Erro desconhecido"
             }
         }
     }

@@ -230,15 +230,16 @@ fun LoginScreen(
             }
 
 
-            if (deuRuim || msg.isNotBlank()) {
+            if (viewModel.deuErro) {
                 AlertError(
-                    msg = msg
+                    msg = "Ops! Houve um erro inesperado. Tente novamente mais tarde."
                 )
-            }
+                
+                LaunchedEffect("login"){
+                    delay(5000)
+                    deuRuim = false
+                }
 
-            LaunchedEffect("login"){
-                delay(5000)
-                deuRuim = false
             }
         }
     }

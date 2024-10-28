@@ -7,15 +7,15 @@ import school.sptech.data.service.CategoriaProdutoService
 import school.sptech.data.service.DespesaService
 import school.sptech.data.service.EmpresaService
 import school.sptech.data.service.EnderecoService
-import school.sptech.data.service.FinancasService
+import school.sptech.data.service.MovimentacoesService
 import school.sptech.data.service.FuncionarioService
 import school.sptech.data.service.MovimentacaoValidadeService
 import school.sptech.data.service.ProdutoService
 import school.sptech.data.service.ValidadeService
 
 object RetrofitService{
-    private val ipAws = "54.88.201.60"
-    private val BASE_URL_API = "http://$ipAws/"
+    private val ipAws = "54.243.135.89"
+    private val BASE_URL_API = "http://$ipAws"
 //    private val BASE_URL_API = "https://6715378f33bc2bfe40b9caae.mockapi.io/api/v1/"
 
     fun getClientEmpresa(): EmpresaService {
@@ -107,13 +107,14 @@ object RetrofitService{
         return client
     }
 
-    fun getClientFinancas(): FinancasService {
+    fun getClientFinancas(): MovimentacoesService {
         val client = Retrofit.Builder()
             .baseUrl(BASE_URL_API)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(FinancasService::class.java)
+            .create(MovimentacoesService::class.java)
 
         return client
     }
+
 }

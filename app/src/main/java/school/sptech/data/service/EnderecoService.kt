@@ -9,13 +9,13 @@ import retrofit2.http.Path
 import school.sptech.data.model.Endereco
 
 interface EnderecoService {
-    @GET("/enderecos/empresa/{empresaId}")
+    @GET("/api/enderecos/empresa/{empresaId}")
     suspend fun getEnderecoByEmpresaId(@Path("empresaId") empresaId: Int): Response<Endereco>
 
-    @POST("/enderecos/address/{cep}")
+    @POST("/api/enderecos/address/{cep}")
     suspend fun getEnderecoByCep(@Path("cep") cep: String): Response<Endereco>
 
-    @PUT("/enderecos/{enderecoId}")
+    @PUT("/api/enderecos/{enderecoId}")
     suspend fun putEndereco(
         @Path("enderecoId") enderecoId: Int,
         @Body endereco: Endereco

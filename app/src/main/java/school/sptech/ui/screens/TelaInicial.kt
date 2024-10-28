@@ -19,6 +19,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -31,6 +33,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 import school.sptech.R
@@ -71,18 +74,20 @@ fun TelaInicio(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
+    var listaProdutos = produtoViewModel.getProdutos(preferencesHelper.getIdEmpresa())
+
+
     LaunchedEffect(Unit) {
         // Inicializa o usuário e a empresa
         usuarioViewModel.getFuncionario(preferencesHelper.getIdUsuario())
+        produtoViewModel.getProdutos(preferencesHelper.getIdEmpresa())
         movimentacaoValidadeViewModel.getKpisEstoque()
     }
 
     val idEmpresa = usuarioViewModel.usuario.empresa?.id ?: preferencesHelper.getIdEmpresa()
     preferencesHelper.saveIdEmpresa(idEmpresa)
 
-    val listaProdutos = produtoViewModel.getProdutos(idEmpresa)
     val usuario = usuarioViewModel.usuario
-
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Background()
@@ -95,10 +100,14 @@ fun TelaInicio(
                 Spacer(modifier = Modifier.size(21.dp))
 
                 BoxKpisEstoque(
-                    qtdProdutosEstoqueAlto = movimentacaoValidadeViewModel.qtdProdutosEstoqueAlto ?: 0,
-                    qtdProdutosSemEstoque = movimentacaoValidadeViewModel.qtdProdutosSemEstoque ?: 0,
-                    qtdProdutosRepostosNoDia = movimentacaoValidadeViewModel.qtdProdutosRepostosNoDia ?: 0,
-                    qtdProdutosEstoqueBaixo = movimentacaoValidadeViewModel.qtdProdutosEstoqueBaixo ?: 0,
+                    qtdProdutosEstoqueAlto = movimentacaoValidadeViewModel.qtdProdutosEstoqueAlto
+                        ?: 0,
+                    qtdProdutosSemEstoque = movimentacaoValidadeViewModel.qtdProdutosSemEstoque
+                        ?: 0,
+                    qtdProdutosRepostosNoDia = movimentacaoValidadeViewModel.qtdProdutosRepostosNoDia
+                        ?: 0,
+                    qtdProdutosEstoqueBaixo = movimentacaoValidadeViewModel.qtdProdutosEstoqueBaixo
+                        ?: 0,
                 )
                 Spacer(modifier = Modifier.size(21.dp))
                 BoxProdutos(
@@ -111,8 +120,13 @@ fun TelaInicio(
         }
     }
 
-    if(usuarioViewModel.deuErro){
-        AlertError(msg = usuarioViewModel.erro)
+    if (usuarioViewModel.deuErro) {
+        AlertError(msg = "Ops! Algo deu errado. Tente novamente mais tarde.")
+
+        LaunchedEffect("erro") {
+            delay(6000)
+            usuarioViewModel.deuErro = false
+        }
     }
 }
 

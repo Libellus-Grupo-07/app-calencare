@@ -9,10 +9,10 @@ import retrofit2.http.Path
 import school.sptech.data.model.Funcionario
 
 interface FuncionarioService {
-    @POST("/funcionarios/login")
+    @POST("/api/funcionarios/login")
     suspend fun login(@Body funcionario: Funcionario): Response<Funcionario>
-    @GET("/funcionarios/{id}")
+    @GET("/api/funcionarios/{id}")
     suspend fun getFuncionario(@Path("id") id:Int): Response<Funcionario>
-    @PUT("/funcionarios/{id}")
+    @PUT("/api/funcionarios/{id}")
     suspend fun putFuncionario(@Path("id") id:Int, @Body funcionario: Funcionario): Response<Funcionario>
 }

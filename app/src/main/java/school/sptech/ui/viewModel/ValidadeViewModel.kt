@@ -69,6 +69,7 @@ class ValidadeViewModel : ViewModel() {
                     listaValidades.clear()
                     listaValidades.addAll(response.body() ?: listOf())
                     deuErro = false
+                    erro = ""
                 } else {
                     deuErro = true
                     erro = response.errorBody()?.string() ?: "Erro desconhecido"
@@ -94,6 +95,7 @@ class ValidadeViewModel : ViewModel() {
                 if (response.isSuccessful) {
                     quantidadeTotalEstoque = response.body()!!
                     deuErro = false
+                    erro = ""
                 } else {
                     deuErro = true
                     erro = response.errorBody()?.string() ?: "Erro desconhecido"
