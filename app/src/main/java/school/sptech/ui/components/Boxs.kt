@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,11 +36,13 @@ import school.sptech.R
 import school.sptech.Routes
 import school.sptech.data.model.Movimentos
 import school.sptech.data.model.Produto
+import school.sptech.ui.theme.Cinza
 import school.sptech.ui.theme.CinzaOpacidade7
 import school.sptech.ui.theme.Preto
 import school.sptech.ui.theme.RoxoNubank
 import school.sptech.ui.theme.fontFamilyPoppins
 import school.sptech.ui.theme.letterSpacingPrincipal
+import school.sptech.ui.viewModel.ValidadeViewModel
 
 @Composable
 fun BoxKpisEstoque(
@@ -121,16 +124,21 @@ fun BoxProdutos(
             Spacer(modifier = modifier.size(21.dp))
 
             if (produtos.isEmpty()) {
-                Text(
-                    modifier = modifier.fillMaxSize(),
-                    text = "Nenhum produto encontrado",
-                    textAlign = TextAlign.Center,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = fontFamilyPoppins,
-                    letterSpacing = letterSpacingPrincipal,
-                    color = Preto
-                )
+                Row(
+                    modifier = modifier.fillMaxSize().padding(bottom = 32.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Nenhum produto encontrado",
+                        textAlign = TextAlign.Center,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        fontFamily = fontFamilyPoppins,
+                        letterSpacing = letterSpacingPrincipal,
+                        color = Cinza
+                    )
+                }
             } else {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),

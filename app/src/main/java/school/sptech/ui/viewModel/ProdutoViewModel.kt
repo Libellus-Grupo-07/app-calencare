@@ -36,6 +36,10 @@ class ProdutoViewModel : ViewModel() {
         categoriaProdutoService = RetrofitService.getClientCategoriaProduto()
     }
 
+    fun getListaProdutos(): List<Produto> {
+        return produtos.toList()
+    }
+
     fun getCategoriasProduto() {
         GlobalScope.launch {
             try {

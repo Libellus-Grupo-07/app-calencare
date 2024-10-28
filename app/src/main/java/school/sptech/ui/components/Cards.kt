@@ -52,6 +52,7 @@ import formatarData
 import formatarDataDatePicker
 import formatarDecimal
 import formatarValorMonetario
+import kotlinx.coroutines.delay
 import school.sptech.R
 import school.sptech.data.model.Despesa
 import school.sptech.data.model.Movimentos
@@ -75,6 +76,8 @@ import school.sptech.ui.theme.Vermelho
 import school.sptech.ui.theme.VermelhoOpacidade15
 import school.sptech.ui.theme.fontFamilyPoppins
 import school.sptech.ui.theme.letterSpacingPrincipal
+import school.sptech.ui.viewModel.MovimentacaoValidadeViewModel
+import school.sptech.ui.viewModel.ReporProdutoViewModel
 import school.sptech.ui.viewModel.ValidadeViewModel
 import transformarEmLocalDateTime
 
@@ -127,6 +130,7 @@ fun CardKpi(titulo: String, valor: String, cor: String, modifier: Modifier = Mod
 @Composable
 fun CardProduto(
     validadeViewModel: ValidadeViewModel = viewModel(),
+    reporProdutoViewModel: ReporProdutoViewModel = viewModel(),
     produto: Produto,
     isTelaInicio: Boolean,
     onClickCardProduto: () -> Unit,
@@ -136,6 +140,16 @@ fun CardProduto(
     var exibirModalRetirar by remember { mutableStateOf(false) } // Controle do modal de retirada
     var exibirModalAdicionarData by remember { mutableStateOf(false) } // Controle do modal de retirada
     var dateValue by remember { mutableStateOf(0L) }
+
+    LaunchedEffect("estoque") {
+
+        validadeViewModel.getValidades(produto.id!!)
+    }
+
+//    val qtdEstoque = validadeViewModel.getTotalEstoqueProduto(produto.id!!)
+    val qtdEstoque = produto.qtdEstoque
+//    produto.qtdEstoque = validadeViewModel.getTotalEstoqueProduto(produto.id!!)
+    produto.validades = validadeViewModel.listaValidades
 
     Row(
         modifier = modifier
@@ -215,7 +229,7 @@ fun CardProduto(
                         )
                     }
                 } else {
-                    val buttonRetirarEnabled = produto.qtdEstoque ?: 0 > 0
+                    val buttonRetirarEnabled = qtdEstoque ?: 0 > 0
 
                     Row(
                         modifier = modifier.fillMaxWidth(),
@@ -291,12 +305,38 @@ fun CardProduto(
                 produto.qtdEstoque = validadeViewModel.quantidadeTotalEstoque
 
                 ReporProductModal(
-                    onDismiss = { exibirModalRepor = false },
+                    onDismiss = {
+                        exibirModalRepor = false
+
+                        reporProdutoViewModel.setQuantidadeInicial(0)
+                        reporProdutoViewModel.setQuantidadeMaxima(0)
+                    },
                     produto = produto.nome ?: "",
                     quantidadeEstoque = produto.qtdEstoque ?: 0,
+                    onDateSelected = {
+                        val validade = produto.validades?.find { validadeAtual ->
+                            it!!.equals(validadeAtual.dtValidade ?: "")
+                        }
+
+                        validadeViewModel.validade = validade!!
+                        reporProdutoViewModel.quantidadeEstoqueData.value =
+                            validadeViewModel.getQuantidadeEstoqueValidade(validade.id!!)
+
+                        reporProdutoViewModel.setQuantidadeMaxima(0)
+                    },
+                    onQuantidadeChanged = {
+                        validadeViewModel.movimentacaoValidade =
+                            validadeViewModel.movimentacaoValidade.copy(quantidade = it)
+                    },
+                    viewModel = reporProdutoViewModel,
                     onClickAdicionarData = { exibirModalAdicionarData = true },
                     onConfirm = {
-                        exibirModalRepor = false
+                        validadeViewModel.reporEstoque()
+                        if (!validadeViewModel.deuErro) {
+                            reporProdutoViewModel.setQuantidadeInicial(0)
+                            reporProdutoViewModel.setQuantidadeMaxima(0)
+                            exibirModalRepor = false
+                        }
                     },
                     datesFromBackend = produto.validades!!.map { it.dtValidade ?: "" } ?: listOf()
                 )
@@ -304,19 +344,50 @@ fun CardProduto(
 
             // Exibe o modal de retirada de produto
             if (exibirModalRetirar) {
-
                 RetirarProductModal(
                     produto = produto.nome ?: "",
                     quantidadeEstoque = produto.qtdEstoque ?: 0,
-                    onDismiss = { exibirModalRetirar = false },
-                    onConfirm = {
+                    onDismiss = {
                         exibirModalRetirar = false
+                        reporProdutoViewModel.setQuantidadeInicial(0)
+                        reporProdutoViewModel.setQuantidadeMaxima(0)
+                        reporProdutoViewModel.quantidadeEstoqueData.value = 0
+                    },
+                    onConfirm = {
+                        validadeViewModel.retirarEstoque()
+
+                        if (!validadeViewModel.deuErro) {
+                            reporProdutoViewModel.setQuantidadeInicial(0)
+                            reporProdutoViewModel.setQuantidadeMaxima(0)
+                            reporProdutoViewModel.quantidadeEstoqueData.value = 0
+                            exibirModalRetirar = false
+
+                        }
+                    },
+                    viewModel = reporProdutoViewModel,
+                    onDateSelected = {
+                        val validade = produto.validades?.find { validadeAtual ->
+                            it!!.equals(validadeAtual.dtValidade ?: "")
+                        }
+
+                        validadeViewModel.validade = validade!!
+                        val qtdMaxima =
+                            validadeViewModel.getQuantidadeEstoqueValidade(validade.id!!)
+
+                        reporProdutoViewModel.quantidadeEstoqueData.value = qtdMaxima
+                        reporProdutoViewModel.setQuantidadeMaxima(qtdMaxima)
+                        reporProdutoViewModel.setQuantidadeInicial(0)
+
+                    },
+                    onQuantidadeChanged = {
+                        validadeViewModel.movimentacaoValidade =
+                            validadeViewModel.movimentacaoValidade.copy(quantidade = it)
                     },
                     datesFromBackend = produto.validades?.map { it.dtValidade ?: "" } ?: listOf()
                 )
             }
 
-            if(exibirModalAdicionarData){
+            if (exibirModalAdicionarData) {
                 exibirModalRepor = false
 
                 DatePickerModal(
@@ -326,7 +397,8 @@ fun CardProduto(
                         exibirModalRepor = true
                     },
                     onDateSelected = { date ->
-                        validadeViewModel.validade = validadeViewModel.validade.copy(idProduto = produto.id ?: 0)
+                        validadeViewModel.validade =
+                            validadeViewModel.validade.copy(idProduto = produto.id ?: 0)
                         validadeViewModel.validade = validadeViewModel.validade.copy(
                             dtValidade = transformarEmLocalDateTime(
                                 formatarDataDatePicker(
@@ -343,6 +415,24 @@ fun CardProduto(
                     }
                 )
             }
+
+//            if(validadeViewModel.deuErro){
+//                AlertError(msg = "Ops! Algo deu errado. Tente novamente.")
+//            }
+//
+//            if(exibirModalRepor || exibirModalRetirar){
+//                if(!validadeViewModel.deuErro && validadeViewModel.erro.isNotEmpty()){
+//                    exibirModalRepor = false
+//                    exibirModalRetirar = false
+//                    AlertSuccess(msg = "Estoque atualizado com sucesso!")
+//
+//                    LaunchedEffect("sucess") {
+//                        delay(6000)
+//                        validadeViewModel.deuErro = false
+//                    }
+//                }
+//            }
+
         }
     }
 }
@@ -463,12 +553,12 @@ fun CardDespesa(despesa: Despesa, corTexto: Color) {
                                 contentColor = Verde
                             ),
                             contentPadding = PaddingValues(
-                               horizontal = 12.dp,
+                                horizontal = 12.dp,
                             ),
                             onClick = { /*TODO*/ }
                         ) {
                             Text(text = despesa.dtPagamento?.let { formatarData(it) } ?: "",
-            //                text = despesa.dtPagamento ?: "",
+                                //                text = despesa.dtPagamento ?: "",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 11.sp,
                                 fontFamily = fontFamilyPoppins

@@ -9,12 +9,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -37,8 +35,8 @@ import school.sptech.ui.components.TituloLarge
 import school.sptech.ui.components.TopBarComSelecaoData
 import school.sptech.ui.theme.*
 import school.sptech.ui.viewModel.DespesaViewModel
+import school.sptech.ui.viewModel.MovimentacoesViewModel
 import java.time.LocalDate
-import java.time.ZoneId
 import java.time.format.TextStyle
 import java.util.Locale
 
@@ -56,14 +54,14 @@ class TelaFinancasActivity : ComponentActivity() {
 
 @Composable
 fun TelaFinancas(
+    financasViewModel: MovimentacoesViewModel = viewModel(),
     despesaViewModel: DespesaViewModel = viewModel(),
     navController: NavController = rememberNavController()
 ) {
 
-    val receitas = remember { mutableStateOf(3669.91) }
-    val despesasTotais = remember { mutableStateOf(11080.00) }
-    val faturamento = remember { mutableStateOf(14749.91) }
-    val comissoes = remember { mutableStateOf(8000.00) }
+    val receitas = remember { mutableStateOf(0.0) }
+    val faturamento = remember { mutableStateOf(0.0) }
+    val comissoes = remember { mutableStateOf(0.0) }
     var mesSelecionado by remember {
         mutableStateOf(
             LocalDate.now().month.getDisplayName(
@@ -81,21 +79,28 @@ fun TelaFinancas(
     var mostrarSeletorData by remember { mutableStateOf(false) }
     val idEmpresa = preferencesHelper.getIdEmpresa()
 
-    var deuErro by remember { mutableStateOf(false) }
-    var erro by remember { mutableStateOf("") }
     var despesas = despesaViewModel.listaDespesas
 
     LaunchedEffect(Unit) {
+        financasViewModel.getFinancas(
+            empresaId = idEmpresa,
+            ano = anoSelecionado,
+            mes = getMonthInt(mesSelecionado)?.value ?: 0
+        )
+
         despesaViewModel.getDespesas(
             empresaId = idEmpresa,
             ano = anoSelecionado,
             mes = getMonthInt(mesSelecionado)?.value ?: 0
         )
+
+        despesaViewModel.getTotalDespesasMes(
+            ano = anoSelecionado,
+            mes = getMonthInt(mesSelecionado)?.value ?: 0
+        )
     }
 
-    deuErro = despesaViewModel.deuErro
-    erro = despesaViewModel.erro
-
+    var despesasTotais = despesaViewModel.totalDespesas
 
     if (mostrarSeletorData) {
         SeletorData(
@@ -121,7 +126,7 @@ fun TelaFinancas(
         anoSelecionado = anoSelecionado,
         aoClicarSeletorData = { mostrarSeletorData = true },
         receitas = receitas.value,
-        despesasTotais = despesasTotais.value,
+        despesasTotais = despesasTotais,
         faturamento = faturamento.value,
         comissoes = comissoes.value,
         despesas = despesas,
@@ -178,7 +183,7 @@ fun ConteudoTelaFinancas(
 fun ResumoFinanceiro(
     receitas: Double,
     despesas: Double,
-    faturamento: Double,
+    lucro: Double,
     comissoes: Double,
 ) {
     Column {
@@ -214,7 +219,7 @@ fun ResumoFinanceiro(
             Column(modifier = Modifier.weight(0.4f)) {
                 CardKpi(
                     "Total em Lucro",
-                    "R$ + ${formatarDecimal(faturamento.toFloat())}",
+                    "R$ + ${formatarDecimal(lucro.toFloat())}",
                     "VERDE"
                 )
             }

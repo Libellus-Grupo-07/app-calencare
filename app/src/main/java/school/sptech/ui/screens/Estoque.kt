@@ -20,14 +20,17 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.delay
 import school.sptech.R
 import school.sptech.data.model.CategoriaProduto
 import school.sptech.data.model.Produto
 import school.sptech.preferencesHelper
+import school.sptech.ui.components.AlertError
 import school.sptech.ui.components.Background
 import school.sptech.ui.components.BoxProdutos
 import school.sptech.ui.components.TopBarEstoque
 import school.sptech.ui.viewModel.ProdutoViewModel
+import school.sptech.ui.viewModel.ValidadeViewModel
 
 class Estoque : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,6 +45,7 @@ class Estoque : ComponentActivity() {
 @Composable
 fun TelaEstoque(
     produtoViewModel: ProdutoViewModel = viewModel(),
+    validadeViewModel: ValidadeViewModel = viewModel(),
     navController: NavController
 ) {
 
@@ -60,12 +64,18 @@ fun TelaEstoque(
                 titulo = stringResource(id = R.string.estoque),
                 isTelaInicio = false,
                 modifier = Modifier.fillMaxWidth(),
-                navController = navController
+                navController = navController,
             )
-
         }
+    }
 
+    if(produtoViewModel.deuErro) {
+        AlertError(msg = "Ops! Algo deu errado. Tente novamente mais tarde.")
 
+        LaunchedEffect("erro") {
+            delay(6000)
+            produtoViewModel.deuErro = false
+        }
     }
 }
 

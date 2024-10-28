@@ -9,21 +9,28 @@ import retrofit2.http.Path
 import school.sptech.data.model.Despesa
 
 interface DespesaService {
-    @GET("/despesas/info/{empresaId}/{mes}/{ano}")
+    @GET("/api/despesas/info/{empresaId}/{mes}/{ano}")
     suspend fun getAllDespesasByEmpresaIdAndMesAndAno(
         @Path("empresaId") empresaId: Int,
         @Path("mes") mes: Int,
         @Path("ano") ano: Int
     ): Response<List<Despesa>>
 
-    @GET("/despesas/{empresaId}/{despesaId}")
+    @GET("/api/despesas/{empresaId}/{despesaId}")
     suspend fun getDespesaById(
         @Path("empresaId") empresaId: Int,
         @Path("despesaId") despesaId: Int
     ): Response<Despesa>
 
 
-    @PUT("/despesas/{empresaId}/{despesaId}/{categoriaDespesaId}")
+    @GET("/api/despesas/total/{empresaId}/{mes}/{ano}")
+    suspend fun getTotalDespesasByEmpresaIdAndMesAndAno(
+        @Path("empresaId") empresaId: Int,
+        @Path("mes") mes: Int,
+        @Path("ano") ano: Int
+    ): Response<Double>
+
+    @PUT("/api/despesas/{empresaId}/{despesaId}/{categoriaDespesaId}")
     suspend fun putDespesaById(
         @Path("empresaId") empresaId: Int,
         @Path("despesaId") despesaId: Int,
@@ -31,7 +38,7 @@ interface DespesaService {
         @Body despesa: Despesa
     ): Response<Despesa>
 
-    @POST("/despesas/{empresaId}/{categoriaDespesaId}")
+    @POST("/api/despesas/{empresaId}/{categoriaDespesaId}")
     suspend fun postDespesa(
         @Path("empresaId") empresaId: Int,
         @Path("categoriaDespesaId") categoriaDespesaId: Int,
