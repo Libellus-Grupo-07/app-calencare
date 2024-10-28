@@ -15,18 +15,30 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import formatarData
+import formatarDataDatePicker
 import getColorTextEstoque
 import getEnabledButtonRetirarEstoque
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import school.sptech.R
+import school.sptech.Routes
 import school.sptech.data.model.Produto
+import school.sptech.navigation.NavBar
 import school.sptech.preferencesHelper
+import school.sptech.ui.components.AlertError
+import school.sptech.ui.components.AlertSuccess
 import school.sptech.ui.components.Background
 import school.sptech.ui.components.ButtonBackground
 import school.sptech.ui.components.ButtonOutline
+import school.sptech.ui.components.DatePickerModal
 import school.sptech.ui.components.DropdownFieldWithLabel
 import school.sptech.ui.components.FormFieldWithLabel
 import school.sptech.ui.components.LabelInput
@@ -40,6 +52,8 @@ import school.sptech.ui.theme.fontFamilyPoppins
 import school.sptech.ui.viewModel.ProdutoViewModel
 import school.sptech.ui.viewModel.ReporProdutoViewModel
 import school.sptech.ui.viewModel.ValidadeViewModel
+import transformarEmLocalDateTime
+import kotlin.coroutines.cancellation.CancellationException
 
 class TelaInformacoesProduto : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,31 +75,18 @@ fun TelaInformacoesProdutoScreen(
     idProduto: Int = 0,
     idEmpresa: Int = preferencesHelper.getIdEmpresa()
 ) {
-    produtoViewModel.getCategoriasProduto()
-
-    var msg by remember {
-        mutableStateOf("")
-    }
-
-    var deuRuim by remember {
-        mutableStateOf(false)
-    }
 
     LaunchedEffect(Unit) {
+        produtoViewModel.getCategoriasProduto()
         produtoViewModel.getProdutoById(empresaId = idEmpresa, produtoId = idProduto)
+        validadeViewModel.getValidades(idProduto)
     }
 
     val produto = produtoViewModel.getProdutoAtual()
     produto.qtdEstoque = validadeViewModel.getTotalEstoqueProduto(idProduto)
 
-    val validades = validadeViewModel.getValidades(idProduto)
-    val listaValidades = validades.toList().map {
-        it.dtValidade?.let { data ->
-            formatarData(
-                data
-            )
-        } ?: ""
-    }
+    val validades = validadeViewModel.listaValidades
+    val listaValidades = validades.map { it.dtValidade ?: "" }
 
     var exibirModalRetirar by remember {
         mutableStateOf(false)
@@ -94,11 +95,19 @@ fun TelaInformacoesProdutoScreen(
         mutableStateOf(false)
     }
 
+    var exibirAdicionarData by remember {
+        mutableStateOf(false)
+    }
+
+    var dateValue by remember { mutableStateOf(0L) }
+
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
             topBar = {
                 TopBarInformacoesProduto(
-                    onClickSalvar = { /*TODO*/ },
+                    onClickSalvar = {
+                        produtoViewModel.atualizarProduto()
+                    },
                     onClickVoltar = { navController.popBackStack() }
                 )
             }
@@ -121,9 +130,11 @@ fun TelaInformacoesProdutoScreen(
                         produto?.qtdEstoque ?: 0
                     ),
                     onRetirarClick = {
+                        validadeViewModel.deuErro = false
                         exibirModalRetirar = true
                     },
                     onReporClick = {
+                        validadeViewModel.deuErro = false
                         exibirModalRepor = true
                     }
                 )
@@ -137,15 +148,17 @@ fun TelaInformacoesProdutoScreen(
                     exibirModalRepor = false
                     reporProdutoViewModel.setQuantidadeInicial(0)
                     reporProdutoViewModel.setQuantidadeMaxima(0)
+                    reporProdutoViewModel.quantidadeEstoqueData.value = 0
+
                 },
                 produto = produto.nome ?: "",
                 quantidadeEstoque = produto.qtdEstoque ?: 0,
                 viewModel = reporProdutoViewModel,
                 onDateSelected = {
-                    val validade =
-                        validades.find { validade ->
-                            formatarData(validade.dtValidade!!).equals(it)
-                        }
+                    val validade = validades.find { validadeAtual ->
+                        it!!.equals(validadeAtual.dtValidade ?: "")
+                    }
+
                     validadeViewModel.validade = validade!!
                     reporProdutoViewModel.quantidadeEstoqueData.value =
                         validadeViewModel.getQuantidadeEstoqueValidade(validade.id!!)
@@ -157,22 +170,79 @@ fun TelaInformacoesProdutoScreen(
                     validadeViewModel.movimentacaoValidade =
                         validadeViewModel.movimentacaoValidade.copy(quantidade = it)
                 },
+                onClickAdicionarData = {
+                    exibirAdicionarData = true
+                },
                 onConfirm = {
-                    msg = ""
                     validadeViewModel.reporEstoque()
-                    msg = validadeViewModel.erro
-                    deuRuim = validadeViewModel.deuErro
-
-                    if (!deuRuim && msg.isNotEmpty()) {
-                        exibirModalRepor = false
-                        reporProdutoViewModel.setQuantidadeInicial(0)
-                        reporProdutoViewModel.setQuantidadeMaxima(0)
-                    }
                 },
                 datesFromBackend = listaValidades,
             )
 
         }
+
+        if (exibirAdicionarData) {
+            exibirModalRepor = false
+
+            DatePickerModal(
+                dateSelected = dateValue,
+                onDismiss = {
+                    exibirAdicionarData = false
+                    exibirModalRepor = true
+                },
+                onDateSelected = { date ->
+                    validadeViewModel.validade =
+                        validadeViewModel.validade.copy(idProduto = produto.id ?: 0)
+                    validadeViewModel.validade = validadeViewModel.validade.copy(
+                        dtValidade = transformarEmLocalDateTime(
+                            formatarDataDatePicker(
+                                inputFormat = true,
+                                data = date
+                            )
+                        ).toString()
+                    )
+
+                    validadeViewModel.adicionarValidade()
+
+                    exibirAdicionarData = false
+                    exibirModalRepor = true
+                }
+            )
+        }
+
+        if (produtoViewModel.deuErro) {
+            AlertError(
+                msg = produtoViewModel.erro
+            )
+        }
+
+        if (!produtoViewModel.deuErro && produtoViewModel.erro.isNotEmpty()) {
+            AlertSuccess(msg = "Produto atualizado com sucesso!")
+
+            DisposableEffect(key1 = "Sucess") {
+                val job = CoroutineScope(Dispatchers.Main).launch {
+                    try {
+                        delay(3000)
+                        produtoViewModel.erro = ""
+                        val ultimaRota = navController.previousBackStackEntry?.destination?.route
+                        navController.navigate(ultimaRota ?: NavBar.Inicio.route) {
+                            popUpTo(Routes.InformacoesProduto.route) {
+                                inclusive = true
+                            }
+
+                            launchSingleTop = true
+                        }
+
+                    } catch (e: CancellationException) {
+                        throw e
+                    }
+                }
+                onDispose {
+                    job.cancel()
+                }
+            }
+        }
+
 
         // Exibe o modal de retirada de produto
         if (exibirModalRetirar) {
@@ -180,15 +250,15 @@ fun TelaInformacoesProdutoScreen(
                 produto = produto.nome ?: "",
                 viewModel = reporProdutoViewModel,
                 onDateSelected = {
-                    val validade =
-                        validades.find { validade ->
-                            formatarData(validade.dtValidade!!).equals(it)
-                        }
+                    val validade = validades.find { validadeAtual ->
+                        it!!.equals(validadeAtual.dtValidade ?: "")
+                    }
                     validadeViewModel.validade = validade!!
-                    reporProdutoViewModel.quantidadeEstoqueData.value =
-                        validadeViewModel.getQuantidadeEstoqueValidade(validade.id!!)
 
-                    reporProdutoViewModel.setQuantidadeMaxima(reporProdutoViewModel.quantidadeEstoqueData.value)
+                    val qtdMaxima = validadeViewModel.getQuantidadeEstoqueValidade(validade.id!!)
+
+                    reporProdutoViewModel.quantidadeEstoqueData.value = qtdMaxima
+                    reporProdutoViewModel.setQuantidadeMaxima(qtdMaxima)
                 },
                 onQuantidadeChanged = {
                     validadeViewModel.movimentacaoValidade =
@@ -199,21 +269,33 @@ fun TelaInformacoesProdutoScreen(
                     exibirModalRetirar = false
                     reporProdutoViewModel.setQuantidadeInicial(0)
                     reporProdutoViewModel.setQuantidadeMaxima(0)
+                    reporProdutoViewModel.quantidadeEstoqueData.value = 0
+
                 },
                 onConfirm = {
-                    msg = ""
                     validadeViewModel.retirarEstoque()
-                    msg = validadeViewModel.erro
-                    deuRuim = validadeViewModel.deuErro
-
-                    if (!deuRuim && msg.isNotEmpty()) {
-                        exibirModalRetirar = false
-                        reporProdutoViewModel.setQuantidadeInicial(0)
-                        reporProdutoViewModel.setQuantidadeMaxima(0)
-                    }
                 },
                 datesFromBackend = listaValidades
             )
+        }
+
+        if(validadeViewModel.deuErro){
+            AlertError(msg = validadeViewModel.erro)
+        }
+
+        if(!validadeViewModel.deuErro && validadeViewModel.erro.isNotEmpty()){
+            AlertSuccess(msg = "Estoque atualizado com sucesso!")
+            exibirModalRepor = false
+            exibirModalRetirar = false
+
+            reporProdutoViewModel.setQuantidadeInicial(0)
+            reporProdutoViewModel.setQuantidadeMaxima(0)
+            reporProdutoViewModel.quantidadeEstoqueData.value = 0
+
+            LaunchedEffect("success") {
+                delay(3000)
+                validadeViewModel.erro = ""
+            }
         }
     }
 }

@@ -16,17 +16,16 @@ import school.sptech.data.service.ProdutoService
 import school.sptech.network.RetrofitService
 import school.sptech.preferencesHelper
 
-class ProdutoViewModel: ViewModel() {
-//class ProdutoViewModel(private val validadeViewModel: ValidadeViewModel) : ViewModel() {
+class ProdutoViewModel : ViewModel() {
+    //class ProdutoViewModel(private val validadeViewModel: ValidadeViewModel) : ViewModel() {
     private val produtoService: ProdutoService;
     private val categoriaProdutoService: CategoriaProdutoService;
 
     private var empresaId by mutableStateOf(0)
-    private var produtos = mutableStateListOf<Produto>()
+    var produtos = mutableStateListOf<Produto>()
     var categoriasProduto by mutableStateOf(listOf<CategoriaProduto>())
     var produto by mutableStateOf(Produto(empresaId = preferencesHelper.getIdEmpresa()))
     private var _produtoAtual by mutableStateOf(Produto(empresaId = preferencesHelper.getIdEmpresa()))
-    var produtoAtualizacao by mutableStateOf<Produto?>(null)
     var categoriaProduto by mutableStateOf(CategoriaProduto())
     var validade by mutableStateOf(Validade())
     var deuErro by mutableStateOf(false)
@@ -61,12 +60,12 @@ class ProdutoViewModel: ViewModel() {
         }
     }
 
-    fun getProdutoAtual() : Produto{
+    fun getProdutoAtual(): Produto {
         _produtoAtual = produto
         return _produtoAtual
     }
 
-    fun getProduto(empresaId: Int, produtoId: Int) : Produto{
+    fun getProduto(empresaId: Int, produtoId: Int): Produto {
         getProdutoById(empresaId, produtoId)
         return produto
     }
@@ -92,10 +91,6 @@ class ProdutoViewModel: ViewModel() {
         }
     }
 
-    fun getListaProdutos() : List<Produto>{
-        return produtos
-    }
-
     fun getProdutos(empresaId: Int): List<Produto> {
         this.empresaId = empresaId
         getProdutos()
@@ -107,7 +102,8 @@ class ProdutoViewModel: ViewModel() {
     private fun getProdutos() {
         GlobalScope.launch {
             try {
-                val response = produtoService.getAllProdutosByEmpresaId(empresaId)
+                val response = produtoService.getAllProdutosByEmpresaId(preferencesHelper.getIdEmpresa())
+                erro = response.errorBody()?.string() ?: "Erro desconhecido"
 
                 if (response.isSuccessful) {
                     produtos.clear()
@@ -125,15 +121,15 @@ class ProdutoViewModel: ViewModel() {
         }
     }
 
-    private fun getValidades(){
-       GlobalScope.launch {
-           produtos.forEach { produto ->
+    private fun getValidades() {
+        GlobalScope.launch {
+            produtos.forEach { produto ->
 //               produto.validades = validadeViewModel.getValidades(produto.id!!)
-           }
-       }
+            }
+        }
     }
 
-    private fun getQuantidadeTotalEstoque(){
+    private fun getQuantidadeTotalEstoque() {
         GlobalScope.launch {
             produtos.forEach { produto ->
 //                produto.qtdEstoque = validadeViewModel.getTotalEstoqueProduto(produto.id!!)
@@ -150,6 +146,7 @@ class ProdutoViewModel: ViewModel() {
 
                 if (response.isSuccessful) {
                     deuErro = false
+                    erro = "OK"
                 } else {
                     Log.e("api", "Erro ao adicionar produto => ${response.errorBody()?.string()}")
                     deuErro = true
@@ -157,6 +154,42 @@ class ProdutoViewModel: ViewModel() {
                 }
             } catch (ex: Exception) {
                 Log.e("api", "Erro ao adicionar produto => ${ex.message}")
+                deuErro = true
+                erro = ex.message ?: "Erro desconhecido"
+            }
+        }
+    }
+
+    fun atualizarProduto() {
+        GlobalScope.launch {
+            try {
+                val categoriaProdutoId =
+                    categoriasProduto.find{ it.nome == produto.categoriaProdutoNome }?.id
+
+                val produtoAtualizado = Produto(
+                    nome = produto.nome,
+                    marca = produto.marca,
+                    descricao = produto.descricao,
+                    categoriaProdutoId = categoriaProdutoId,
+                )
+
+                val response = produtoService.atualizarProduto(
+                    produtoId = produto.id ?: 0,
+                    empresaId = produto.empresaId ?: 0,
+                    produto = produtoAtualizado
+                )
+
+                if (response.isSuccessful) {
+                    deuErro = false
+                    erro = "Produto atualizado com sucesso!"
+                } else {
+                    Log.e("api", "Erro ao atualizar produto => ${response.errorBody()?.string()}")
+                    deuErro = true
+                    erro = response.errorBody()?.string() ?: "Erro desconhecido"
+                }
+
+            } catch (ex: Exception) {
+                Log.e("api", "Erro ao atualizar produto => ${ex.message}")
                 deuErro = true
                 erro = ex.message ?: "Erro desconhecido"
             }

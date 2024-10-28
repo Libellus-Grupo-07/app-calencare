@@ -35,13 +35,17 @@ import kotlinx.coroutines.launch
 
 import school.sptech.R
 import school.sptech.data.model.Produto
+import school.sptech.data.service.MovimentacaoValidadeService
 import school.sptech.preferencesHelper
+import school.sptech.ui.components.AlertError
 import school.sptech.ui.components.Background
 import school.sptech.ui.components.BoxKpisEstoque
 import school.sptech.ui.components.BoxProdutos
 import school.sptech.ui.components.TopBarInicio
 import school.sptech.ui.theme.CalencareAppTheme
 import school.sptech.ui.theme.Preto
+import school.sptech.ui.viewModel.EmpresaViewModel
+import school.sptech.ui.viewModel.MovimentacaoValidadeViewModel
 import school.sptech.ui.viewModel.ProdutoViewModel
 import school.sptech.ui.viewModel.UsuarioViewModel
 import school.sptech.ui.viewModel.ValidadeViewModel
@@ -62,6 +66,7 @@ class TelaInicial : ComponentActivity() {
 fun TelaInicio(
     usuarioViewModel: UsuarioViewModel = viewModel(),
     produtoViewModel: ProdutoViewModel = viewModel(),
+    movimentacaoValidadeViewModel: MovimentacaoValidadeViewModel = viewModel(),
     validadeViewModel: ValidadeViewModel = viewModel(),
     navController: NavController,
     modifier: Modifier = Modifier
@@ -69,45 +74,15 @@ fun TelaInicio(
     LaunchedEffect(Unit) {
         // Inicializa o usuário e a empresa
         usuarioViewModel.getFuncionario(preferencesHelper.getIdUsuario())
-        val idEmpresa = preferencesHelper.getIdEmpresa()
-
-        if (idEmpresa == -1 || idEmpresa == 0) {
-            preferencesHelper.saveIdEmpresa(usuarioViewModel.usuario.empresa?.id ?: 0)
-        }
-
-        // Obtém a lista de produtos com base no id da empresa do usuário
-//        val produtos = produtoViewModel.getProdutos(usuarioViewModel.usuario?.empresa?.id ?: 0)
-
-        // Atualiza cada produto com suas respectivas validades e quantidade em estoque
-//        produtos.forEach { produto ->
-//            produto.validades = validadeViewModel.getValidades(produto.id!!)
-//            produto.qtdEstoque = validadeViewModel.getTotalEstoqueProduto(produto.id!!)
-//        }
+        movimentacaoValidadeViewModel.getKpisEstoque()
     }
 
-    val listaProdutos = produtoViewModel.getProdutos(usuarioViewModel.usuario?.empresa?.id ?: 0)
+    val idEmpresa = usuarioViewModel.usuario.empresa?.id ?: preferencesHelper.getIdEmpresa()
+    preferencesHelper.saveIdEmpresa(idEmpresa)
+
+    val listaProdutos = produtoViewModel.getProdutos(idEmpresa)
     val usuario = usuarioViewModel.usuario
-    
-    if (usuarioViewModel.deuErro) {
-        Box(
-            modifier = Modifier
-                .padding(10.dp)
-                .background(Color(228, 3, 80, 210))
-                .zIndex(1f)
-        ) {
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = "⚠\uFE0F Ops! Alguma coisa deu errado. \r\nTente novamente ${usuarioViewModel.erro}",
-                    color = Color.Yellow,
-                    textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(10.dp)
-                )
-            }
-        }
-    }
+
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Background()
@@ -120,10 +95,10 @@ fun TelaInicio(
                 Spacer(modifier = Modifier.size(21.dp))
 
                 BoxKpisEstoque(
-                    qtdProdutosEstoqueAlto = 25,
-                    qtdProdutosSemEstoque = 1,
-                    qtdProdutosRepostosNoDia = 0,
-                    qtdProdutosEstoqueBaixo = 5
+                    qtdProdutosEstoqueAlto = movimentacaoValidadeViewModel.qtdProdutosEstoqueAlto ?: 0,
+                    qtdProdutosSemEstoque = movimentacaoValidadeViewModel.qtdProdutosSemEstoque ?: 0,
+                    qtdProdutosRepostosNoDia = movimentacaoValidadeViewModel.qtdProdutosRepostosNoDia ?: 0,
+                    qtdProdutosEstoqueBaixo = movimentacaoValidadeViewModel.qtdProdutosEstoqueBaixo ?: 0,
                 )
                 Spacer(modifier = Modifier.size(21.dp))
                 BoxProdutos(
@@ -134,6 +109,10 @@ fun TelaInicio(
                 )
             }
         }
+    }
+
+    if(usuarioViewModel.deuErro){
+        AlertError(msg = usuarioViewModel.erro)
     }
 }
 

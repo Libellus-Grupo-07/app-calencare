@@ -14,11 +14,19 @@ class PreferencesHelper(context: Context) {
         sharedPreferences.edit().putInt("idUsuario", idUsuario).apply()
     }
 
+    fun saveMesFinancas(mesFinancas: Int) {
+        sharedPreferences.edit().putInt("mesFinancas", 0).apply()
+    }
+
     fun getIdEmpresa(): Int {
         return sharedPreferences.getInt("idEmpresa", -1)
     }
 
     fun getIdUsuario(): Int {
         return sharedPreferences.getInt("idUsuario", -1)
+    }
+
+    fun getMesFinancas(): Int {
+        return sharedPreferences.getInt("mesFinancas", -1)
     }
 }

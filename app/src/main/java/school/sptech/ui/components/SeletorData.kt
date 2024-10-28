@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -14,11 +15,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
+import formatarData
 import school.sptech.ui.theme.Cinza
 import school.sptech.ui.theme.CinzaOpacidade7
 import school.sptech.ui.theme.Preto
@@ -48,6 +57,7 @@ fun SeletorData(
 fun SelectableDatesRow(
     dates: List<String>,
     onDateSelected: (String) -> Unit,
+    onClickAdicionarData: () -> Unit = {},
     qtdEstoqueData: Int = 0,
     isRepor: Boolean = false,
     selectedDate: String? = null
@@ -65,9 +75,9 @@ fun SelectableDatesRow(
         ) {
             LabelInput(label = "Data de Validade")
 
-            if(isRepor){
+            if (isRepor) {
                 TextButton(
-                    onClick = { /*TODO*/ },
+                    onClick = onClickAdicionarData,
                     contentPadding = PaddingValues(horizontal = 4.dp),
                 ) {
                     Text(
@@ -86,24 +96,25 @@ fun SelectableDatesRow(
         Row(modifier = Modifier.fillMaxWidth()) {
             Text(
                 buildAnnotatedString {
-                     withStyle(
-                         SpanStyle(
-                             color = RoxoNubank,
-                             fontFamily = fontFamilyPoppins,
-                             letterSpacing = letterSpacingPrincipal,
-                             fontSize = 10.5.sp,
-                             fontWeight = FontWeight.ExtraBold
-                         )
+                    withStyle(
+                        SpanStyle(
+                            color = RoxoNubank,
+                            fontFamily = fontFamilyPoppins,
+                            letterSpacing = letterSpacingPrincipal,
+                            fontSize = 10.5.sp,
+                            fontWeight = FontWeight.ExtraBold
+                        )
                     ) {
                         append("$qtdEstoqueData ${if (qtdEstoqueData == 1) "produto" else "produtos"} ")
                     }
-                    withStyle(SpanStyle(
-                        color = Cinza,
-                        fontFamily = fontFamilyPoppins,
-                        letterSpacing = letterSpacingPrincipal,
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 10.5.sp,
-                    )
+                    withStyle(
+                        SpanStyle(
+                            color = Cinza,
+                            fontFamily = fontFamilyPoppins,
+                            letterSpacing = letterSpacingPrincipal,
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 10.5.sp,
+                        )
                     ) {
                         append("com a data de validade selecionada.")
                     }
@@ -119,7 +130,7 @@ fun SelectableDatesRow(
         ) {
             items(dates) { date ->
                 DateItem(
-                    date = date,
+                    date = formatarData(date),
                     isSelected = date == currentDate,
                     onClick = {
                         currentDate = date
@@ -157,5 +168,69 @@ fun DateItem(
             letterSpacing = letterSpacingPrincipal,
             textAlign = TextAlign.Center
         )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MonthYearPicker(
+    selectedMonth: String,
+    selectedYear: Int,
+    onMonthSelected: (String) -> Unit,
+    onYearSelected: (Int) -> Unit,
+    currentYear: Int = 2024,
+    yearRange: IntRange = (1900..currentYear)
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val months = listOf(
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    )
+
+    Column {
+        // Month Picker
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded }
+        ) {
+            TextField(
+                value = selectedMonth,
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Select Month") },
+                trailingIcon = {
+                    Icon(Icons.Filled.ArrowDropDown, null)
+                }
+            )
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                months.forEach { month ->
+                    DropdownMenuItem(onClick = {
+                        onMonthSelected(month)
+                        expanded = false
+                    },
+                        text = {
+                            Text(text = month)
+                        })
+                }
+            }
+        }
+
+        // Year Picker
+        LazyColumn(
+            modifier = Modifier.height(200.dp) // Set an appropriate height
+        ) {
+            items(yearRange.toList()) { year ->
+                Text(
+                    text = year.toString(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                        .clickable { onYearSelected(year) }
+                )
+            }
+        }
     }
 }

@@ -16,5 +16,5 @@ interface ProdutoService {
     @POST("/produto")
     suspend fun adicionarProduto(@Body produto: Produto): Response<Produto>
     @PUT("/produto/{empresaId}/{produtoId}")
-    suspend fun putProduto(@Path("empresaId") empresaId: Int, @Path("produtoId") produtoId: Int, @Body produto: Produto): Response<Produto>
+    suspend fun atualizarProduto(@Path("empresaId") empresaId: Int, @Path("produtoId") produtoId: Int, @Body produto: Produto): Response<Produto>
 }

@@ -1,5 +1,6 @@
 package school.sptech.ui.screens
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -7,10 +8,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import formatarDecimal
@@ -24,10 +27,17 @@ import school.sptech.ui.components.TopBarVoltar
 import school.sptech.ui.viewModel.DespesaViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import formatarData
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import school.sptech.Routes
 import school.sptech.navigation.NavBar
 import school.sptech.ui.components.AlertError
+import school.sptech.ui.components.AlertSuccess
 import java.time.LocalDate
+import kotlin.coroutines.cancellation.CancellationException
 
 class TelaAdicionarDespesa : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,14 +51,16 @@ class TelaAdicionarDespesa : ComponentActivity() {
     }
 }
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun TelaAddDespesa(
     viewModel: DespesaViewModel = viewModel(),
     navController: NavHostController = rememberNavController()
 ) {
-    viewModel.getCategoriasDespesa()
-    var deuRuim by remember { mutableStateOf(viewModel.deuErro) }
-    var msg by remember { mutableStateOf(viewModel.erro) }
+    LaunchedEffect("categorias") {
+        viewModel.getCategoriasDespesa()
+
+    }
 
     Scaffold(
         topBar = {
@@ -73,25 +85,46 @@ fun TelaAddDespesa(
                 onCancelClick = { navController.popBackStack() },
                 onAddClick = {
                     viewModel.adicionarDespesa()
-                    deuRuim = viewModel.deuErro
-                    msg = viewModel.erro
-
-                    if (!deuRuim && msg.isNotBlank()) {
-                        navController.navigate(NavBar.Financas.route){
-                            popUpTo(Routes.AdicionarDespesa.route) {
-                                inclusive = true
-                            }
-                            launchSingleTop = true
-                        }
-                    }
                 }
             )
         }
+
+        if (viewModel.deuErro) {
+            AlertError(msg = viewModel.erro)
+
+            LaunchedEffect(key1 = "success") {
+                delay(5000)
+                viewModel.deuErro = false
+            }
+        }
+
+        if (!viewModel.deuErro && viewModel.erro.isNotEmpty()) {
+            AlertSuccess(msg = "Despesa adicionada com sucesso!")
+
+            DisposableEffect(key1 = "Sucess") {
+                val job = CoroutineScope(Dispatchers.Main).launch {
+                    try {
+                        delay(3000)
+                        viewModel.erro = ""
+                        navController.navigate(NavBar.Financas.route) {
+                            popUpTo(Routes.AdicionarDespesa.route) {
+                                inclusive = true
+                            }
+
+                            launchSingleTop = true
+                        }
+
+                    } catch (e: CancellationException) {
+                        throw e
+                    }
+                }
+                onDispose {
+                    job.cancel()
+                }
+            }
+        }
     }
 
-    if (deuRuim || msg.isNotBlank()) {
-        AlertError(msg = viewModel.erro)
-    }
 }
 
 @Composable
@@ -142,7 +175,9 @@ fun DespesaForm(viewModel: DespesaViewModel) {
         // Payment Method Dropdown
         DropdownFieldWithLabel(
             value = viewModel.despesa.formaPagamento ?: "",
-            onValueChange = { viewModel.despesa = viewModel.despesa.copy(formaPagamento = it) },
+            onValueChange = {
+                viewModel.despesa = viewModel.despesa.copy(formaPagamento = it)
+            },
             label = stringResource(R.string.forma_pagamento),
             options = formasPagamento
         )
