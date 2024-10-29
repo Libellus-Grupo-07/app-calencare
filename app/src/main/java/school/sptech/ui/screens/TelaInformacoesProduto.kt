@@ -15,17 +15,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import formatarData
 import formatarDataDatePicker
 import getColorTextEstoque
 import getEnabledButtonRetirarEstoque
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import school.sptech.R
@@ -47,7 +44,6 @@ import school.sptech.ui.components.RetirarProductModal
 import school.sptech.ui.components.TopBarInformacoesProduto
 import school.sptech.ui.theme.CalencareAppTheme
 import school.sptech.ui.theme.RoxoNubank
-import school.sptech.ui.theme.Vermelho
 import school.sptech.ui.theme.fontFamilyPoppins
 import school.sptech.ui.viewModel.ProdutoViewModel
 import school.sptech.ui.viewModel.ReporProdutoViewModel
@@ -79,13 +75,13 @@ fun TelaInformacoesProdutoScreen(
     LaunchedEffect(Unit) {
         produtoViewModel.getCategoriasProduto()
         produtoViewModel.getProdutoById(empresaId = idEmpresa, produtoId = idProduto)
-        validadeViewModel.getValidades(idProduto)
+//        validadeViewModel.getValidades(idProduto)
     }
 
     val produto = produtoViewModel.getProdutoAtual()
     produto.qtdEstoque = validadeViewModel.getTotalEstoqueProduto(idProduto)
 
-    val validades = validadeViewModel.listaValidades
+    val validades = validadeViewModel.getValidades(idProduto)
     val listaValidades = validades.map { it.dtValidade ?: "" }
 
     var exibirModalRetirar by remember {
@@ -149,7 +145,6 @@ fun TelaInformacoesProdutoScreen(
                     reporProdutoViewModel.setQuantidadeInicial(0)
                     reporProdutoViewModel.setQuantidadeMaxima(0)
                     reporProdutoViewModel.quantidadeEstoqueData.value = 0
-
                 },
                 produto = produto.nome ?: "",
                 quantidadeEstoque = produto.qtdEstoque ?: 0,
@@ -161,7 +156,7 @@ fun TelaInformacoesProdutoScreen(
 
                     validadeViewModel.validade = validade!!
                     reporProdutoViewModel.quantidadeEstoqueData.value =
-                        validadeViewModel.getQuantidadeEstoqueValidade(validade.id!!)
+                        validadeViewModel.getQuantidadeEstoqueDaValidade()
 
                     reporProdutoViewModel.setQuantidadeMaxima(0)
 
@@ -205,7 +200,6 @@ fun TelaInformacoesProdutoScreen(
                     validadeViewModel.adicionarValidade()
 
                     exibirAdicionarData = false
-                    exibirModalRepor = true
                 }
             )
         }
@@ -255,7 +249,7 @@ fun TelaInformacoesProdutoScreen(
                     }
                     validadeViewModel.validade = validade!!
 
-                    val qtdMaxima = validadeViewModel.getQuantidadeEstoqueValidade(validade.id!!)
+                    val qtdMaxima = validadeViewModel.getQuantidadeEstoqueDaValidade()
 
                     reporProdutoViewModel.quantidadeEstoqueData.value = qtdMaxima
                     reporProdutoViewModel.setQuantidadeMaxima(qtdMaxima)

@@ -52,7 +52,6 @@ import formatarData
 import formatarDataDatePicker
 import formatarDecimal
 import formatarValorMonetario
-import kotlinx.coroutines.delay
 import school.sptech.R
 import school.sptech.data.model.Despesa
 import school.sptech.data.model.Movimentos
@@ -76,7 +75,6 @@ import school.sptech.ui.theme.Vermelho
 import school.sptech.ui.theme.VermelhoOpacidade15
 import school.sptech.ui.theme.fontFamilyPoppins
 import school.sptech.ui.theme.letterSpacingPrincipal
-import school.sptech.ui.viewModel.MovimentacaoValidadeViewModel
 import school.sptech.ui.viewModel.ReporProdutoViewModel
 import school.sptech.ui.viewModel.ValidadeViewModel
 import transformarEmLocalDateTime
@@ -142,13 +140,12 @@ fun CardProduto(
     var dateValue by remember { mutableStateOf(0L) }
 
     LaunchedEffect("estoque") {
-
         validadeViewModel.getValidades(produto.id!!)
+//        validadeViewModel.getTotalEstoqueProduto(produto.id!!)
     }
 
 //    val qtdEstoque = validadeViewModel.getTotalEstoqueProduto(produto.id!!)
-    val qtdEstoque = produto.qtdEstoque
-//    produto.qtdEstoque = validadeViewModel.getTotalEstoqueProduto(produto.id!!)
+    val qtdEstoque = 0
     produto.validades = validadeViewModel.listaValidades
 
     Row(
@@ -197,9 +194,13 @@ fun CardProduto(
                     color = Cinza,
                     fontFamily = fontFamilyPoppins
                 )
+
                 Spacer(modifier = Modifier.size(8.dp))
 
-                ButtonEstoque(qtdEstoque = produto.qtdEstoque ?: 0)
+                ButtonEstoque(
+//                    qtdEstoque =  validadeViewModel.getTotalEstoqueProduto(produto.id!!),
+                    qtdEstoque =  0
+                )
 
                 if (isTelaInicio) {
                     TextButton(
@@ -312,7 +313,7 @@ fun CardProduto(
                         reporProdutoViewModel.setQuantidadeMaxima(0)
                     },
                     produto = produto.nome ?: "",
-                    quantidadeEstoque = produto.qtdEstoque ?: 0,
+                    quantidadeEstoque = qtdEstoque ?: 0,
                     onDateSelected = {
                         val validade = produto.validades?.find { validadeAtual ->
                             it!!.equals(validadeAtual.dtValidade ?: "")
@@ -320,7 +321,7 @@ fun CardProduto(
 
                         validadeViewModel.validade = validade!!
                         reporProdutoViewModel.quantidadeEstoqueData.value =
-                            validadeViewModel.getQuantidadeEstoqueValidade(validade.id!!)
+                            validadeViewModel.getQuantidadeEstoqueDaValidade()
 
                         reporProdutoViewModel.setQuantidadeMaxima(0)
                     },
@@ -346,7 +347,7 @@ fun CardProduto(
             if (exibirModalRetirar) {
                 RetirarProductModal(
                     produto = produto.nome ?: "",
-                    quantidadeEstoque = produto.qtdEstoque ?: 0,
+                    quantidadeEstoque = qtdEstoque ?: 0,
                     onDismiss = {
                         exibirModalRetirar = false
                         reporProdutoViewModel.setQuantidadeInicial(0)
@@ -372,7 +373,7 @@ fun CardProduto(
 
                         validadeViewModel.validade = validade!!
                         val qtdMaxima =
-                            validadeViewModel.getQuantidadeEstoqueValidade(validade.id!!)
+                            validadeViewModel.getQuantidadeEstoqueDaValidade()
 
                         reporProdutoViewModel.quantidadeEstoqueData.value = qtdMaxima
                         reporProdutoViewModel.setQuantidadeMaxima(qtdMaxima)

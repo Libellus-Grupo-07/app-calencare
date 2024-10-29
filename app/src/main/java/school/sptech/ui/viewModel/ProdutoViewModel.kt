@@ -37,6 +37,7 @@ class ProdutoViewModel : ViewModel() {
     }
 
     fun getListaProdutos(): List<Produto> {
+        getProdutos()
         return produtos.toList()
     }
 

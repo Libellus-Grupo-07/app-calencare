@@ -99,7 +99,6 @@ fun BoxKpisEstoque(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun BoxProdutos(
     navController: NavController,

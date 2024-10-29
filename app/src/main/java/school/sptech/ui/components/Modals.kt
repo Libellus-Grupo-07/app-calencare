@@ -508,8 +508,8 @@ fun AlertError(msg: String) {
         modifier = Modifier
             .fillMaxSize()
             .zIndex(1f)
-            .padding(top = 64.dp),
-        verticalArrangement = Arrangement.Top,
+            .padding(bottom = 64.dp),
+        verticalArrangement = Arrangement.Bottom,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         ExtendedFloatingActionButton(
@@ -563,8 +563,8 @@ fun AlertSuccess(msg: String) {
         modifier = Modifier
             .fillMaxSize()
             .zIndex(1f)
-            .padding(top = 64.dp),
-        verticalArrangement = Arrangement.Top,
+            .padding(bottom = 64.dp),
+        verticalArrangement = Arrangement.Bottom,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
