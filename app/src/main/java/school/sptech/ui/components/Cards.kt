@@ -144,7 +144,8 @@ fun CardProduto(
 //        validadeViewModel.getTotalEstoqueProduto(produto.id!!)
     }
 
-    val qtdEstoque = validadeViewModel.getTotalEstoqueProduto(produto.id!!)
+//    val qtdEstoque = validadeViewModel.getTotalEstoqueProduto(produto.id!!)
+    val qtdEstoque = 0
     produto.validades = validadeViewModel.listaValidades
 
     Row(
@@ -197,7 +198,8 @@ fun CardProduto(
                 Spacer(modifier = Modifier.size(8.dp))
 
                 ButtonEstoque(
-                    qtdEstoque =  validadeViewModel.getTotalEstoqueProduto(produto.id!!),
+//                    qtdEstoque =  validadeViewModel.getTotalEstoqueProduto(produto.id!!),
+                    qtdEstoque =  0
                 )
 
                 if (isTelaInicio) {

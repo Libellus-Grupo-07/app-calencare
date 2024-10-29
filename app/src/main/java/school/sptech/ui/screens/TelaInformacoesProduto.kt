@@ -75,13 +75,13 @@ fun TelaInformacoesProdutoScreen(
     LaunchedEffect(Unit) {
         produtoViewModel.getCategoriasProduto()
         produtoViewModel.getProdutoById(empresaId = idEmpresa, produtoId = idProduto)
-        validadeViewModel.getValidades(idProduto)
+//        validadeViewModel.getValidades(idProduto)
     }
 
     val produto = produtoViewModel.getProdutoAtual()
     produto.qtdEstoque = validadeViewModel.getTotalEstoqueProduto(idProduto)
 
-    val validades = validadeViewModel.listaValidades
+    val validades = validadeViewModel.getValidades(idProduto)
     val listaValidades = validades.map { it.dtValidade ?: "" }
 
     var exibirModalRetirar by remember {
@@ -145,7 +145,6 @@ fun TelaInformacoesProdutoScreen(
                     reporProdutoViewModel.setQuantidadeInicial(0)
                     reporProdutoViewModel.setQuantidadeMaxima(0)
                     reporProdutoViewModel.quantidadeEstoqueData.value = 0
-
                 },
                 produto = produto.nome ?: "",
                 quantidadeEstoque = produto.qtdEstoque ?: 0,
@@ -201,7 +200,6 @@ fun TelaInformacoesProdutoScreen(
                     validadeViewModel.adicionarValidade()
 
                     exibirAdicionarData = false
-                    exibirModalRepor = true
                 }
             )
         }
