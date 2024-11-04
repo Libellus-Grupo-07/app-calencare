@@ -74,4 +74,5 @@
     <string name="possui_validade">Possui Validade?</string>
     <string name="campo_obrigatorio">Campo obrigatório.</string>
     <string name="observacao">Observação</string>
+    <string name="title_activity_tela_editar_despesa">TelaEditarDespesa</string>
 </resources>
