@@ -17,7 +17,6 @@ import school.sptech.network.RetrofitService
 import school.sptech.preferencesHelper
 
 class ProdutoViewModel : ViewModel() {
-    //class ProdutoViewModel(private val validadeViewModel: ValidadeViewModel) : ViewModel() {
     private val produtoService: ProdutoService;
     private val categoriaProdutoService: CategoriaProdutoService;
 
@@ -37,7 +36,6 @@ class ProdutoViewModel : ViewModel() {
     }
 
     fun getListaProdutos(): List<Produto> {
-        getProdutos()
         return produtos.toList()
     }
 
@@ -70,11 +68,6 @@ class ProdutoViewModel : ViewModel() {
         return _produtoAtual
     }
 
-    fun getProduto(empresaId: Int, produtoId: Int): Produto {
-        getProdutoById(empresaId, produtoId)
-        return produto
-    }
-
     fun getProdutoById(empresaId: Int, produtoId: Int) {
         GlobalScope.launch {
             try {
@@ -99,8 +92,6 @@ class ProdutoViewModel : ViewModel() {
     fun getProdutos(empresaId: Int): List<Produto> {
         this.empresaId = empresaId
         getProdutos()
-//        getValidades()
-//        getQuantidadeTotalEstoque()
         return produtos.toList()
     }
 
@@ -122,22 +113,6 @@ class ProdutoViewModel : ViewModel() {
                 Log.e("api", "Erro ao buscar produtos => ${ex.message}")
                 deuErro = true
                 erro = ex.message ?: "Erro desconhecido"
-            }
-        }
-    }
-
-    private fun getValidades() {
-        GlobalScope.launch {
-            produtos.forEach { produto ->
-//               produto.validades = validadeViewModel.getValidades(produto.id!!)
-            }
-        }
-    }
-
-    private fun getQuantidadeTotalEstoque() {
-        GlobalScope.launch {
-            produtos.forEach { produto ->
-//                produto.qtdEstoque = validadeViewModel.getTotalEstoqueProduto(produto.id!!)
             }
         }
     }

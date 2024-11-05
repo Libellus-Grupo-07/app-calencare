@@ -69,6 +69,7 @@ import school.sptech.ui.theme.Vermelho
 import school.sptech.ui.theme.VermelhoOpacidade15
 import school.sptech.ui.theme.fontFamilyPoppins
 import school.sptech.ui.theme.letterSpacingPrincipal
+import school.sptech.ui.viewModel.EnderecoViewModel
 import school.sptech.ui.viewModel.ReporProdutoViewModel
 
 @Composable
@@ -514,11 +515,11 @@ fun AlertError(msg: String) {
     ) {
         ExtendedFloatingActionButton(
             modifier = Modifier
-                .border(
-                    width = 1.dp,
-                    color = VermelhoOpacidade15,
-                    shape = RoundedCornerShape(16.dp)
-                )
+//                .border(
+//                    width = 1.dp,
+//                    color = VermelhoOpacidade15,
+//                    shape = RoundedCornerShape(16.dp)
+//                )
                 .fillMaxWidth(0.86f),
             text = {
                 Text(
@@ -558,7 +559,7 @@ fun AlertError(msg: String) {
 }
 
 @Composable
-fun AlertSuccess(msg: String) {
+fun AlertSuccess(msg: String, onClick: () -> Unit = {}) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -573,11 +574,11 @@ fun AlertSuccess(msg: String) {
             contentColor = Verde,
             containerColor = Color(0xFFD8F1D2),
             modifier = Modifier
-                .border(
-                    width = 1.dp,
-                    color = VerdeOpacidade15,
-                    shape = RoundedCornerShape(16.dp)
-                )
+//                .border(
+//                    width = 1.dp,
+//                    color = VerdeOpacidade15,
+//                    shape = RoundedCornerShape(16.dp)
+//                )
                 .fillMaxWidth(0.86f),
             elevation = FloatingActionButtonDefaults.elevation(
                 defaultElevation = 24.dp,
@@ -595,8 +596,142 @@ fun AlertSuccess(msg: String) {
                 )
             },
             icon = { Icon(Icons.Filled.Check, contentDescription = "") },
-            onClick = {
-            }
+            onClick = onClick
         )
     }
+}
+
+@Composable
+fun ModalEditarEndereco(
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+    enderecoViewModel: EnderecoViewModel
+) {
+    val endereco = enderecoViewModel.endereco
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        dismissButton = {
+            ButtonCancelar(onClick = onDismiss)
+        },
+        confirmButton = {
+            ButtonBackground(titulo = "Salvar", cor = RoxoNubank, onClick = onConfirm)
+        },
+        containerColor = Branco,
+        properties = DialogProperties(
+            dismissOnBackPress = true,
+            dismissOnClickOutside = true
+        ),
+        title = {
+            Row(modifier =  Modifier.padding(horizontal = 8.dp, vertical = 8.dp)) {
+                TituloLarge(titulo = stringResource(id = R.string.editarEndereco))
+                Spacer(modifier = Modifier.weight(1f))
+                IconButton(
+                    onClick = onDismiss,
+                    modifier = Modifier.size(24.dp),
+                    colors = IconButtonDefaults.iconButtonColors(
+                        contentColor = Preto,
+                        containerColor = Color.Transparent,
+                    )
+                ) {
+                    Icon(Icons.Filled.Close, contentDescription = "Fechar")
+                }
+            }
+        },
+        text = {
+            Column(
+                modifier = Modifier.padding(horizontal = 8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                // CEP
+                FormFieldWithLabel(
+                    isSmallInput = true,
+                    value = endereco.cep ?: "",  // Valor alterado
+                    onValueChange = {
+                        enderecoViewModel.endereco = enderecoViewModel.endereco.copy(cep = it)
+
+                        if (it.length >= 9) {
+                            enderecoViewModel.buscarEnderecoPorCep()
+                        }
+                    },
+                    label = stringResource(id = R.string.cep)
+                )
+
+                FormFieldWithLabel(
+                    isSmallInput = true,
+                    value = endereco.logradouro ?: "",  // Valor alterado
+                    onValueChange = {
+                        enderecoViewModel.endereco =
+                            enderecoViewModel.endereco.copy(logradouro = it)
+                    },
+                    label = stringResource(id = R.string.logradouro)
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    Arrangement.SpaceBetween
+                ) {
+                    Column(modifier = Modifier.weight(0.3f)) {
+                        FormFieldWithLabel(
+                            isSmallInput = true,
+                            value = endereco.numero.toString() ?: "",  // Valor alterado
+                            onValueChange = {
+                                enderecoViewModel.endereco =
+                                    enderecoViewModel.endereco.copy(numero = it)
+                            },
+                            isNumericInput = true,
+                            label = stringResource(id = R.string.numero)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.size(8.dp))
+
+                    Column(modifier = Modifier.weight(0.5f)) {
+                        FormFieldWithLabel(
+                            isSmallInput = true,
+                            value = endereco.complemento ?: "",  // Valor alterado
+                            onValueChange = {
+                                enderecoViewModel.endereco =
+                                    enderecoViewModel.endereco.copy(complemento = it)
+                            },
+                            label = stringResource(id = R.string.complemento)
+                        )
+                    }
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    Arrangement.SpaceBetween
+                ) {
+                    Column(modifier = Modifier.weight(0.7f)) {
+                        FormFieldWithLabel(
+                            isSmallInput = true,
+                            value = endereco.localidade ?: "",  // Valor alterado
+                            onValueChange = {
+                                enderecoViewModel.endereco =
+                                    enderecoViewModel.endereco.copy(localidade = it)
+                            },
+                            isNumericInput = true,
+                            label = stringResource(id = R.string.cidade)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.size(8.dp))
+
+                    Column(modifier = Modifier.weight(0.4f)) {
+                        FormFieldWithLabel(
+                            isSmallInput = true,
+                            value = endereco.uf ?: "",  // Valor alterado
+                            onValueChange = {
+                                enderecoViewModel.endereco =
+                                    enderecoViewModel.endereco.copy(uf = it)
+                            },
+                            label = stringResource(id = R.string.uf)
+                        )
+                    }
+                }
+            }
+        }
+    )
 }

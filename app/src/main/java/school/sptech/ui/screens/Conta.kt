@@ -27,15 +27,17 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import okhttp3.Route
+import kotlinx.coroutines.delay
 import school.sptech.Routes
-import school.sptech.data.model.Funcionario
 import school.sptech.preferencesHelper
+import school.sptech.ui.components.AlertError
+import school.sptech.ui.components.AlertSuccess
 import school.sptech.ui.components.Background
 import school.sptech.ui.components.BoxPerfil
 import school.sptech.ui.components.FormDadosEmpresa
 import school.sptech.ui.components.FormDadosPessoais
 import school.sptech.ui.components.ModalConfirmarSair
+import school.sptech.ui.components.ModalEditarEndereco
 import school.sptech.ui.components.TopBarConta
 import school.sptech.ui.theme.CalencareAppTheme
 import school.sptech.ui.viewModel.EmpresaViewModel
@@ -76,7 +78,8 @@ fun TelaConta(
     val usuario = usuarioViewModel.usuario
     val empresa = empresaViewModel.empresa
     val endereco = enderecoViewModel.endereco
-    var exibirModal by remember { mutableStateOf(false) }
+    var exibirModalSair by remember { mutableStateOf(false) }
+    var exibirModalEndereco by remember { mutableStateOf(false) }
 
     var telaAtual by remember {
         mutableStateOf(navController.currentBackStackEntry?.destination?.route)
@@ -95,9 +98,13 @@ fun TelaConta(
             // Linha para os botões "Voltar", "Sair da Conta" e "Salvar"
 
             TopBarConta(
-                onClickSalvar = {},
+                onClickSalvar = {
+                    empresaViewModel.atualizarEmpresa()
+                    usuarioViewModel.atualizarFuncionario()
+                    enderecoViewModel.atualizarEndereco()
+                },
                 onClickSair = {
-                    exibirModal = true
+                    exibirModalSair = true
                 },
                 navController = navController,
                 enabledButtonSalvar = enabledButtonSalvar
@@ -125,26 +132,28 @@ fun TelaConta(
                         Routes.DadosEmpresa.route -> {
                             FormDadosEmpresa(
                                 empresaViewModel = empresaViewModel,
-                                enderecoViewModel = enderecoViewModel,
                                 empresa = empresa,
-                                endereco = endereco
+                                endereco = endereco,
+                                onClickInputEndereco = {
+                                    exibirModalEndereco = true
+                                }
                             )
                         }
 
                         else -> {
-                            FormDadosPessoais(usuario)
+                            FormDadosPessoais(usuario, usuarioViewModel)
                         }
                     }
                 }
             }
         }
 
-        if(exibirModal){
+        if (exibirModalSair) {
             ModalConfirmarSair(
                 onConfirm = {
                     preferencesHelper.saveIdEmpresa(-1)
                     preferencesHelper.saveIdUsuario(-1)
-                    exibirModal = false
+                    exibirModalSair = false
                     navController.navigate(Routes.Login.route) {
                         popUpTo(0) {
                             inclusive = true
@@ -153,9 +162,57 @@ fun TelaConta(
                     }
                 },
                 onDismiss = {
-                    exibirModal = false
+                    exibirModalSair = false
                 }
             )
+        }
+
+        if(exibirModalEndereco){
+            ModalEditarEndereco(
+                onDismiss = { exibirModalEndereco = false },
+                onConfirm = {
+                    enderecoViewModel.atualizarEndereco()
+
+                    if(!enderecoViewModel.deuErro){
+                        exibirModalEndereco = false
+                    }
+                },
+                enderecoViewModel = enderecoViewModel
+            )
+        }
+
+        if (usuarioViewModel.deuErro || empresaViewModel.deuErro || enderecoViewModel.deuErro) {
+            AlertError(msg =
+                if (usuarioViewModel.deuErro) {
+                    usuarioViewModel.erro
+                } else
+                    empresaViewModel.erro
+            )
+
+            LaunchedEffect("error") {
+                delay(5000)
+                usuarioViewModel.deuErro = false
+                empresaViewModel.deuErro = false
+                enderecoViewModel.deuErro = false
+            }
+        } else if(
+            usuarioViewModel.erro.isNotEmpty() &&
+            empresaViewModel.erro.isNotEmpty()) {
+            AlertSuccess(msg = "Informações atualizadas com sucesso!")
+
+            LaunchedEffect("sucess") {
+                delay(5000)
+                navController.popBackStack()
+            }
+        } else if(enderecoViewModel.erro.isNotEmpty()){
+            AlertSuccess(
+                msg = "Endereço atualizado com sucesso!",
+                onClick = { enderecoViewModel.erro = "" }
+            )
+
+            LaunchedEffect("sucess") {
+                delay(5000)
+            }
         }
     }
 }

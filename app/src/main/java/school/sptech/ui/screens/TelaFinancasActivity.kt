@@ -79,8 +79,6 @@ fun TelaFinancas(
     var mostrarSeletorData by remember { mutableStateOf(false) }
     val idEmpresa = preferencesHelper.getIdEmpresa()
 
-    var despesas = despesaViewModel.listaDespesas
-
     LaunchedEffect(Unit) {
         financasViewModel.getFinancas(
             empresaId = idEmpresa,
@@ -129,7 +127,7 @@ fun TelaFinancas(
         despesasTotais = despesasTotais,
         faturamento = faturamento.value,
         comissoes = comissoes.value,
-        despesas = despesas,
+        despesas = despesaViewModel.getListaDespesas(),
         corTitulo = Preto,
         adicionarDespesa = { navController.navigate(Routes.AdicionarDespesa.route) }
     )

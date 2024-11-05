@@ -1,14 +1,17 @@
 package school.sptech.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Button
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -16,16 +19,20 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MenuItemColors
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import formatarDataDatePicker
 import school.sptech.R
 import school.sptech.data.model.Empresa
@@ -33,9 +40,12 @@ import school.sptech.data.model.Endereco
 import school.sptech.data.model.Funcionario
 import school.sptech.ui.theme.Branco
 import school.sptech.ui.theme.Cinza
+import school.sptech.ui.theme.Preto
 import school.sptech.ui.theme.RoxoNubank
+import school.sptech.ui.theme.fontFamilyPoppins
+import school.sptech.ui.theme.letterSpacingPrincipal
 import school.sptech.ui.viewModel.EmpresaViewModel
-import school.sptech.ui.viewModel.EnderecoViewModel
+import school.sptech.ui.viewModel.UsuarioViewModel
 
 @Composable
 fun FormFieldWithLabel(
@@ -45,39 +55,66 @@ fun FormFieldWithLabel(
     isMultiline: Boolean = false,
     readOnly: Boolean = false,
     isDateInput: Boolean = false,
-    isNumericInput: Boolean = false
+    isNumericInput: Boolean = false,
+    isSmallInput: Boolean = false,
+    clickableInput: Boolean = false,
+    onClickInput: () -> Unit = {}
 ) {
     var enabledDatePicker by remember { mutableStateOf(false) }
     val dateValue: Long = if (isDateInput && value.isNotEmpty()) value.toLong() else 0L
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        LabelInput(label = label)
-        InputMedium(
-            value = if (isDateInput && value.isNotBlank()) formatarDataDatePicker(
-                inputFormat = true,
-                data = dateValue
-            ) else value,
-            onValueChange = onValueChange,
-            label = label,
-            readOnly = readOnly,
-            isNumericInput = isNumericInput,
-            isMultiline = isMultiline,
-            trailingIcon = {
-                if (isDateInput) {
-                    IconButton(onClick = { enabledDatePicker = true }) {
-                        Icon(
-                            painter = painterResource(id = R.mipmap.calendario),
-                            contentDescription = "Ícone de calendário",
-                            modifier = Modifier.size(18.dp),
-                        )
+        LabelInput(label = label, isSmallInput = isSmallInput)
+
+        if (clickableInput) {
+            TextButton(
+                onClick = onClickInput,
+                border = BorderStroke(1.dp, Cinza),
+                shape = RoundedCornerShape(if (isMultiline) 20.dp else 100.dp),
+                colors = ButtonColors(
+                    contentColor = Preto,
+                    containerColor = Color.Transparent,
+                    disabledContentColor = Preto,
+                    disabledContainerColor = Color.Transparent,
+                ),
+                contentPadding = PaddingValues(
+                    horizontal = 24.dp,
+                    vertical = 20.dp
+                ),
+            ) {
+                Text(
+                    text = value,
+                    fontSize = 13.5.sp,
+                    fontFamily = fontFamilyPoppins,
+                    fontWeight = FontWeight.Medium,
+                    letterSpacing = letterSpacingPrincipal,
+                )
+            }
+        } else {
+            InputMedium(
+                value = if (isDateInput && value.isNotBlank()) formatarDataDatePicker(
+                    inputFormat = true,
+                    data = dateValue
+                ) else value,
+                onValueChange = onValueChange,
+                label = if(isNumericInput) "" else label,
+                readOnly = readOnly,
+                isNumericInput = isNumericInput,
+                isSmallInput = isSmallInput,
+                isMultiline = isMultiline,
+                trailingIcon = {
+                    if (isDateInput) {
+                        IconButton(onClick = { enabledDatePicker = true }) {
+                            Icon(
+                                painter = painterResource(id = R.mipmap.calendario),
+                                contentDescription = "Ícone de calendário",
+                                modifier = Modifier.size(18.dp),
+                            )
+                        }
                     }
-                }
-            },
-            modifier = Modifier
-                .clickable(enabled = isDateInput, onClick =  {
-                enabledDatePicker = true
-            })
-        )
+                },
+            )
+        }
     }
 
     if (isDateInput) {
@@ -176,25 +213,34 @@ fun FormButtons(
 }
 
 @Composable
-fun FormDadosPessoais(usuario: Funcionario) {
+fun FormDadosPessoais(
+    usuario: Funcionario,
+    usuarioViewModel: UsuarioViewModel
+) {
     // Nome
     FormFieldWithLabel(
         value = usuario.nome ?: "",
-        onValueChange = { },
+        onValueChange = {
+            usuarioViewModel.usuario = usuarioViewModel.usuario.copy(nome = it)
+        },
         label = stringResource(R.string.nome)
     )
 
     // Telefone
     FormFieldWithLabel(
         value = usuario.telefone ?: "",
-        onValueChange = {},
+        onValueChange = {
+            usuarioViewModel.usuario = usuarioViewModel.usuario.copy(telefone = it)
+        },
         label = stringResource(R.string.telefone)
     )
 
     // Email
     FormFieldWithLabel(
         value = usuario.email ?: "",
-        onValueChange = {},
+        onValueChange = {
+            usuarioViewModel.usuario = usuarioViewModel.usuario.copy(email = it)
+        },
         label = stringResource(R.string.email)
     )
 
@@ -211,9 +257,9 @@ fun FormDadosPessoais(usuario: Funcionario) {
 @Composable
 fun FormDadosEmpresa(
     empresaViewModel: EmpresaViewModel,
-    enderecoViewModel: EnderecoViewModel,
     empresa: Empresa,
-    endereco: Endereco
+    endereco: Endereco,
+    onClickInputEndereco: () -> Unit
 ) {
     FormFieldWithLabel(
         value = empresa.razaoSocial ?: "",  // Valor alterado
@@ -241,48 +287,23 @@ fun FormDadosEmpresa(
         label = stringResource(id = R.string.telefone)
     )
 
-    // CEP
     FormFieldWithLabel(
-        value = endereco.cep ?: "",  // Valor alterado
+        value = empresa.intervaloAtendimento.toString() ?: "0",
         onValueChange = {
-            enderecoViewModel.endereco = enderecoViewModel.endereco.copy(cep = it)
+            empresaViewModel.empresa =
+                empresaViewModel.empresa.copy(intervaloAtendimento = it.toInt())
         },
-        label = stringResource(id = R.string.cep)
+        label = stringResource(id = R.string.intervaloAtendimento)
     )
 
+    // Endereço
     FormFieldWithLabel(
-        value = endereco.logradouro ?: "",  // Valor alterado
-        onValueChange = {
-            enderecoViewModel.endereco = enderecoViewModel.endereco.copy(logradouro = it)
-        },
-        label = stringResource(id = R.string.logradouro)
+        value = endereco.descricaoEndereco ?: "",  // Valor alterado
+        readOnly = true,
+        onValueChange = {},
+        isMultiline = true,
+        label = stringResource(id = R.string.endereco),
+        onClickInput = onClickInputEndereco,
+        clickableInput = true
     )
-
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        Arrangement.SpaceBetween
-    ) {
-        Column(modifier = Modifier.weight(0.3f)) {
-            FormFieldWithLabel(
-                value = endereco.numero.toString() ?: "",  // Valor alterado
-                onValueChange = {
-                    enderecoViewModel.endereco = enderecoViewModel.endereco.copy(numero = it)
-                },
-                isNumericInput = true,
-                label = stringResource(id = R.string.numero)
-            )
-        }
-
-        Spacer(modifier = Modifier.size(12.dp))
-
-        Column(modifier = Modifier.weight(0.5f)) {
-            FormFieldWithLabel(
-                value = endereco.complemento ?: "",  // Valor alterado
-                onValueChange = {
-                    enderecoViewModel.endereco = enderecoViewModel.endereco.copy(complemento = it)
-                },
-                label = stringResource(id = R.string.complemento)
-            )
-        }
-    }
 }

@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +33,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import getStringProduto
 import school.sptech.R
 import school.sptech.Routes
 import school.sptech.data.model.Movimentos
@@ -58,7 +60,7 @@ fun BoxKpisEstoque(
                 Column(modifier = modifier.weight(0.4f)) {
                     CardKpi(
                         titulo = stringResource(id = R.string.produtoEstoqueAlto),
-                        valor = "$qtdProdutosEstoqueAlto produtos",
+                        valor = "$qtdProdutosEstoqueAlto ${getStringProduto(qtdProdutosEstoqueAlto)}",
                         cor = "Verde"
                     )
                 }
@@ -68,7 +70,7 @@ fun BoxKpisEstoque(
                 Column(modifier = modifier.weight(0.4f)) {
                     CardKpi(
                         titulo = stringResource(id = R.string.produtoSemEstoque),
-                        valor = "$qtdProdutosSemEstoque produtos",
+                        valor = "$qtdProdutosSemEstoque ${getStringProduto(qtdProdutosSemEstoque)}",
                         cor = "Vermelho"
                     )
                 }
@@ -80,7 +82,11 @@ fun BoxKpisEstoque(
                 Column(modifier = modifier.weight(0.5f)) {
                     CardKpi(
                         titulo = stringResource(id = R.string.produtosRepostosDia),
-                        valor = "$qtdProdutosRepostosNoDia produtos",
+                        valor = "$qtdProdutosRepostosNoDia ${
+                            getStringProduto(
+                                qtdProdutosRepostosNoDia
+                            )
+                        }",
                         cor = "Azul"
                     )
                 }
@@ -90,7 +96,7 @@ fun BoxKpisEstoque(
                 Column(modifier = modifier.weight(0.5f)) {
                     CardKpi(
                         titulo = stringResource(id = R.string.produtosEstoqueBaixo),
-                        valor = "$qtdProdutosEstoqueBaixo produtos",
+                        valor = "$qtdProdutosEstoqueBaixo ${getStringProduto(qtdProdutosEstoqueBaixo)}",
                         cor = "Laranja"
                     )
                 }
@@ -124,7 +130,9 @@ fun BoxProdutos(
 
             if (produtos.isEmpty()) {
                 Row(
-                    modifier = modifier.fillMaxSize().padding(bottom = 32.dp),
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(bottom = 32.dp),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -188,9 +196,27 @@ fun BoxMovimentos(movimentos: List<Movimentos>) {
     ) {
         TituloLarge(titulo = stringResource(id = R.string.movimentos))
 
-        LazyColumn {
-            items(movimentos.size) { index ->
-                CardMovimentos(movimentos[index])
+        if (movimentos.isEmpty()) {
+            Row(
+                modifier = Modifier.fillMaxSize().padding(bottom = 16.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Nenhum movimento encontrado",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    fontFamily = fontFamilyPoppins,
+                    letterSpacing = letterSpacingPrincipal,
+                    color = Cinza,
+                    modifier = Modifier.padding(top = 16.dp)
+                )
+            }
+        } else {
+            LazyColumn {
+                items(movimentos) { movimento ->
+                    CardMovimentos(movimento)
+                }
             }
         }
     }

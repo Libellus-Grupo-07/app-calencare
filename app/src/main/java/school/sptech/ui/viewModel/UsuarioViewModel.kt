@@ -71,4 +71,25 @@ class UsuarioViewModel : ViewModel() {
             }
         }
     }
+
+    fun atualizarFuncionario() {
+        GlobalScope.launch {
+            try {
+                val response = usuarioService.atualizarFuncionario(usuario.id!!, usuario)
+
+                if (response.isSuccessful) {
+                    deuErro = false
+                    erro = "Funcionário atualizado com sucesso"
+                } else {
+                    Log.e("api", "Erro ao tentar atualizar funcionario ${response.errorBody()?.string()}")
+                    deuErro = true
+                    erro = response.errorBody()?.string() ?: "Erro desconhecido"
+                }
+            } catch (ex: Exception) {
+                Log.e("api", "Erro ao tentar atualizar funcionario", ex)
+                deuErro = true
+                erro = ex.message ?: "Erro desconhecido"
+            }
+        }
+    }
 }

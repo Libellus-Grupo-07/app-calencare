@@ -40,9 +40,9 @@ fun transformarEmLocalDateTime(data: String): LocalDateTime {
 }
 
 
-fun formatarDecimal(valor: Number, isValueInput:Boolean = false): String {
+fun formatarDecimal(valor: Number, isValueInput: Boolean = false): String {
     val format = DecimalFormat("#,##0.00")
-    val formatted = format.format(valor.toDouble() / if(isValueInput) 100 else 1)
+    val formatted = format.format(valor.toDouble() / if (isValueInput) 100 else 1)
     return formatted
 }
 
@@ -60,6 +60,13 @@ fun formatarData(data: LocalDate): String {
 
 fun formatarData(data: String): String {
     val format = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+
+    if (data.length == 10) {
+        val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val date = LocalDate.parse(data, inputFormatter)
+        return date.format(format)
+    }
+
     val formatted = LocalDateTime.parse(data).format(format)
     return formatted
 }
@@ -69,6 +76,7 @@ fun formatarDataBd(data: LocalDate): String {
     val formatted = LocalDate.parse(data.toString()).format(format)
     return formatted
 }
+
 
 fun formatarDoubleBd(valor: String): String {
     val format = valor.replace(".", "").replace(",", ".")
@@ -92,21 +100,25 @@ fun getEnabledButtonRetirarEstoque(qtdEstoque: Int): Boolean {
     return qtdEstoque > 0
 }
 
-fun getEnabledInputDataValidade(descricaoValidade:String): Boolean{
+fun getEnabledInputDataValidade(descricaoValidade: String): Boolean {
     return !descricaoValidade.equals("Indefinido")
 }
 
+fun getStringProduto(qtdEstoque: Int): String {
+    return if (qtdEstoque == 1) "produto" else "produtos"
+}
+
 fun getColorTextEstoque(qtdEstoque: Int): Color {
-    return when{
+    return when {
         qtdEstoque == 0 -> Vermelho
         qtdEstoque in 1..5 -> Laranja
-        qtdEstoque in 6 until 15-> Amarelo
+        qtdEstoque in 6 until 15 -> Amarelo
         else -> Verde
     }
 }
 
-fun getMonthInt(month:String) : Month?{
-    Month.values().forEach{ mes ->
+fun getMonthInt(month: String): Month? {
+    Month.values().forEach { mes ->
         val nomeEmLocale = mes.getDisplayName(TextStyle.FULL, Locale("pt", "BR"));
         if (nomeEmLocale.equals(month, ignoreCase = true)) {
             return mes;
