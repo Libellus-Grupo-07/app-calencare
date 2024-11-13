@@ -23,6 +23,7 @@ import getColorTextEstoque
 import getEnabledButtonRetirarEstoque
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import school.sptech.R
@@ -81,7 +82,7 @@ fun TelaInformacoesProdutoScreen(
     val produto = produtoViewModel.getProdutoAtual()
     produto.qtdEstoque = validadeViewModel.getTotalEstoqueProduto(idProduto)
 
-    val validades = validadeViewModel.getValidades(idProduto)
+    val validades = validadeViewModel   .getValidades(idProduto)
     val listaValidades = validades.map { it.dtValidade ?: "" }
 
     var exibirModalRetirar by remember {
@@ -177,13 +178,18 @@ fun TelaInformacoesProdutoScreen(
         }
 
         if (exibirAdicionarData) {
-            exibirModalRepor = false
+//            exibirModalRepor = false
 
             DatePickerModal(
                 dateSelected = dateValue,
                 onDismiss = {
                     exibirAdicionarData = false
-                    exibirModalRepor = true
+
+//                    GlobalScope.launch {
+//                        delay(500)
+//                        exibirModalRepor = true
+//                    }
+
                 },
                 onDateSelected = { date ->
                     validadeViewModel.validade =

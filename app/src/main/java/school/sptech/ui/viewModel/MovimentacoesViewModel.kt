@@ -17,7 +17,7 @@ class MovimentacoesViewModel : ViewModel() {
     var financas = mutableListOf<Financas>()
 
     init {
-        movimentacoesService = RetrofitService.getClientFinancas()
+        movimentacoesService = RetrofitService.getClientMovimentacoes()
     }
 
     fun getFinancas(empresaId: Int, mes: Int, ano: Int) : List<Financas> {

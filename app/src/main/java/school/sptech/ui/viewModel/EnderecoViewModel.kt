@@ -30,6 +30,7 @@ class EnderecoViewModel : ViewModel() {
                     if (response.isSuccessful && response.body() != null) {
                         endereco = response.body()!!
                         deuErro = false
+                        erro = ""
                     } else {
                         Log.e(
                             "api",
@@ -45,26 +46,60 @@ class EnderecoViewModel : ViewModel() {
         }
     }
 
-//    fun buscarEnderecoPorCep(abc:String) {
+    //    fun buscarEnderecoPorCep(abc:String) {
     fun buscarEnderecoPorCep() {
         GlobalScope.launch {
             try {
                 var response = enderecoService.getEnderecoByCep(endereco.cep!!)
 
-                if (response.isSuccessful && response.body() != null) {
-                    endereco = response.body()!!
+                if (response.isSuccessful) {
+                    endereco = endereco.copy(
+                        logradouro = response.body()?.logradouro,
+                        bairro = response.body()?.bairro,
+                        localidade = response.body()?.localidade,
+                        uf = response.body()?.uf,
+                        complemento = response.body()?.complemento,
+                        numero = ""
+                    )
                     deuErro = false
-                    erro = "DEU CERTO"
+                    erro = ""
+
                 } else {
                     Log.e(
                         "api",
                         "Erro ao tentar buscar endereco ${response.errorBody()?.string()}"
                     )
                     deuErro = true
+                    erro = response.message() ?: "Erro desconhecido"
                 }
             } catch (ex: Exception) {
                 Log.e("api", "Erro ao tentar buscar endereco", ex)
                 deuErro = true
+            }
+        }
+    }
+
+    fun atualizarEndereco(){
+        GlobalScope.launch {
+            try {
+                var response = enderecoService.putEndereco(endereco.id!!, endereco)
+
+                if (response.isSuccessful) {
+                    endereco = response.body()!!
+                    deuErro = false
+                    erro = "Endereço atualizado com sucesso!"
+                } else {
+                    Log.e(
+                        "api",
+                        "Erro ao tentar atualizar endereco ${response.errorBody()?.string()}"
+                    )
+                    deuErro = true
+                    erro = response.message() ?: "Erro desconhecido"
+                }
+            } catch (ex: Exception) {
+                Log.e("api", "Erro ao tentar atualizar endereco", ex)
+                deuErro = true
+                erro = ex.message ?: "Erro desconhecido"
             }
         }
     }

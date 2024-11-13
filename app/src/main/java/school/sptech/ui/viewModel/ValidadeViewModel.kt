@@ -20,9 +20,11 @@ class ValidadeViewModel : ViewModel() {
 
     var listaValidades = mutableStateListOf<Validade>()
     private var produtoId by mutableStateOf(0)
-    var validade by mutableStateOf(Validade(
-        dtCriacao = LocalDateTime.now().toString()
-    ))
+    var validade by mutableStateOf(
+        Validade(
+            dtCriacao = LocalDateTime.now().toString()
+        )
+    )
     var movimentacaoValidade by mutableStateOf(MovimentacaoValidade())
     var quantidadeEstoqueValidade by mutableStateOf(0)
     var quantidadeTotalEstoque by mutableStateOf(0)
@@ -34,12 +36,12 @@ class ValidadeViewModel : ViewModel() {
         movimentacaoValidadeService = RetrofitService.getClientMovimentacaoValidade()
     }
 
-    fun adicionarValidade(){
+    fun adicionarValidade() {
         GlobalScope.launch {
             try {
                 val response = validadeService.adicionarValidade(validade)
 
-                if(response.isSuccessful){
+                if (response.isSuccessful) {
                     deuErro = false
                     erro = "Validade cadastrada com sucesso"
                     validade = Validade()
@@ -47,14 +49,14 @@ class ValidadeViewModel : ViewModel() {
                     deuErro = true
                     erro = response.errorBody()?.string() ?: "Erro desconhecido"
                 }
-            } catch (ex: Exception){
+            } catch (ex: Exception) {
                 deuErro = true
                 erro = ex.message ?: "Erro desconhecido"
             }
         }
     }
 
-    fun getListaValidades() : List<Validade> {
+    fun getListaValidades(): List<Validade> {
         getValidades(produtoId)
         return listaValidades
     }
@@ -75,6 +77,8 @@ class ValidadeViewModel : ViewModel() {
                     listaValidades.addAll(response.body() ?: listOf())
                     deuErro = false
                     erro = ""
+                } else if(response.code() == 404) {
+                    deuErro = false
                 } else {
                     deuErro = true
                     erro = response.errorBody()?.string() ?: "Erro desconhecido"
@@ -90,7 +94,7 @@ class ValidadeViewModel : ViewModel() {
         this.produtoId = produtoId
 
 //        if(quantidadeTotalEstoque == 0){
-            getTotalEstoqueProdutoById(produtoId)
+        getTotalEstoqueProdutoById(produtoId)
 //        }
 
         return quantidadeTotalEstoque
@@ -121,41 +125,43 @@ class ValidadeViewModel : ViewModel() {
         return quantidadeEstoqueValidade
     }
 
-    fun getQuantidadeEstoquePorValidade(){
+    fun getQuantidadeEstoquePorValidade() {
         GlobalScope.launch {
             try {
-                val response = movimentacaoValidadeService.getQuantidadePorValidade(validadeId = validade.id!!)
+                val response =
+                    movimentacaoValidadeService.getQuantidadePorValidade(validadeId = validade.id!!)
 
-                if(response.isSuccessful){
+                if (response.isSuccessful) {
                     quantidadeEstoqueValidade = response.body()!!
                     deuErro = false
                 } else {
                     deuErro = true
                     erro = response.errorBody()?.string() ?: "Erro desconhecido"
                 }
-            } catch (ex: Exception){
+            } catch (ex: Exception) {
                 deuErro = true
                 erro = ex.message ?: "Erro desconhecido"
             }
         }
     }
 
-    fun retirarEstoque(){
+    fun retirarEstoque() {
         adicionarMovimentacao(0)
     }
 
-    fun reporEstoque(){
+    fun reporEstoque() {
         adicionarMovimentacao(1)
     }
 
-    private fun adicionarMovimentacao(tipoMovimentacao:Int){
+    private fun adicionarMovimentacao(tipoMovimentacao: Int) {
         GlobalScope.launch {
             try {
                 movimentacaoValidade.tipoMovimentacao = tipoMovimentacao.toString()
                 movimentacaoValidade.idValidade = validade.id
 
-                val response = movimentacaoValidadeService.postMovimentacaoValidade(movimentacaoValidade)
-                if(response.isSuccessful){
+                val response =
+                    movimentacaoValidadeService.postMovimentacaoValidade(movimentacaoValidade)
+                if (response.isSuccessful) {
                     deuErro = false
                     erro = "Movimentação realizada com sucesso"
                     movimentacaoValidade = MovimentacaoValidade()
@@ -163,7 +169,7 @@ class ValidadeViewModel : ViewModel() {
                     deuErro = true
                     erro = response.errorBody()?.string() ?: "Erro desconhecido"
                 }
-            } catch (ex: Exception){
+            } catch (ex: Exception) {
                 deuErro = true
                 erro = ex.message ?: "Erro desconhecido"
             }

@@ -6,4 +6,5 @@ data class Empresa(
     var razaoSocial:String? = null,
     var emailPrincipal:String? = null,
     var telefonePrincipal: String? = null,
+    var intervaloAtendimento: Int? = null
 )

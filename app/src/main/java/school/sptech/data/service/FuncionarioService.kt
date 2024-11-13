@@ -14,5 +14,5 @@ interface FuncionarioService {
     @GET("/api/funcionarios/{id}")
     suspend fun getFuncionario(@Path("id") id:Int): Response<Funcionario>
     @PUT("/api/funcionarios/{id}")
-    suspend fun putFuncionario(@Path("id") id:Int, @Body funcionario: Funcionario): Response<Funcionario>
+    suspend fun atualizarFuncionario(@Path("id") id:Int, @Body funcionario: Funcionario): Response<Funcionario>
 }

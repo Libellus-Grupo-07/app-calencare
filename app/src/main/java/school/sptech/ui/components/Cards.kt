@@ -461,7 +461,7 @@ fun CardMovimentos(
 
         Row {
             Text(
-                text = formatarData(movimentos.dtMovimentos),
+                text = formatarData(movimentos.data),
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Medium,
                 fontFamily = fontFamilyPoppins,
@@ -479,10 +479,10 @@ fun CardMovimentos(
             Arrangement.SpaceBetween,
             Alignment.CenterVertically
         ) {
-            val isDespesa by remember { mutableStateOf(movimentos.tipoMovimentos == "Despesa") }
+            val isDespesa by remember { mutableStateOf(movimentos.descricao == "Despesas") }
 
             Text(
-                text = movimentos.nome,
+                text = movimentos.descricao,
                 fontSize = 13.5.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = fontFamilyPoppins,
@@ -494,7 +494,7 @@ fun CardMovimentos(
                 text = stringResource(
                     id = R.string.valorMovimentos,
                     if (isDespesa) "-" else "+",
-                    formatarDecimal(movimentos.valor.toFloat())
+                    formatarDecimal(movimentos.total.toFloat())
                 ),
                 fontSize = 15.sp,
                 fontWeight = FontWeight.ExtraBold,

@@ -91,7 +91,7 @@ fun InputIcon(
         shape = RoundedCornerShape(100.dp),
         isError = error,
         supportingText = {
-            if(error){
+            if (error) {
                 Text(
                     text = stringResource(id = R.string.campo_obrigatorio),
                     color = Vermelho,
@@ -134,14 +134,13 @@ fun InputIcon(
 
 
 @Composable
-fun InputData(selectedText:String, onClick: () -> Unit) {
+fun InputData(selectedText: String, onClick: () -> Unit) {
     TextButton(
         onClick = onClick,
         contentPadding = PaddingValues(horizontal = 24.dp, vertical = 14.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.Transparent)
-        ,
+            .background(Color.Transparent),
         colors = ButtonColors(
             contentColor = Cinza,
             containerColor = Color.Transparent,
@@ -176,19 +175,20 @@ fun InputMedium(
     label: String,
     isMultiline: Boolean = false,
     isNumericInput: Boolean = false,
-    modifier: Modifier = Modifier,
+    isSmallInput: Boolean = false,
+    modifier: Modifier = Modifier
 ){
     val shapeSize = if (isMultiline) 20.dp else 40.dp
     val textStyle = TextStyle(
         fontFamily = fontFamilyPoppins,
-        fontSize = 13.5.sp,
+        fontSize = if(isSmallInput) 11.5.sp else 13.5.sp,
         letterSpacing = letterSpacingPrincipal,
         fontWeight = FontWeight.Medium,
         color = Preto,
         baselineShift = BaselineShift(0f),
         textIndent = TextIndent(
-            firstLine = 8.sp,
-            restLine = 8.sp
+            firstLine = if(isSmallInput) 2.sp else 8.sp,
+            restLine = if(isSmallInput) 2.sp else 8.sp
         )
     )
 
@@ -197,7 +197,7 @@ fun InputMedium(
         textStyle = textStyle,
         readOnly = readOnly,
         onValueChange = onValueChange,
-        keyboardOptions = if(isNumericInput) KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal) else KeyboardOptions.Default,
+        keyboardOptions = if (isNumericInput) KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal) else KeyboardOptions.Default,
         colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = Preto,
             focusedTextColor = Preto,
@@ -213,16 +213,20 @@ fun InputMedium(
             )
         ),
         trailingIcon = trailingIcon?.let { { trailingIcon() } },
-        placeholder = { Text(
-            text = label,
-            style = textStyle,
-            fontWeight = FontWeight.Normal
-        ) },
+        placeholder = {
+            Text(
+                text = label,
+                style = textStyle,
+                fontWeight = FontWeight.Normal
+            )
+        },
         modifier = modifier
             .fillMaxWidth()
             .let {
-                if (isMultiline) it.height(124.dp) else it.height(52.dp)
-         },
+                if (isMultiline) it.height(124.dp)
+                else if(isSmallInput) it.height(48.dp)
+                else it.height(52.dp)
+            },
         shape = RoundedCornerShape(shapeSize),
         singleLine = !isMultiline,
         maxLines = if (isMultiline) Int.MAX_VALUE else 1
