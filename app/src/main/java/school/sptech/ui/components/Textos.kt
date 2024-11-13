@@ -42,14 +42,14 @@ fun TituloMedium(titulo:String) {
 }
 
 @Composable
-fun LabelInput(label:String, color: Color = Cinza, isSmallInput:Boolean = false){
+fun LabelInput(label:String, color: Color = Cinza, isSmallInput: Boolean = false){
     Text(
         text = label,
         color = color,
         fontWeight = FontWeight.Bold,
         letterSpacing = letterSpacingPrincipal,
         fontFamily = fontFamilyPoppins,
-        fontSize = if(isSmallInput) 12.sp else 14.sp,
+        fontSize = if (isSmallInput) 11.5.sp else 14.sp,
         modifier = Modifier.padding(bottom = 4.dp)
     )
 }

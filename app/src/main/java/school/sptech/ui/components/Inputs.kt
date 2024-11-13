@@ -177,7 +177,7 @@ fun InputMedium(
     isNumericInput: Boolean = false,
     isSmallInput: Boolean = false,
     modifier: Modifier = Modifier
-) {
+){
     val shapeSize = if (isMultiline) 20.dp else 40.dp
     val textStyle = TextStyle(
         fontFamily = fontFamilyPoppins,

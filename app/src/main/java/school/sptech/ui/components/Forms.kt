@@ -111,11 +111,6 @@ fun FormFieldWithLabel(
                                 modifier = Modifier.size(18.dp),
                             )
                         }
-                    }
-                },
-            )
-        }
-    }
 
     if (isDateInput) {
         if (enabledDatePicker) {
