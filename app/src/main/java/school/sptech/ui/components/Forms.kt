@@ -45,13 +45,14 @@ fun FormFieldWithLabel(
     isMultiline: Boolean = false,
     readOnly: Boolean = false,
     isDateInput: Boolean = false,
-    isNumericInput: Boolean = false
+    isNumericInput: Boolean = false,
+    isSmallInput: Boolean = false
 ) {
     var enabledDatePicker by remember { mutableStateOf(false) }
     val dateValue: Long = if (isDateInput && value.isNotEmpty()) value.toLong() else 0L
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        LabelInput(label = label)
+        LabelInput(label = label, isSmallInput = isSmallInput)
         InputMedium(
             value = if (isDateInput && value.isNotBlank()) formatarDataDatePicker(
                 inputFormat = true,
