@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -31,6 +32,7 @@ import school.sptech.ui.components.CardDespesa
 import school.sptech.ui.components.CardKpi
 import school.sptech.ui.components.SeletorData
 import school.sptech.ui.components.TextoButtonMedium
+import school.sptech.ui.components.TextoNenhumItemCadastrado
 import school.sptech.ui.components.TituloLarge
 import school.sptech.ui.components.TopBarComSelecaoData
 import school.sptech.ui.theme.*
@@ -269,11 +271,24 @@ fun ListaDespesas(despesas: List<Despesa>, corTexto: Color, adicionarDespesa: (D
             }
         }
 
-        LazyColumn {
-            items(despesas) { despesa ->
-                CardDespesa(despesa, corTexto)
+
+        if(despesas.isEmpty()){
+            Row(
+                modifier = Modifier.fillMaxSize().padding(bottom = 24.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                TextoNenhumItemCadastrado(texto = "Nenhuma despesa cadastrada")
+            }
+        } else {
+            LazyColumn {
+                items(despesas) { despesa ->
+                    CardDespesa(despesa, corTexto)
+                }
             }
         }
+
+
     }
 }
 

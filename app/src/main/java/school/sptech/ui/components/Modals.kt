@@ -461,7 +461,9 @@ fun ModalConfirmarSair(
             ButtonCancelar(onClick = onDismiss)
         },
         title = {
-            Row {
+            Row(
+                modifier =  Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+            ) {
                 TituloLarge(titulo = "Sair da Conta")
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(

@@ -55,11 +55,12 @@ fun TelaInicio(
     LaunchedEffect(Unit) {
         usuarioViewModel.getFuncionario(preferencesHelper.getIdUsuario())
         produtoViewModel.getProdutos(preferencesHelper.getIdEmpresa())
+        preferencesHelper.saveIdEmpresa(usuarioViewModel.usuario.empresa?.id ?: preferencesHelper.getIdEmpresa())
+
 //        movimentacaoValidadeViewModel.getKpisEstoque(preferencesHelper.getIdEmpresa())
     }
 
     val idEmpresa = usuarioViewModel.usuario.empresa?.id ?: preferencesHelper.getIdEmpresa()
-    preferencesHelper.saveIdEmpresa(idEmpresa)
 
     val usuario = usuarioViewModel.usuario
 

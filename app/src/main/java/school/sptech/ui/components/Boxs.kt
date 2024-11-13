@@ -136,15 +136,7 @@ fun BoxProdutos(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "Nenhum produto encontrado",
-                        textAlign = TextAlign.Center,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium,
-                        fontFamily = fontFamilyPoppins,
-                        letterSpacing = letterSpacingPrincipal,
-                        color = Cinza
-                    )
+                   TextoNenhumItemCadastrado(texto = "Nenhum produto cadastrado")
                 }
             } else {
                 LazyVerticalGrid(
@@ -198,19 +190,13 @@ fun BoxMovimentos(movimentos: List<Movimentos>) {
 
         if (movimentos.isEmpty()) {
             Row(
-                modifier = Modifier.fillMaxSize().padding(bottom = 16.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 16.dp),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "Nenhum movimento encontrado",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    fontFamily = fontFamilyPoppins,
-                    letterSpacing = letterSpacingPrincipal,
-                    color = Cinza,
-                    modifier = Modifier.padding(top = 16.dp)
-                )
+                TextoNenhumItemCadastrado(texto = "Nenhum movimento cadastrado")
             }
         } else {
             LazyColumn {
