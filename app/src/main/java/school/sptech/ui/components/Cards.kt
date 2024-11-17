@@ -37,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -52,6 +53,7 @@ import formatarData
 import formatarDataDatePicker
 import formatarDecimal
 import formatarValorMonetario
+import kotlinx.coroutines.delay
 import school.sptech.R
 import school.sptech.data.model.Despesa
 import school.sptech.data.model.Movimentos
@@ -75,9 +77,12 @@ import school.sptech.ui.theme.Vermelho
 import school.sptech.ui.theme.VermelhoOpacidade15
 import school.sptech.ui.theme.fontFamilyPoppins
 import school.sptech.ui.theme.letterSpacingPrincipal
+import school.sptech.ui.theme.letterSpacingSecundaria
 import school.sptech.ui.viewModel.ReporProdutoViewModel
 import school.sptech.ui.viewModel.ValidadeViewModel
 import transformarEmLocalDateTime
+import java.time.LocalDate
+import java.util.Locale
 
 @Composable
 fun CardKpi(titulo: String, valor: String, cor: String, modifier: Modifier = Modifier) {
@@ -141,11 +146,10 @@ fun CardProduto(
 
     LaunchedEffect("estoque") {
         validadeViewModel.getValidades(produto.id!!)
-//        validadeViewModel.getTotalEstoqueProduto(produto.id!!)
+        //validadeViewModel.getTotalEstoqueProduto(produto.id!!)
+        //validadeViewModel.atualizarQtdEstoqueValidades()
     }
 
-//    val qtdEstoque = validadeViewModel.getTotalEstoqueProduto(produto.id!!)
-    val qtdEstoque = 0
     produto.validades = validadeViewModel.listaValidades
 
     Row(
@@ -198,8 +202,7 @@ fun CardProduto(
                 Spacer(modifier = Modifier.size(8.dp))
 
                 ButtonEstoque(
-//                    qtdEstoque =  validadeViewModel.getTotalEstoqueProduto(produto.id!!),
-                    qtdEstoque =  0
+                    qtdEstoque = produto.qntdTotalEstoque ?: 0,
                 )
 
                 if (isTelaInicio) {
@@ -207,7 +210,10 @@ fun CardProduto(
                         modifier = Modifier
                             .fillMaxWidth(),
                         shape = CircleShape,
-                        onClick = { exibirModalRepor = true },
+                        onClick = {
+                            validadeViewModel.deuErro = false
+                            exibirModalRepor = true
+                        },
                         colors = ButtonDefaults.buttonColors(
                             contentColor = Branco,
                             containerColor = RoxoNubank,
@@ -230,7 +236,7 @@ fun CardProduto(
                         )
                     }
                 } else {
-                    val buttonRetirarEnabled = qtdEstoque ?: 0 > 0
+                    val buttonRetirarEnabled = produto.qntdTotalEstoque ?: 0 > 0
 
                     Row(
                         modifier = modifier.fillMaxWidth(),
@@ -243,6 +249,7 @@ fun CardProduto(
                                 .height(36.dp),
                             shape = CircleShape,
                             onClick = {
+                                validadeViewModel.deuErro = false
                                 exibirModalRetirar = true
                             }, // Atualiza o estado para abrir o modal de retirada
                             colors = ButtonDefaults.buttonColors(
@@ -271,7 +278,10 @@ fun CardProduto(
                                 .weight(0.5f)
                                 .height(36.dp),
                             shape = CircleShape,
-                            onClick = { exibirModalRepor = true },
+                            onClick = {
+                                validadeViewModel.deuErro = false
+                                exibirModalRepor = true
+                            },
                             colors = ButtonDefaults.buttonColors(
                                 contentColor = Branco,
                                 containerColor = RoxoNubank,
@@ -291,55 +301,51 @@ fun CardProduto(
                 }
             }
 
-
-            LaunchedEffect(Unit) {
-                produto.validades = validadeViewModel.getValidades(produto.id ?: 0)
-            }
-
             // Exibe o modal de reposição de produto
             if (exibirModalRepor) {
-                LaunchedEffect("exibirModalRepor") {
-                    validadeViewModel.getTotalEstoqueProduto(produto.id ?: 0)
+                LaunchedEffect(Unit) {
+                    produto.validades = validadeViewModel.getValidades(produto.id ?: 0)
                 }
-
-                produto.validades = validadeViewModel.getValidades(produto.id ?: 0)
-                produto.qtdEstoque = validadeViewModel.quantidadeTotalEstoque
 
                 ReporProductModal(
                     onDismiss = {
                         exibirModalRepor = false
-
+                        reporProdutoViewModel.quantidadeEstoqueData.value = 0
                         reporProdutoViewModel.setQuantidadeInicial(0)
                         reporProdutoViewModel.setQuantidadeMaxima(0)
                     },
                     produto = produto.nome ?: "",
-                    quantidadeEstoque = qtdEstoque ?: 0,
+                    quantidadeEstoque = produto.qntdTotalEstoque ?: 0,
                     onDateSelected = {
+                        reporProdutoViewModel.quantidadeEstoqueData.value = 0
                         val validade = produto.validades?.find { validadeAtual ->
-                            it!!.equals(validadeAtual.dtValidade ?: "")
+                            it!!.equals((validadeAtual.dtValidade ?: ""))
+                                    && validadeAtual.produtoId == produto.id
                         }
 
                         validadeViewModel.validade = validade!!
                         reporProdutoViewModel.quantidadeEstoqueData.value =
                             validadeViewModel.getQuantidadeEstoqueDaValidade()
-
-                        reporProdutoViewModel.setQuantidadeMaxima(0)
+                        reporProdutoViewModel.setQuantidadeMaxima(null)
                     },
                     onQuantidadeChanged = {
                         validadeViewModel.movimentacaoValidade =
                             validadeViewModel.movimentacaoValidade.copy(quantidade = it)
                     },
                     viewModel = reporProdutoViewModel,
-                    onClickAdicionarData = { exibirModalAdicionarData = true },
+                    onClickAdicionarData = {
+                        exibirModalAdicionarData = true
+                    },
                     onConfirm = {
                         validadeViewModel.reporEstoque()
                         if (!validadeViewModel.deuErro) {
+                            validadeViewModel.atualizarQtdEstoqueValidades()
                             reporProdutoViewModel.setQuantidadeInicial(0)
                             reporProdutoViewModel.setQuantidadeMaxima(0)
                             exibirModalRepor = false
                         }
                     },
-                    datesFromBackend = produto.validades!!.map { it.dtValidade ?: "" } ?: listOf()
+                    datesFromBackend = produto.validades?.map { it.dtValidade ?: "" } ?: listOf()
                 )
             }
 
@@ -347,7 +353,7 @@ fun CardProduto(
             if (exibirModalRetirar) {
                 RetirarProductModal(
                     produto = produto.nome ?: "",
-                    quantidadeEstoque = qtdEstoque ?: 0,
+                    quantidadeEstoque = produto.qntdTotalEstoque ?: 0,
                     onDismiss = {
                         exibirModalRetirar = false
                         reporProdutoViewModel.setQuantidadeInicial(0)
@@ -362,11 +368,12 @@ fun CardProduto(
                             reporProdutoViewModel.setQuantidadeMaxima(0)
                             reporProdutoViewModel.quantidadeEstoqueData.value = 0
                             exibirModalRetirar = false
-
                         }
                     },
                     viewModel = reporProdutoViewModel,
                     onDateSelected = {
+                        reporProdutoViewModel.quantidadeEstoqueData.value = 0
+
                         val validade = produto.validades?.find { validadeAtual ->
                             it!!.equals(validadeAtual.dtValidade ?: "")
                         }
@@ -378,7 +385,6 @@ fun CardProduto(
                         reporProdutoViewModel.quantidadeEstoqueData.value = qtdMaxima
                         reporProdutoViewModel.setQuantidadeMaxima(qtdMaxima)
                         reporProdutoViewModel.setQuantidadeInicial(0)
-
                     },
                     onQuantidadeChanged = {
                         validadeViewModel.movimentacaoValidade =
@@ -410,6 +416,7 @@ fun CardProduto(
                         )
 
                         validadeViewModel.adicionarValidade()
+                        produto.validades = validadeViewModel.getValidades(produto.id ?: 0)
 
                         exibirModalAdicionarData = false
                         exibirModalRepor = true
@@ -417,23 +424,19 @@ fun CardProduto(
                 )
             }
 
-//            if(validadeViewModel.deuErro){
-//                AlertError(msg = "Ops! Algo deu errado. Tente novamente.")
-//            }
-//
-//            if(exibirModalRepor || exibirModalRetirar){
-//                if(!validadeViewModel.deuErro && validadeViewModel.erro.isNotEmpty()){
-//                    exibirModalRepor = false
-//                    exibirModalRetirar = false
-//                    AlertSuccess(msg = "Estoque atualizado com sucesso!")
-//
-//                    LaunchedEffect("sucess") {
-//                        delay(6000)
-//                        validadeViewModel.deuErro = false
-//                    }
-//                }
-//            }
+            if (validadeViewModel.deuErro) {
+                exibirModalRepor = false
+                exibirModalRetirar = false
+                exibirModalAdicionarData = false
+            }
 
+            if (exibirModalRepor || exibirModalRetirar) {
+                if (!validadeViewModel.deuErro && validadeViewModel.erro.isNotEmpty()) {
+                    exibirModalRepor = false
+                    exibirModalRetirar = false
+                    exibirModalAdicionarData = false
+                }
+            }
         }
     }
 }
@@ -511,8 +514,14 @@ fun CardDespesa(despesa: Despesa, corTexto: Color) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp, horizontal = 8.dp)
-            .border(1.dp, PretoOpacidade15, RoundedCornerShape(20.dp)),
+            .padding(vertical = 4.dp, horizontal = 4.dp)
+            .border(0.dp, PretoOpacidade15, RoundedCornerShape(20.dp))
+            .shadow(
+                shape = RoundedCornerShape(20.dp),
+                ambientColor = Color.Transparent,
+                spotColor = PretoOpacidade25,
+                elevation = 4.dp,
+            ),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = Branco)
     ) {
@@ -558,17 +567,24 @@ fun CardDespesa(despesa: Despesa, corTexto: Color) {
                             ),
                             onClick = { /*TODO*/ }
                         ) {
-                            Text(text = despesa.dtPagamento?.let { formatarData(it) } ?: "",
+                            Text(
+                                text = "PAGO EM ${despesa.dtPagamento?.let { formatarData(it) }}",
                                 //                text = despesa.dtPagamento ?: "",
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 11.sp,
-                                fontFamily = fontFamilyPoppins
+                                fontSize = 10.sp,
+                                fontFamily = fontFamilyPoppins,
+                                letterSpacing = letterSpacingSecundaria
                             )
                         }
                     }
 
                     Text(
-                        text = despesa.nome?.capitalize() ?: "",
+                        text = despesa.nome?.replaceFirstChar {
+                            if (it.isLowerCase()) it.titlecase(
+                                Locale.ROOT
+                            ) else it.toString()
+                        }
+                            ?: "",
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp,
                         color = corTexto,
@@ -578,7 +594,8 @@ fun CardDespesa(despesa: Despesa, corTexto: Color) {
                         text = despesa.valor?.let { formatarValorMonetario(it.toFloat()) } ?: "",
                         fontSize = 16.sp,
                         color = Vermelho,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = letterSpacingPrincipal
                     )
                 }
             }

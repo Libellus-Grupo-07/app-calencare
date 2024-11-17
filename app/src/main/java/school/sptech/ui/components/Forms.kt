@@ -58,7 +58,8 @@ fun FormFieldWithLabel(
     isNumericInput: Boolean = false,
     isSmallInput: Boolean = false,
     clickableInput: Boolean = false,
-    onClickInput: () -> Unit = {}
+    onClickInput: () -> Unit = {},
+    minSize:Int? = null
 ) {
     var enabledDatePicker by remember { mutableStateOf(false) }
     val dateValue: Long = if (isDateInput && value.isNotEmpty()) value.toLong() else 0L
@@ -66,9 +67,15 @@ fun FormFieldWithLabel(
     Column(modifier = Modifier.fillMaxWidth()) {
         LabelInput(label = label, isSmallInput = isSmallInput)
 
-        if (clickableInput) {
+        Spacer(modifier = Modifier.height(8.dp))
+
+        if (clickableInput || isDateInput) {
             TextButton(
-                onClick = onClickInput,
+                onClick = {
+                    if (isDateInput) {
+                        enabledDatePicker = true
+                    } else onClickInput()
+                },
                 border = BorderStroke(1.dp, Cinza),
                 shape = RoundedCornerShape(if (isMultiline) 20.dp else 100.dp),
                 colors = ButtonColors(
@@ -79,38 +86,52 @@ fun FormFieldWithLabel(
                 ),
                 contentPadding = PaddingValues(
                     horizontal = 24.dp,
-                    vertical = 20.dp
+                    vertical = if(isSmallInput) 14.dp else if(isDateInput) 17.5.dp else 20.dp
                 ),
             ) {
                 Text(
-                    text = value,
-                    fontSize = 13.5.sp,
+                    text = if (isDateInput) {
+                        if (value.isNotEmpty()) {
+                            formatarDataDatePicker(
+                                inputFormat = true,
+                                data = dateValue
+                            )
+                        } else {
+                            label
+                        }
+                    } else value,
+                    fontSize = if(isSmallInput) 11.5.sp else 13.5.sp,
                     fontFamily = fontFamilyPoppins,
-                    fontWeight = FontWeight.Medium,
+                    fontWeight = FontWeight.Normal,
                     letterSpacing = letterSpacingPrincipal,
                 )
+
+                if (isDateInput) {
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    Icon(
+                        painter = painterResource(id = R.mipmap.calendario),
+                        contentDescription = "Ícone de Calendário",
+                        modifier = Modifier.let {
+                            if (isSmallInput) it.size(16.dp) else it.size(20.dp)
+                        },
+                        tint = Cinza
+                    )
+                }
             }
         } else {
             InputMedium(
-                value = if (isDateInput && value.isNotBlank()) formatarDataDatePicker(
-                    inputFormat = true,
-                    data = dateValue
-                ) else value,
+                value = value,
                 onValueChange = onValueChange,
-                label = if(isNumericInput) "" else label,
+                label = if (isNumericInput) "" else label,
                 readOnly = readOnly,
                 isNumericInput = isNumericInput,
                 isSmallInput = isSmallInput,
                 isMultiline = isMultiline,
-                trailingIcon = {
-                    if (isDateInput) {
-                        IconButton(onClick = { enabledDatePicker = true }) {
-                            Icon(
-                                painter = painterResource(id = R.mipmap.calendario),
-                                contentDescription = "Ícone de calendário",
-                                modifier = Modifier.size(18.dp),
-                            )
-                        }
+                tamanhoMinimo = minSize
+            )
+        }
+    }
 
     if (isDateInput) {
         if (enabledDatePicker) {
@@ -225,7 +246,8 @@ fun FormDadosPessoais(
     FormFieldWithLabel(
         value = usuario.telefone ?: "",
         onValueChange = {
-            usuarioViewModel.usuario = usuarioViewModel.usuario.copy(telefone = it)
+            usuarioViewModel.usuario =
+                usuarioViewModel.usuario.copy(telefone = it)
         },
         label = stringResource(R.string.telefone)
     )
@@ -259,7 +281,8 @@ fun FormDadosEmpresa(
     FormFieldWithLabel(
         value = empresa.razaoSocial ?: "",  // Valor alterado
         onValueChange = {
-            empresaViewModel.empresa = empresaViewModel.empresa.copy(razaoSocial = it)
+            empresaViewModel.empresa =
+                empresaViewModel.empresa.copy(razaoSocial = it)
         },
         label = stringResource(id = R.string.razaoSocial)
     )
@@ -277,7 +300,8 @@ fun FormDadosEmpresa(
     FormFieldWithLabel(
         value = empresa.telefonePrincipal ?: "",  // Valor alterado
         onValueChange = {
-            empresaViewModel.empresa = empresaViewModel.empresa.copy(telefonePrincipal = it)
+            empresaViewModel.empresa =
+                empresaViewModel.empresa.copy(telefonePrincipal = it)
         },
         label = stringResource(id = R.string.telefone)
     )

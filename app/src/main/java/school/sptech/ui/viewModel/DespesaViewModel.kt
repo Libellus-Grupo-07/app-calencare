@@ -99,7 +99,7 @@ class DespesaViewModel : ViewModel() {
                     listaDespesas.clear()
                     listaDespesas.addAll(response.body() ?: listOf())
                     deuErro = false
-                    erro = response.message()
+                    erro = ""
                 } else {
                     Log.e("api", "Erro ao buscar despesas => ${response.errorBody()?.string()}")
                     deuErro = true

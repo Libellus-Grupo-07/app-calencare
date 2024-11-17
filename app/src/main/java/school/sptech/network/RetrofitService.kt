@@ -15,7 +15,8 @@ import school.sptech.data.service.ProdutoService
 import school.sptech.data.service.ValidadeService
 
 object RetrofitService{
-    private val ipAws = "54.243.135.89"
+//    private val ipAws = "54.243.135.89"
+    private val ipAws = "44.205.75.87"
     private val BASE_URL_API = "http://$ipAws"
 
     fun getClientEmpresa(): EmpresaService {

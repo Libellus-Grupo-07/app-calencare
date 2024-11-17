@@ -39,12 +39,14 @@ class ValidadeViewModel : ViewModel() {
     fun adicionarValidade() {
         GlobalScope.launch {
             try {
+                validade.dtCriacao = LocalDateTime.now().toString()
                 val response = validadeService.adicionarValidade(validade)
 
                 if (response.isSuccessful) {
                     deuErro = false
-                    erro = "Validade cadastrada com sucesso"
+                    erro = ""
                     validade = Validade()
+                    listaValidades.add(response.body()!!)
                 } else {
                     deuErro = true
                     erro = response.errorBody()?.string() ?: "Erro desconhecido"
@@ -77,7 +79,8 @@ class ValidadeViewModel : ViewModel() {
                     listaValidades.addAll(response.body() ?: listOf())
                     deuErro = false
                     erro = ""
-                } else if(response.code() == 404) {
+                    //atualizarQtdEstoqueValidades()
+                } else if (response.code() == 404) {
                     deuErro = false
                 } else {
                     deuErro = true
@@ -88,6 +91,19 @@ class ValidadeViewModel : ViewModel() {
                 erro = ex.message ?: "Erro desconhecido"
             }
         }
+    }
+
+    fun atualizarQtdEstoqueValidades() {
+       GlobalScope.launch {
+            listaValidades.forEach { validadeAtual ->
+                if(validadeAtual.qntdEstoque == null){
+                    validade =  validadeAtual
+                    validadeAtual.qntdEstoque = getQuantidadeEstoqueDaValidade()
+                }
+            }
+        }
+
+        validade =  Validade()
     }
 
     fun getTotalEstoqueProduto(produtoId: Int): Int {
@@ -129,7 +145,9 @@ class ValidadeViewModel : ViewModel() {
         GlobalScope.launch {
             try {
                 val response =
-                    movimentacaoValidadeService.getQuantidadePorValidade(validadeId = validade.id!!)
+                    movimentacaoValidadeService.getQuantidadePorValidade(
+                        validadeId = validade.id ?: 0
+                    )
 
                 if (response.isSuccessful) {
                     quantidadeEstoqueValidade = response.body()!!
@@ -161,10 +179,12 @@ class ValidadeViewModel : ViewModel() {
 
                 val response =
                     movimentacaoValidadeService.postMovimentacaoValidade(movimentacaoValidade)
+
                 if (response.isSuccessful) {
                     deuErro = false
                     erro = "Movimentação realizada com sucesso"
                     movimentacaoValidade = MovimentacaoValidade()
+                    //validade.qntdEstoque = getQuantidadeEstoqueDaValidade()
                 } else {
                     deuErro = true
                     erro = response.errorBody()?.string() ?: "Erro desconhecido"

@@ -23,6 +23,7 @@ import kotlinx.coroutines.delay
 import school.sptech.R
 import school.sptech.preferencesHelper
 import school.sptech.ui.components.AlertError
+import school.sptech.ui.components.AlertSuccess
 import school.sptech.ui.components.Background
 import school.sptech.ui.components.BoxKpisEstoque
 import school.sptech.ui.components.BoxProdutos
@@ -31,6 +32,7 @@ import school.sptech.ui.theme.CalencareAppTheme
 import school.sptech.ui.viewModel.MovimentacaoValidadeViewModel
 import school.sptech.ui.viewModel.ProdutoViewModel
 import school.sptech.ui.viewModel.UsuarioViewModel
+import school.sptech.ui.viewModel.ValidadeViewModel
 
 class TelaInicial : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,6 +50,7 @@ class TelaInicial : ComponentActivity() {
 fun TelaInicio(
     usuarioViewModel: UsuarioViewModel = viewModel(),
     produtoViewModel: ProdutoViewModel = viewModel(),
+    validadeViewModel: ValidadeViewModel = viewModel(),
     movimentacaoValidadeViewModel: MovimentacaoValidadeViewModel = viewModel(),
     navController: NavController,
     modifier: Modifier = Modifier
@@ -55,14 +58,11 @@ fun TelaInicio(
     LaunchedEffect(Unit) {
         usuarioViewModel.getFuncionario(preferencesHelper.getIdUsuario())
         produtoViewModel.getProdutos(preferencesHelper.getIdEmpresa())
-        preferencesHelper.saveIdEmpresa(usuarioViewModel.usuario.empresa?.id ?: preferencesHelper.getIdEmpresa())
-
-//        movimentacaoValidadeViewModel.getKpisEstoque(preferencesHelper.getIdEmpresa())
     }
 
-    val idEmpresa = usuarioViewModel.usuario.empresa?.id ?: preferencesHelper.getIdEmpresa()
-
     val usuario = usuarioViewModel.usuario
+    var idEmpresa = usuarioViewModel.usuario.empresa?.id ?: preferencesHelper.getIdEmpresa()
+    preferencesHelper.saveIdEmpresa(idEmpresa)
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Background()
@@ -84,7 +84,8 @@ fun TelaInicio(
                 Spacer(modifier = Modifier.size(21.dp))
 
                 BoxProdutos(
-                    produtos = produtoViewModel.getListaProdutos(),
+                    produtos = produtoViewModel.getListaProdutosEstoqueBaixo(),
+                    validadeViewModel = validadeViewModel,
                     titulo = stringResource(id = R.string.produtosComQuantidadeBaixa),
                     isTelaInicio = true,
                     navController = navController
@@ -99,6 +100,16 @@ fun TelaInicio(
         LaunchedEffect("erro") {
             delay(6000)
             usuarioViewModel.deuErro = false
+        }
+    }
+
+    if(!validadeViewModel.deuErro && validadeViewModel.erro.isNotEmpty()){
+        AlertSuccess(msg = "Estoque atualizado com sucesso!")
+
+        LaunchedEffect("sucesso") {
+            produtoViewModel.getProdutos(preferencesHelper.getIdEmpresa())
+            delay(6000)
+            validadeViewModel.erro = ""
         }
     }
 }

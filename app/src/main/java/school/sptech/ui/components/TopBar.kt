@@ -150,7 +150,7 @@ fun TopBarVoltar(navController: NavController, titulo: String) {
 }
 
 @Composable
-fun TopBarEstoque(navController: NavController, modifier: Modifier = Modifier) {
+fun TopBarEstoque(navController: NavController, onClickFiltro: () -> Unit, modifier: Modifier = Modifier) {
     var text by remember { mutableStateOf("") }
 
     Row(
@@ -229,7 +229,7 @@ fun TopBarEstoque(navController: NavController, modifier: Modifier = Modifier) {
             }
 
             IconButton(
-                onClick = { /*TODO*/ },
+                onClick = onClickFiltro,
                 colors = IconButtonDefaults.iconButtonColors(
                     contentColor = Preto
                 )

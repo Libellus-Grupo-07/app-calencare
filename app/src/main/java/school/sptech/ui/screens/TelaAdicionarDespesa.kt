@@ -84,7 +84,15 @@ fun TelaAddDespesa(
             FormButtons(
                 onCancelClick = { navController.popBackStack() },
                 onAddClick = {
-                    viewModel.adicionarDespesa()
+                    if(
+                        viewModel.despesa.nome?.isNotEmpty() == true &&
+                        viewModel.despesa.observacao?.isNotEmpty() == true &&
+                        viewModel.despesa.valor?.isNotEmpty() == true &&
+                        viewModel.despesa.formaPagamento?.isNotEmpty() == true &&
+                        viewModel.despesa.dtPagamento?.isNotEmpty() == true
+                    ){
+                        viewModel.adicionarDespesa()
+                    }
                 }
             )
         }
@@ -131,7 +139,7 @@ fun TelaAddDespesa(
 fun DespesaForm(viewModel: DespesaViewModel) {
     val formasPagamento = listOf("Dinheiro", "Cartão", "Pix") // Payment methods list
 
-    Column(modifier = Modifier.fillMaxWidth(), Arrangement.spacedBy(16.dp)) {
+    Column(modifier = Modifier.fillMaxWidth(), Arrangement.spacedBy(4.dp)) {
 
         // Name Field
         FormFieldWithLabel(
@@ -147,6 +155,7 @@ fun DespesaForm(viewModel: DespesaViewModel) {
             value = viewModel.despesa.observacao ?: "",
             onValueChange = { viewModel.despesa = viewModel.despesa.copy(observacao = it) },
             label = stringResource(R.string.observacao),
+            minSize = 5
         )
 
         // Category Dropdown

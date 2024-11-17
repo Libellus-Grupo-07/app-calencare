@@ -112,27 +112,28 @@ fun LoginScreen(
                 contentDescription = "Logo",
                 modifier = Modifier
                     .width(220.dp)
-                    .padding(12.dp)
+                    .padding(20.dp)
             )
 
             // Imagem de login
             Image(
                 painter = painterResource(id = R.mipmap.imagem_login),
                 contentDescription = "Imagem",
-                modifier = Modifier.size(390.dp)
+                modifier = Modifier.size(260.dp)
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             // Título "Entrar"
             Text(
                 text = stringResource(R.string.entrar),
-                fontSize = 30.sp,
+                fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = Preto
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(12.dp))
+
             Column {
                 // Campo de Email
                 InputIcon(
@@ -147,7 +148,7 @@ fun LoginScreen(
                     label = stringResource(R.string.email),
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(6.dp))
 
                 // Campo de Senha
                 InputIcon(
@@ -179,24 +180,22 @@ fun LoginScreen(
                 )
             }
 
-          //Spacer(modifier = Modifier.height(4.dp))
+//            Row(
+//                modifier = Modifier.fillMaxWidth(),
+//                horizontalArrangement = Arrangement.End
+//            ) {
+//                TextButton(onClick = { /* Ação de esquecimento de senha */ }) {
+//                    Text(
+//                        stringResource(R.string.esqueceuSenha),
+//                        color = Cinza,
+//                        fontFamily = fontFamilyPoppins,
+//                        letterSpacing = letterSpacingPrincipal,
+//                        fontWeight = FontWeight.Normal
+//                    )
+//                }
+//            }
 
-            /*Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                TextButton(onClick = { /* Ação de esquecimento de senha */ }) {
-                    Text(
-                        stringResource(R.string.esqueceuSenha),
-                        color = Cinza,
-                        fontFamily = fontFamilyPoppins,
-                        letterSpacing = letterSpacingPrincipal,
-                        fontWeight = FontWeight.Normal
-                    )
-                }
-            }*/
-
-            Spacer(modifier = Modifier.height(15.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             // Botão "Entrar"
             Button(
@@ -229,6 +228,14 @@ fun LoginScreen(
                 TextoButtonExtraLarge(texto = stringResource(R.string.entrar))
             }
 
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Image(
+                painter = painterResource(id = R.mipmap.logo_libellus),
+                contentDescription = "Logo Libellus",
+                modifier = Modifier.size(140.dp),
+                alignment = Alignment.Center
+            )
 
             if (viewModel.deuErro) {
                 AlertError(

@@ -1,9 +1,13 @@
 package school.sptech.ui.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
@@ -14,12 +18,18 @@ import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -39,6 +49,7 @@ import school.sptech.ui.theme.CinzaOpacidade7
 import school.sptech.ui.theme.Laranja
 import school.sptech.ui.theme.LaranjaOpacidade15
 import school.sptech.ui.theme.Preto
+import school.sptech.ui.theme.RoxoNubank
 import school.sptech.ui.theme.Verde
 import school.sptech.ui.theme.VerdeOpacidade15
 import school.sptech.ui.theme.Vermelho
@@ -167,7 +178,12 @@ fun ButtonOutline(
             Icon(
                 painter = painterResource(id = iconId),
                 contentDescription = "Ícone de $titulo",
-                modifier = modifier.size(if(isMediumButton) 11.dp else 13.dp)
+                modifier = modifier.let {
+                    if(titulo.equals("Limpar", ignoreCase = true)) it.size(14.dp)
+                    else if(isMediumButton) it.size(11.dp)
+                    else it.size(13.dp)
+                }
+
             )
             Spacer(modifier = modifier.size(if(isMediumButton) 6.dp else 8.dp))
         }
@@ -186,7 +202,8 @@ fun ButtonBackground(
     modifier: Modifier = Modifier,
     iconPainter: ImageVector? = null,
     iconId: Int? = null,
-    isMediumButton: Boolean = false
+    isMediumButton: Boolean = false,
+    isSmallButton: Boolean = false
 ){
     val corTexto = when(cor){
         VermelhoOpacidade15 -> Vermelho
@@ -197,7 +214,8 @@ fun ButtonBackground(
     }
 
     Button(
-        modifier = modifier.height(if (isMediumButton) 38.dp else 44.dp),
+        modifier = modifier.height(
+            if (isSmallButton) 34.dp else if (isMediumButton) 38.dp else 44.dp),
         shape = CircleShape,
         enabled = enabled,
         onClick = onClick,
@@ -208,7 +226,7 @@ fun ButtonBackground(
             disabledContainerColor = Branco
         ),
         contentPadding = PaddingValues(
-            horizontal = 18.dp,
+            horizontal = if(isSmallButton) 14.dp else 18.dp,
         )
     ) {
         if(enabledIcon){
@@ -222,14 +240,18 @@ fun ButtonBackground(
                 Icon(
                     imageVector = iconPainter ?: Icons.Rounded.Check,
                     contentDescription = "Ícone de $titulo",
-                    modifier = modifier.width(if (isMediumButton) 16.dp else 18.dp)
+                    modifier = modifier.let {
+                        if (isMediumButton) it.width(16.dp)
+                        else it.width(18.dp)
+                    }
                 )
             }
 
             Spacer(modifier = modifier.size(if(isMediumButton) 4.dp else 6.dp))
         }
 
-        if(isMediumButton) TextoButtonSmall(texto = titulo) else TextoButtonLarge(texto = titulo)
+        if( isSmallButton || isMediumButton) TextoButtonSmall(texto = titulo)
+        else TextoButtonLarge(texto = titulo)
 
     }
 }
@@ -258,5 +280,52 @@ fun ButtonIconVoltar(modifier: Modifier = Modifier, onClick: () -> Unit){
             contentDescription = "Ícone de Voltar",
             modifier = Modifier.size(32.dp),
         )
+    }
+}
+
+@Composable
+fun ButtonIconExcluir(modifier: Modifier = Modifier, onClick: () -> Unit){
+    Column(modifier = modifier.fillMaxWidth()) {
+        Box(
+            modifier = modifier
+                .size(
+                    60.dp
+                )
+                .shadow(
+                    elevation = 4.dp,
+                    shape = CircleShape,
+                    clip = true,
+                    ambientColor = Color.Transparent,
+                    spotColor = Preto.copy(0.5f)
+                )
+                .align(Alignment.End)
+                .background(
+                    brush = Brush.linearGradient(
+                        colors = listOf(Color(0xFFFFFFFF), Color(0xFFC995F2)),
+                        end = Offset(240f, 160f),
+                    ),
+                    shape = CircleShape,
+                ),
+        ) {
+            FloatingActionButton(
+                onClick = onClick,
+                shape = CircleShape,
+                modifier = modifier.fillMaxSize(),
+                contentColor = RoxoNubank,
+                containerColor = Color.Transparent,
+                elevation = FloatingActionButtonDefaults.elevation(
+                    defaultElevation = 0.dp,
+                    pressedElevation = 0.dp,
+                    focusedElevation = 0.dp,
+                    hoveredElevation = 0.dp
+                )
+            ) {
+                Icon(
+                    painter = painterResource(id = R.mipmap.delete),
+                    contentDescription = "Delete",
+                    modifier = modifier.size(20.dp)
+                )
+            }
+        }
     }
 }
