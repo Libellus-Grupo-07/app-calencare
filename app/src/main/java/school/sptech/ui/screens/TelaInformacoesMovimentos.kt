@@ -11,7 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import school.sptech.ui.screens.ui.theme.CalencareAppTheme
+import school.sptech.ui.theme.CalencareAppTheme
 
 class TelaInformacoesMovimentos : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,7 +40,7 @@ fun TelaInformacoesMovimentosScreen(name: String, modifier: Modifier = Modifier)
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview3() {
+fun TelaInformacoesMovimentosPreview() {
     CalencareAppTheme {
         TelaInformacoesMovimentosScreen("Android")
     }

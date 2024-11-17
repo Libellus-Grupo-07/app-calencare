@@ -612,7 +612,7 @@ fun CardDespesa(despesa: Despesa) {
                             onClick = { /*TODO*/ }
                         ) {
                             Text(
-                                text = "PAGO EM ${despesa.dtPagamento?.let { formatarData(it) }}",
+                                text = "Pago em ${despesa.dtPagamento?.let { formatarData(it) }}",
                                 //                text = despesa.dtPagamento ?: "",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 10.sp,

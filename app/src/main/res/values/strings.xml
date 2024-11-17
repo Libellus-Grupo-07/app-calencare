@@ -81,4 +81,6 @@
     <string name="endereco">Endereço</string>
     <string name="cidade">Cidade</string>
     <string name="title_activity_tela_informacoes_movimentos">TelaInformacoesMovimentos</string>
+    <string name="valor_invalido">O %1$s deve ser maior que 0.0.</string>
+    <string name="data_invalida">A %1$s deve ser uma data presente ou passada.</string>
 </resources>

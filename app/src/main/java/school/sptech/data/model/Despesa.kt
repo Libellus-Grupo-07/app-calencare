@@ -1,12 +1,10 @@
 package school.sptech.data.model
 
-import java.time.LocalDate
-
 data class Despesa(
     var id:Int? = null,
     var nome: String? = null,
     var observacao:String? = null,
-    var valor: String? = null,
+    var valor: String? = "0,00",
     var formaPagamento:String? = null,
     var dtPagamento: String? = null,
     var dtCriacao: String? = null,

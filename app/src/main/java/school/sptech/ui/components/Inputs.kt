@@ -127,26 +127,28 @@ fun InputMedium(
     trailingIcon: @Composable() (() -> Unit)? = null,
     onValueChange: (String) -> Unit,
     label: String,
+    error: Boolean = false,
     isMultiline: Boolean = false,
     isNumericInput: Boolean = false,
     isSmallInput: Boolean = false,
     tamanhoMinimo: Int? = null,
     campoObrigatorio: Boolean = true,
     modifier: Modifier = Modifier
-){
-    var error by remember { mutableStateOf(false) }
+) {
+    var inputNaoPreenchida by remember { mutableStateOf(error) }
+    var inputPreenchidaComQuantidadeMinima by remember { mutableStateOf(true) }
+    var inputNumericInvalida by remember { mutableStateOf(false) }
 
     val shapeSize = if (isMultiline) 20.dp else 40.dp
     val textStyle = TextStyle(
         fontFamily = fontFamilyPoppins,
-        fontSize = if(isSmallInput) 11.5.sp else 13.5.sp,
+        fontSize = if (isSmallInput) 11.5.sp else 13.5.sp,
         letterSpacing = letterSpacingPrincipal,
         fontWeight = FontWeight.Medium,
-        color = Preto,
         baselineShift = BaselineShift(0f),
         textIndent = TextIndent(
-            firstLine = if(isSmallInput) 2.sp else 8.sp,
-            restLine = if(isSmallInput) 2.sp else 8.sp
+            firstLine = if (isSmallInput) 2.sp else 8.sp,
+            restLine = if (isSmallInput) 2.sp else 8.sp
         )
     )
 
@@ -156,7 +158,10 @@ fun InputMedium(
         readOnly = readOnly,
         onValueChange = {
             onValueChange(it)
-            error = it.isEmpty() && campoObrigatorio || tamanhoMinimo != null && it.length < tamanhoMinimo
+            inputNaoPreenchida =
+                it.isEmpty() && campoObrigatorio || isNumericInput && it.toDoubleOrNull() == 0.0
+            inputPreenchidaComQuantidadeMinima =
+                tamanhoMinimo?.let { tamanhoMinimo -> it.length >= tamanhoMinimo } ?: true
         },
         keyboardOptions = if (isNumericInput) KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal) else KeyboardOptions.Default,
         colors = OutlinedTextFieldDefaults.colors(
@@ -164,6 +169,7 @@ fun InputMedium(
             focusedTextColor = Preto,
             focusedPlaceholderColor = Cinza,
             focusedTrailingIconColor = Preto,
+            unfocusedTextColor = Preto,
             unfocusedBorderColor = Cinza,
             unfocusedPlaceholderColor = Cinza,
             unfocusedTrailingIconColor = Cinza,
@@ -172,6 +178,9 @@ fun InputMedium(
             errorLeadingIconColor = Vermelho,
             errorBorderColor = Vermelho,
             errorPlaceholderColor = Vermelho,
+            errorLabelColor = Vermelho,
+            errorTextColor = Vermelho,
+            errorTrailingIconColor = Vermelho,
             selectionColors = TextSelectionColors(
                 handleColor = RoxoNubank,
                 backgroundColor = CinzaOpacidade15,
@@ -180,7 +189,7 @@ fun InputMedium(
         trailingIcon = trailingIcon?.let { { trailingIcon() } },
         placeholder = {
             Text(
-                text = label,
+                text = if (isNumericInput) "" else label,
                 style = textStyle,
                 fontWeight = FontWeight.Normal
             )
@@ -189,26 +198,35 @@ fun InputMedium(
             .fillMaxWidth()
             .let {
                 if (isMultiline) it.height(124.dp)
-                else if(!campoObrigatorio && isSmallInput) it.height(64.dp)
-                else if(isSmallInput) it.height(48.dp)
+                else if (!campoObrigatorio && isSmallInput) it.height(64.dp)
+                else if (isSmallInput) it.height(48.dp)
                 else it.height(70.dp)
             },
         shape = RoundedCornerShape(shapeSize),
         singleLine = !isMultiline,
         maxLines = if (isMultiline) Int.MAX_VALUE else 1,
-        isError = error,
+        isError = (error && value.isEmpty())
+                || inputNaoPreenchida
+                || !inputPreenchidaComQuantidadeMinima
+                || (isNumericInput && (error && value == "0,00")),
         supportingText = {
-           if(error){
-               Text(
-                   text = if(tamanhoMinimo != null) "$label deve ter no mínimo $tamanhoMinimo caracteres"
-                        else stringResource(id = R.string.campo_obrigatorio),
-                   color = Vermelho,
-                   fontSize = 9.5.sp,
-                   fontWeight = FontWeight.Medium,
-                   fontFamily = fontFamilyPoppins,
-                   letterSpacing = letterSpacingSecundaria
-               )
-           }
+            if ((error && value.isEmpty()) || inputNaoPreenchida || !inputPreenchidaComQuantidadeMinima || (isNumericInput && (error && value == "0,00"))) {
+                Text(
+                    text = if (!inputNaoPreenchida && !inputPreenchidaComQuantidadeMinima)
+                        "$label deve ter no mínimo $tamanhoMinimo caracteres"
+                    else if (
+                        isNumericInput && (isNumericInput && (error && value == "0,00"))) stringResource(
+                        id = R.string.valor_invalido,
+                        label
+                    )
+                    else stringResource(id = R.string.campo_obrigatorio),
+                    color = Vermelho,
+                    fontSize = 9.5.sp,
+                    fontWeight = FontWeight.Medium,
+                    fontFamily = fontFamilyPoppins,
+                    letterSpacing = letterSpacingSecundaria
+                )
+            }
         }
     )
 }

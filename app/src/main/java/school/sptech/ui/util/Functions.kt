@@ -89,6 +89,10 @@ fun formatarDoubleBd(valor: String): String {
 
 @OptIn(ExperimentalMaterial3Api::class)
 fun formatarDataDatePicker(inputFormat: Boolean = false, data: Long?): String {
+    if(data == null || data == 0L){
+        return ""
+    }
+
     val dateFormatter = DatePickerDefaults.dateFormatter(
         selectedDateSkeleton = if (inputFormat) "dd MM yyyy" else "dd MMMM yyyy",
     )
@@ -130,4 +134,11 @@ fun getMonthInt(month: String): Month? {
     }
 
     return null
+}
+
+fun isDataValida(data: String): Boolean {
+    if(data.isEmpty()){
+        return false
+    }
+   return data.isNotEmpty() && transformarEmLocalDate(data).isBefore(LocalDate.now().plusDays(1))
 }

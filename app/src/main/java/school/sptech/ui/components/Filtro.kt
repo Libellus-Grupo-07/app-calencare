@@ -241,7 +241,14 @@ fun FiltroDespesaModal(
 
                     SelectableButtons(
                         items = formasPagamento,
-                        itemsSelecionados = formasPagamentoSelecionadas
+                        itemsSelecionados = formasPagamentoSelecionadas,
+                        onClick = {
+                            if (formasPagamentoSelecionadas.contains(it)) {
+                                formasPagamentoSelecionadas.remove(it)
+                            } else {
+                                formasPagamentoSelecionadas.add(it)
+                            }
+                        }
                     )
                 }
 
