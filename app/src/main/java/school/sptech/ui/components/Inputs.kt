@@ -189,6 +189,7 @@ fun InputMedium(
             .fillMaxWidth()
             .let {
                 if (isMultiline) it.height(124.dp)
+                else if(!campoObrigatorio && isSmallInput) it.height(64.dp)
                 else if(isSmallInput) it.height(48.dp)
                 else it.height(70.dp)
             },

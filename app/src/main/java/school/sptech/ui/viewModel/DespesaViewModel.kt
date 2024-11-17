@@ -1,18 +1,19 @@
 package school.sptech.ui.viewModel
 
 import android.util.Log
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import formatarData
 import formatarDataDatePicker
 import formatarDoubleBd
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import school.sptech.data.model.CategoriaDespesa
 import school.sptech.data.model.Despesa
+import school.sptech.data.model.FiltroDespesa
 import school.sptech.data.service.CategoriaDespesaService
 import school.sptech.data.service.DespesaService
 import school.sptech.network.RetrofitService
@@ -29,7 +30,7 @@ class DespesaViewModel : ViewModel() {
     var listaCategoriasDespesa by mutableStateOf(listOf<CategoriaDespesa>())
 
     var despesa by mutableStateOf(Despesa())
-
+    var filtro by mutableStateOf(FiltroDespesa())
     //    private var novaDespesa by mutableStateOf(Despesa())
     var categoriaDespesa by mutableStateOf(CategoriaDespesa())
     var totalDespesas by mutableStateOf(0.0)
@@ -70,23 +71,16 @@ class DespesaViewModel : ViewModel() {
         }
     }
 
-//    fun atualizarDespesas(mes: Int, ano: Int) {
-//        this.mes = mes
-//        this.ano = ano
-//
-//        getDespesas()
-//    }
-
     fun getListaDespesas(): List<Despesa> {
         return listaDespesas.toList()
     }
 
-    fun getDespesas(empresaId: Int, mes: Int, ano: Int): List<Despesa> {
-        getDespesasByMesAndAno(empresaId, mes, ano)
+    fun getDespesas(empresaId: Int): List<Despesa> {
+        getDespesasByMesAndAno(empresaId )
         return listaDespesas
     }
 
-    private fun getDespesasByMesAndAno(empresaId: Int, mes: Int = this.mes, ano: Int = this.ano) {
+    private fun getDespesasByMesAndAno(empresaId: Int, ) {
         GlobalScope.launch {
             try {
                 val response = despesaService.getAllDespesasByEmpresaIdAndMesAndAno(
@@ -113,8 +107,7 @@ class DespesaViewModel : ViewModel() {
         }
     }
 
-    fun adicionarDespesa(
-    ) {
+    fun adicionarDespesa() {
         GlobalScope.launch {
             try {
                 val novaDespesa = Despesa(
@@ -192,5 +185,30 @@ class DespesaViewModel : ViewModel() {
                 erro = ex.message ?: "Erro desconhecido"
             }
         }
+    }
+
+    fun filtrarDespesas() : List<Despesa>{
+        val dtPagamentoFiltroFormatada = if(filtro.dtPagamento.isNotEmpty()) {
+            formatarDataDatePicker(
+                inputFormat = true,
+                data = filtro.dtPagamento.toLong()
+            )
+        } else ""
+
+        return listaDespesas.filter {
+            (filtro.categorias.isEmpty() || filtro.categorias.contains(it.categoriaDespesaNome))
+                    && (filtro.dtPagamento.isEmpty() || dtPagamentoFiltroFormatada == formatarData(it.dtPagamento!!))
+                    && (filtro.formasPagamento.isEmpty() || filtro.formasPagamento.contains(it.formaPagamento))
+                    && (filtro.valorMinimo <= it.valor!!.toDouble())
+                    && (filtro.valorMaximo == 0.0 || filtro.valorMaximo >= it.valor!!.toDouble())
+        }
+    }
+
+    fun limparFiltro() {
+        filtro = FiltroDespesa()
+    }
+
+    fun filtroIsEmpty(): Boolean {
+        return filtro.categorias.isEmpty() && filtro.dtPagamento.isEmpty() && filtro.formasPagamento.isEmpty() && filtro.valorMinimo == 0.0 && filtro.valorMaximo == 0.0
     }
 }

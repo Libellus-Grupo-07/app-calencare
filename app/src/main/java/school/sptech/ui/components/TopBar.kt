@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -150,7 +149,7 @@ fun TopBarVoltar(navController: NavController, titulo: String) {
 }
 
 @Composable
-fun TopBarEstoque(navController: NavController, onClickFiltro: () -> Unit, modifier: Modifier = Modifier) {
+fun TopBarSearch(onClickBack: () -> Unit, onClickAdd: () -> Unit, onClickFiltro: () -> Unit, modifier: Modifier = Modifier) {
     var text by remember { mutableStateOf("") }
 
     Row(
@@ -160,7 +159,7 @@ fun TopBarEstoque(navController: NavController, onClickFiltro: () -> Unit, modif
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        ButtonIconVoltar(onClick = { navController.popBackStack() })
+        ButtonIconVoltar(onClick = onClickBack)
 
         OutlinedTextField(
             modifier = Modifier
@@ -216,7 +215,7 @@ fun TopBarEstoque(navController: NavController, onClickFiltro: () -> Unit, modif
             modifier = modifier,
         ) {
             IconButton(
-                onClick = { navController.navigate(Routes.AdicionarProduto.route) },
+                onClick =  onClickAdd,
                 colors = IconButtonDefaults.iconButtonColors(
                     contentColor = Preto
                 )

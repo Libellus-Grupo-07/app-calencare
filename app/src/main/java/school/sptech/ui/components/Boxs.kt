@@ -36,6 +36,7 @@ import androidx.navigation.NavController
 import getStringProduto
 import school.sptech.R
 import school.sptech.Routes
+import school.sptech.data.model.Movimentacoes
 import school.sptech.data.model.Movimentos
 import school.sptech.data.model.Produto
 import school.sptech.ui.theme.Cinza
@@ -164,7 +165,7 @@ fun BoxProdutos(
 }
 
 @Composable
-fun BoxMovimentos(movimentos: List<Movimentos>) {
+fun BoxMovimentos(movimentos: List<Movimentacoes>) {
     Column(
         modifier = Modifier
             .fillMaxSize()

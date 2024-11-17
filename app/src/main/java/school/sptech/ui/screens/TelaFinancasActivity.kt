@@ -4,15 +4,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -23,15 +20,14 @@ import formatarDecimal
 import getMonthInt
 import kotlinx.coroutines.delay
 import school.sptech.R
-import school.sptech.Routes
-import school.sptech.data.model.Despesa
+import school.sptech.data.model.Movimentacoes
 import school.sptech.preferencesHelper
 import school.sptech.ui.components.AlertError
 import school.sptech.ui.components.Background
-import school.sptech.ui.components.CardDespesa
 import school.sptech.ui.components.CardKpi
+import school.sptech.ui.components.CardMovimentos
+import school.sptech.ui.components.Chart
 import school.sptech.ui.components.SeletorData
-import school.sptech.ui.components.TextoButtonMedium
 import school.sptech.ui.components.TextoNenhumItemCadastrado
 import school.sptech.ui.components.TituloLarge
 import school.sptech.ui.components.TopBarComSelecaoData
@@ -82,13 +78,7 @@ fun TelaFinancas(
     val idEmpresa = preferencesHelper.getIdEmpresa()
 
     LaunchedEffect(Unit) {
-        financasViewModel.getFinancas(
-            empresaId = idEmpresa,
-            ano = anoSelecionado,
-            mes = getMonthInt(mesSelecionado)?.value ?: 0
-        )
-
-        despesaViewModel.getDespesas(
+        financasViewModel.getMovimentacoes(
             empresaId = idEmpresa,
             ano = anoSelecionado,
             mes = getMonthInt(mesSelecionado)?.value ?: 0
@@ -112,11 +102,17 @@ fun TelaFinancas(
                 anoSelecionado = ano
                 mostrarSeletorData = false
 
-                despesaViewModel.getDespesas(
+                financasViewModel.getMovimentacoes(
                     empresaId = idEmpresa,
                     ano = anoSelecionado,
                     mes = getMonthInt(mesSelecionado)?.value ?: 0
                 )
+
+                despesaViewModel.getTotalDespesasMes(
+                    ano = anoSelecionado,
+                    mes = getMonthInt(mesSelecionado)?.value ?: 0
+                )
+
             }
         )
     }
@@ -129,12 +125,10 @@ fun TelaFinancas(
         despesasTotais = despesasTotais,
         faturamento = faturamento.value,
         comissoes = comissoes.value,
-        despesas = despesaViewModel.getListaDespesas(),
-        corTitulo = Preto,
-        adicionarDespesa = { navController.navigate(Routes.AdicionarDespesa.route) }
+        movimentos = financasViewModel.movimentacoes
     )
 
-    if(despesaViewModel.deuErro){
+    if (despesaViewModel.deuErro) {
         AlertError(msg = despesaViewModel.erro)
 
         LaunchedEffect("error") {
@@ -153,29 +147,50 @@ fun ConteudoTelaFinancas(
     despesasTotais: Double,
     faturamento: Double,
     comissoes: Double,
-    despesas: List<Despesa>,
-    corTitulo: Color,
-    adicionarDespesa: (Despesa) -> Unit
+    movimentos: List<Movimentacoes>
 ) {
-
-
     Background()
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(20.dp)
-            .padding(top = 16.dp)
+            .padding(top = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        TopBarComSelecaoData(
-            stringResource(id = R.string.financas),
-            mesSelecionado,
-            anoSelecionado,
-            aoClicarSeletorData
-        )
+        Column {
+            TopBarComSelecaoData(
+                stringResource(id = R.string.financas),
+                mesSelecionado,
+                anoSelecionado,
+                aoClicarSeletorData
+            )
 
-        ResumoFinanceiro(receitas, despesasTotais, faturamento, comissoes)
-        Spacer(modifier = Modifier.height(16.dp))
-        ListaDespesas(despesas, corTitulo, adicionarDespesa)
+            ResumoFinanceiro(receitas, despesasTotais, faturamento, comissoes)
+        }
+
+        Chart()
+
+        Column {
+            TituloLarge(titulo = stringResource(id = R.string.movimentos))
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            if (movimentos.isEmpty()) {
+                Row(
+                    modifier = Modifier.fillMaxSize().padding(bottom = 24.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TextoNenhumItemCadastrado(texto = "Nenhum movimento encontrado")
+                }
+            } else {
+                LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    items(movimentos.size) { i ->
+                        CardMovimentos(movimentos = movimentos[i])
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -238,59 +253,6 @@ fun ResumoFinanceiro(
     }
 }
 
-@Composable
-fun ListaDespesas(despesas: List<Despesa>, corTexto: Color, adicionarDespesa: (Despesa) -> Unit) {
-    Column {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            TituloLarge(titulo = "Despesas")
-            TextButton(
-                onClick = {
-                    adicionarDespesa(
-                        Despesa(
-                            nome = "Nova Despesa",
-                            valor = "100.00",
-                            dtCriacao = "2024-10-01",
-                            categoriaDespesaNome = "Categoria C"
-                        )
-                    )
-                },
-                colors = ButtonColors(
-                    contentColor = Cinza,
-                    containerColor = Color.Transparent,
-                    disabledContentColor = Cinza,
-                    disabledContainerColor = Color.Transparent
-                )
-            ) {
-                TextoButtonMedium(texto = "Adicionar Despesa")
-            }
-        }
-
-
-        if(despesas.isEmpty()){
-            Row(
-                modifier = Modifier.fillMaxSize().padding(bottom = 24.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                TextoNenhumItemCadastrado(texto = "Nenhuma despesa cadastrada")
-            }
-        } else {
-            LazyColumn {
-                items(despesas) { despesa ->
-                    CardDespesa(despesa, corTexto)
-                }
-            }
-        }
-
-
-    }
-}
 
 @Preview(showSystemUi = true)
 @Composable

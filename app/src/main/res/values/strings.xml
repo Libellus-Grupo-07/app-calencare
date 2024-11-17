@@ -80,4 +80,5 @@
     <string name="uf">UF</string>
     <string name="endereco">Endereço</string>
     <string name="cidade">Cidade</string>
+    <string name="title_activity_tela_informacoes_movimentos">TelaInformacoesMovimentos</string>
 </resources>

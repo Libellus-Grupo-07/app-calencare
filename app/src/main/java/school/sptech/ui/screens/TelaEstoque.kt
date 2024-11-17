@@ -1,16 +1,14 @@
 package school.sptech.ui.screens
 
-import FilterModal
+import FiltroEstoqueModal
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -28,30 +26,30 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.delay
 import school.sptech.R
-import school.sptech.data.model.CategoriaProduto
+import school.sptech.Routes
 import school.sptech.data.model.Produto
 import school.sptech.preferencesHelper
 import school.sptech.ui.components.AlertError
 import school.sptech.ui.components.AlertSuccess
 import school.sptech.ui.components.Background
 import school.sptech.ui.components.BoxProdutos
-import school.sptech.ui.components.TopBarEstoque
+import school.sptech.ui.components.TopBarSearch
 import school.sptech.ui.viewModel.ProdutoViewModel
 import school.sptech.ui.viewModel.ValidadeViewModel
 
-class Estoque : ComponentActivity() {
+class TelaEstoque : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            TelaEstoque(navController = rememberNavController())
+            TelaEstoqueScreen(navController = rememberNavController())
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TelaEstoque(
+fun TelaEstoqueScreen(
     produtoViewModel: ProdutoViewModel = viewModel(),
     validadeViewModel: ValidadeViewModel = viewModel(),
     navController: NavController
@@ -74,8 +72,9 @@ fun TelaEstoque(
     Background()
 
     Column(modifier = Modifier.padding(vertical = 24.dp)) {
-        TopBarEstoque(
-            navController = navController,
+        TopBarSearch(
+            onClickBack = { navController.popBackStack() },
+            onClickAdd = { navController.navigate(Routes.AdicionarProduto.route) },
             onClickFiltro = { exibirFiltro = !exibirFiltro }
         )
         Row(
@@ -130,7 +129,7 @@ fun TelaEstoque(
     }
 
     if (exibirFiltro) {
-        FilterModal(
+        FiltroEstoqueModal(
             produtoViewModel = produtoViewModel,
             onDismiss = { exibirFiltro = false },
             onLimpar = {
@@ -143,8 +142,7 @@ fun TelaEstoque(
                 listaProdutos.clear()
                 listaProdutos.addAll(produtoViewModel.getListaProdutosPorFiltro())
                 exibirFiltro = false
-            }
-
+            },
         )
     }
 }
@@ -152,5 +150,5 @@ fun TelaEstoque(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun EstoquePreview() {
-    TelaEstoque(navController = rememberNavController())
+    TelaEstoqueScreen(navController = rememberNavController())
 }

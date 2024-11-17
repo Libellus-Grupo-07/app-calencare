@@ -16,18 +16,23 @@
         android:theme="@style/Theme.CalencareApp"
         tools:targetApi="31">
         <activity
+            android:name=".ui.screens.TelaInformacoesMovimentos"
+            android:exported="false"
+            android:label="@string/title_activity_tela_informacoes_movimentos"
+            android:theme="@style/Theme.CalencareApp" />
+        <activity
             android:name=".ui.components.TesteTelaModal"
             android:exported="false"
             android:label="@string/title_activity_teste_tela_modal"
             android:theme="@style/Theme.CalencareApp" />
         <activity
-            android:name=".ui.screens.Dashboard"
+            android:name=".ui.screens.Despesas"
             android:exported="false"
             android:label="@string/title_activity_dashboard"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.CalencareApp" />
         <activity
-            android:name=".ui.screens.Estoque"
+            android:name=".ui.screens.TelaEstoque"
             android:exported="false"
             android:label="@string/title_activity_tela_estoque"
             android:screenOrientation="portrait"
@@ -73,7 +78,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.CalencareApp" />
         <activity
-            android:name=".ui.screens.Notificacoes"
+            android:name=".ui.screens.TelaNotificacoes"
             android:exported="false"
             android:label="@string/title_activity_notificacoes"
             android:screenOrientation="portrait"

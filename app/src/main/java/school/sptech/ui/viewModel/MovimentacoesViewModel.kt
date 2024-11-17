@@ -6,7 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import school.sptech.data.model.Financas
+import school.sptech.data.model.Movimentacoes
 import school.sptech.data.service.MovimentacoesService
 import school.sptech.network.RetrofitService
 
@@ -14,24 +14,24 @@ class MovimentacoesViewModel : ViewModel() {
     private val movimentacoesService:MovimentacoesService
     var deuErro by mutableStateOf(false)
     var erro by mutableStateOf("")
-    var financas = mutableListOf<Financas>()
+    var movimentacoes = mutableListOf<Movimentacoes>()
 
     init {
         movimentacoesService = RetrofitService.getClientMovimentacoes()
     }
 
-    fun getFinancas(empresaId: Int, mes: Int, ano: Int) : List<Financas> {
-        getFinancasByMes(empresaId, mes, ano)
-        return financas
+    fun getMovimentacoes(empresaId: Int, mes: Int, ano: Int) : List<Movimentacoes> {
+        getMovimentacoesByMes(empresaId, mes, ano)
+        return movimentacoes
     }
 
-    private fun getFinancasByMes(empresaId: Int, mes: Int, ano: Int) {
+    private fun getMovimentacoesByMes(empresaId: Int, mes: Int, ano: Int) {
         GlobalScope.launch {
             try {
-                val response = movimentacoesService.getFinancas(empresaId, mes, ano)
+                val response = movimentacoesService.getMovimentacoes(empresaId, mes, ano)
                 if (response.isSuccessful) {
-                    financas.clear()
-                    financas.addAll(response.body() ?: listOf())
+                    movimentacoes.clear()
+                    movimentacoes.addAll(response.body() ?: listOf())
                     deuErro = false
                 } else {
 
