@@ -67,6 +67,10 @@ fun formatarData(data: String): String {
         return date.format(format)
     }
 
+    if(data.isEmpty()){
+        return ""
+    }
+
     val formatted = LocalDateTime.parse(data).format(format)
     return formatted
 }

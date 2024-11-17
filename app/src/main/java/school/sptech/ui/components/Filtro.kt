@@ -27,21 +27,15 @@ import school.sptech.ui.theme.CinzaOpacidade15
 import school.sptech.ui.theme.CinzaOpacidade7
 import school.sptech.ui.theme.RoxoNubank
 import school.sptech.ui.theme.fontFamilyPoppins
+import school.sptech.ui.viewModel.DespesaViewModel
 import school.sptech.ui.viewModel.ProdutoViewModel
 
 @ExperimentalMaterial3Api
 @Composable
-fun FilterModal(
-    produtoViewModel: ProdutoViewModel,
-    onSalvar: () -> Unit = {},
-    onLimpar: () -> Unit = {},
+fun FiltroModal(
+    content: @Composable () -> Unit,
     onDismiss: () -> Unit = {}
 ) {
-    val categorias = produtoViewModel.categoriasProduto
-    val categoriasSelecionadas = remember {
-        mutableStateListOf<CategoriaProduto>().apply { addAll(produtoViewModel.filtro.categorias) }
-    }
-
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
@@ -56,111 +50,300 @@ fun FilterModal(
     ) {
         Column(
             modifier = Modifier.padding(bottom = 32.dp, start = 32.dp, end = 32.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             TituloLarge(titulo = "Filtro")
 
-            Column{
-                // Quantidade Disponível - Range Slider
-                LabelInput(label = "Quantidade Disponível", isSmallInput = true)
+            content()
+        }
+    }
+}
 
-                RangeSlider(
-                    value = produtoViewModel.filtro.rangeQtdEstoque,
-                    onValueChange = { range -> produtoViewModel.filtro = produtoViewModel.filtro.copy(rangeQtdEstoque = range) },
-                    valueRange = 0f..produtoViewModel.qtdMaximaEstoque,
-                    steps = 0,
-                    colors = SliderDefaults.colors(
-                        thumbColor = RoxoNubank,
-                        activeTrackColor = RoxoNubank,
-                        inactiveTrackColor = CinzaOpacidade15
+@ExperimentalMaterial3Api
+@Composable
+fun FiltroEstoqueModal(
+    produtoViewModel: ProdutoViewModel,
+    onSalvar: () -> Unit = {},
+    onLimpar: () -> Unit = {},
+    onDismiss: () -> Unit = {},
+) {
+    val categorias = produtoViewModel.categoriasProduto
+    val categoriasSelecionadas = remember {
+        mutableStateListOf<String>().apply {
+            addAll(produtoViewModel.filtro.categorias)
+        }
+    }
+
+    FiltroModal(onDismiss = onDismiss, content = {
+        Column {
+            // Quantidade Disponível - Range Slider
+            LabelInput(label = "Quantidade Disponível", isSmallInput = true)
+
+            RangeSlider(
+                value = produtoViewModel.filtro.rangeQtdEstoque,
+                onValueChange = { range ->
+                    produtoViewModel.filtro =
+                        produtoViewModel.filtro.copy(rangeQtdEstoque = range)
+                },
+                valueRange = 0f..produtoViewModel.qtdMaximaEstoque,
+                steps = 0,
+                colors = SliderDefaults.colors(
+                    thumbColor = RoxoNubank,
+                    activeTrackColor = RoxoNubank,
+                    inactiveTrackColor = CinzaOpacidade15
+                )
+            )
+
+            Text(
+                text = "${produtoViewModel.filtro.rangeQtdEstoque.start.toInt()} - ${produtoViewModel.filtro.rangeQtdEstoque.endInclusive.toInt()}",
+                fontFamily = fontFamilyPoppins,
+                color = Cinza,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 11.sp,
+                modifier = Modifier.padding(start = 4.dp),
+            )
+        }
+
+        Column {
+            // Categoria
+            LabelInput(label = "Categorias", isSmallInput = true)
+
+            SelectableButtons(
+                items = categorias.map { it.nome ?: "" },
+                itemsSelecionados = mutableListOf<String>().apply {
+                    addAll(categoriasSelecionadas)
+                },
+                onClick = {
+                    if (categoriasSelecionadas.contains(it)) {
+                        categoriasSelecionadas.remove(it)
+                    } else {
+                        categoriasSelecionadas.add(it)
+                    }
+                }
+            )
+        }
+
+        FormFieldWithLabel(
+            value = produtoViewModel.filtro.dtReposicao,
+            onValueChange = {
+                produtoViewModel.filtro = produtoViewModel.filtro.copy(dtReposicao = it)
+            },
+            label = "Data de Reposição",
+            isDateInput = true,
+            isSmallInput = true
+        )
+
+        FormFieldWithLabel(
+            value = produtoViewModel.filtro.dtRetirada,
+            onValueChange = {
+                produtoViewModel.filtro = produtoViewModel.filtro.copy(dtRetirada = it)
+            },
+            label = "Data de Retirada",
+            isDateInput = true,
+            isSmallInput = true
+        )
+
+        FormFieldWithLabel(
+            value = produtoViewModel.filtro.dtValidade,
+            onValueChange = {
+                produtoViewModel.filtro = produtoViewModel.filtro.copy(dtValidade = it)
+            },
+            label = "Data de Validade",
+            isDateInput = true,
+            isSmallInput = true
+        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
+            ButtonOutline(
+                iconId = R.mipmap.limpar,
+                // isMediumButton = true,
+                onClick = onLimpar,
+                titulo = "Limpar",
+            )
+
+            Spacer(modifier = Modifier.width(6.dp))
+
+            ButtonBackground(
+                isMediumButton = true,
+                onClick = {
+                    produtoViewModel.filtro =
+                        produtoViewModel.filtro.copy(categorias = categoriasSelecionadas)
+                    onSalvar()
+                },
+                titulo = "Aplicar",
+                cor = RoxoNubank
+            )
+        }
+    })
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FiltroDespesaModal(
+    onSalvar: () -> Unit,
+    onLimpar: () -> Unit,
+    onDismiss: () -> Unit,
+    despesaViewModel: DespesaViewModel
+) {
+    var categorias = despesaViewModel.listaCategoriasDespesa.map { it.nome ?: "" }
+    var categoriasSelecionadas = remember {
+        mutableStateListOf<String>().apply {
+            addAll(despesaViewModel.filtro.categorias)
+        }
+    }
+    var formasPagamento =
+        despesaViewModel.getListaDespesas().map { it.formaPagamento ?: "" }.distinct()
+
+    var formasPagamentoSelecionadas = remember {
+        mutableStateListOf<String>().apply {
+            addAll(despesaViewModel.filtro.formasPagamento)
+        }
+    }
+
+    FiltroModal(
+        onDismiss = onDismiss,
+        content = {
+            Column(
+                modifier = Modifier,
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Column {
+                    LabelInput(label = "Categorias", isSmallInput = true)
+
+                    SelectableButtons(
+                        items = categorias,
+                        itemsSelecionados = categoriasSelecionadas,
+                        onClick = {
+                            if (categoriasSelecionadas.contains(it)) {
+                                categoriasSelecionadas.remove(it)
+                            } else {
+                                categoriasSelecionadas.add(it)
+                            }
+                        }
                     )
+                }
+
+                FormFieldWithLabel(
+                    value = despesaViewModel.filtro.dtPagamento,
+                    onValueChange = {
+                        despesaViewModel.filtro = despesaViewModel.filtro.copy(dtPagamento = it)
+                    },
+                    label = "Data de Pagamento",
+                    isDateInput = true,
+                    isSmallInput = true
                 )
 
-                Text(
-                    text = "${produtoViewModel.filtro.rangeQtdEstoque.start.toInt()} - ${produtoViewModel.filtro.rangeQtdEstoque.endInclusive.toInt()}",
-                    fontFamily = fontFamilyPoppins,
-                    color = Cinza,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 11.sp,
-                    modifier = Modifier.padding(start = 4.dp),
-                )
-            }
+                Column {
+                    LabelInput(label = "Formas de Pagamento", isSmallInput = true)
 
-            Column {
-                // Categorias
-                LabelInput(label = "Categorias", isSmallInput = true)
+                    SelectableButtons(
+                        items = formasPagamento,
+                        itemsSelecionados = formasPagamentoSelecionadas
+                    )
+                }
 
-                LazyRow(
+                Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    items(categorias.size) { i ->
-                        ButtonBackground(
-                            enabledIcon = false,
-                            isSmallButton = true,
-                            onClick = {
-                                if(categoriasSelecionadas.contains(categorias[i])){
-                                    categoriasSelecionadas.remove(categorias[i])
-                                } else{
-                                    categoriasSelecionadas.add(categorias[i])
-                                }
+                    Column(modifier = Modifier.weight(0.45f)) {
+                        FormFieldWithLabel(
+                            value = formatarDecimal(
+                                despesaViewModel.filtro.valorMinimo,
+                                isValueInput = true
+                            ),
+                            onValueChange = {
+                                val valor = it.replace(",", "").replace(".", "")
+                                despesaViewModel.filtro = despesaViewModel.filtro.copy(
+                                    valorMinimo = valor.toDoubleOrNull() ?: 0.0
+                                )
                             },
-                            titulo = categorias[i].nome ?: "",
-                            cor = if (categoriasSelecionadas.contains(categorias[i]))
-                                RoxoNubank else CinzaOpacidade7
+                            label = "Valor Mínimo",
+                            isSmallInput = true,
+                            isNumericInput = true,
+                            isObrigatorio = false
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Column(modifier = Modifier.weight(0.45f)) {
+                        FormFieldWithLabel(
+                            value = formatarDecimal(
+                                despesaViewModel.filtro.valorMaximo,
+                                isValueInput = true
+                            ),
+                            onValueChange = {
+                                val valor = it.replace(",", "").replace(".", "")
+                                despesaViewModel.filtro = despesaViewModel.filtro.copy(
+                                    valorMaximo = valor.toDoubleOrNull() ?: 0.0
+                                )
+                            },
+                            label = "Valor Máximo",
+                            isSmallInput = true,
+                            isNumericInput = true,
+                            isObrigatorio = false
                         )
                     }
                 }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    ButtonOutline(
+                        iconId = R.mipmap.limpar,
+                        isMediumButton = true,
+                        onClick = onLimpar,
+                        titulo = "Limpar",
+                    )
+
+                    Spacer(modifier = Modifier.width(6.dp))
+
+                    ButtonBackground(
+                        isMediumButton = true,
+                        onClick = {
+                            despesaViewModel.filtro = despesaViewModel.filtro.copy(
+                                categorias = categoriasSelecionadas,
+                                formasPagamento = formasPagamentoSelecionadas,
+                            )
+                            onSalvar()
+                        },
+                        titulo = "Aplicar",
+                        cor = RoxoNubank
+                    )
+                }
             }
+        }
+    )
+}
 
-            FormFieldWithLabel(
-                value = produtoViewModel.filtro.dtReposicao,
-                onValueChange = { produtoViewModel.filtro = produtoViewModel.filtro.copy(dtReposicao = it) },
-                label = "Data de Reposição",
-                isDateInput = true,
-                isSmallInput = true
+@JvmOverloads
+@Composable
+fun SelectableButtons(
+    items: List<String> = listOf(),
+    itemsSelecionados: MutableList<String> = mutableListOf(),
+    onClick: (String) -> Unit = {}
+) {
+    LazyRow(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        items(items.size) { i ->
+            ButtonBackground(
+                enabledIcon = false,
+                isSmallButton = true,
+                onClick = {
+                    onClick(items[i])
+                },
+                titulo = items[i],
+                cor = if (itemsSelecionados.contains(items[i])) RoxoNubank else CinzaOpacidade7
             )
-
-            FormFieldWithLabel(
-                value = produtoViewModel.filtro.dtRetirada,
-                onValueChange = { produtoViewModel.filtro = produtoViewModel.filtro.copy(dtRetirada = it) },
-                label = "Data de Retirada",
-                isDateInput = true,
-                isSmallInput = true
-            )
-
-            FormFieldWithLabel(
-                value = produtoViewModel.filtro.dtValidade,
-                onValueChange = { produtoViewModel.filtro = produtoViewModel.filtro.copy(dtValidade = it) },
-                label = "Data de Validade",
-                isDateInput = true,
-                isSmallInput = true
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                ButtonOutline(
-                    iconId = R.mipmap.limpar,
-                    isMediumButton = true,
-                    onClick = onLimpar,
-                    titulo = "Limpar",
-                )
-
-                Spacer(modifier = Modifier.width(6.dp))
-
-                ButtonBackground(
-                    isMediumButton = true,
-                    onClick = {
-                        produtoViewModel.filtro = produtoViewModel.filtro.copy(categorias = categoriasSelecionadas)
-                        onSalvar()
-                    },
-                    titulo = "Aplicar",
-                    cor = RoxoNubank
-                )
-            }
         }
     }
 }
@@ -169,6 +352,6 @@ fun FilterModal(
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun PreviewFilterModal() {
-    FilterModal(produtoViewModel = viewModel())
+fun PreviewFiltroEstoqueModal() {
+    FiltroEstoqueModal(produtoViewModel = viewModel())
 }

@@ -59,6 +59,7 @@ fun FormFieldWithLabel(
     isSmallInput: Boolean = false,
     clickableInput: Boolean = false,
     onClickInput: () -> Unit = {},
+    isObrigatorio: Boolean = true,
     minSize:Int? = null
 ) {
     var enabledDatePicker by remember { mutableStateOf(false) }
@@ -125,6 +126,7 @@ fun FormFieldWithLabel(
                 onValueChange = onValueChange,
                 label = if (isNumericInput) "" else label,
                 readOnly = readOnly,
+                campoObrigatorio = isObrigatorio,
                 isNumericInput = isNumericInput,
                 isSmallInput = isSmallInput,
                 isMultiline = isMultiline,

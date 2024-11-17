@@ -19,12 +19,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.KeyboardArrowRight
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -56,6 +59,7 @@ import formatarValorMonetario
 import kotlinx.coroutines.delay
 import school.sptech.R
 import school.sptech.data.model.Despesa
+import school.sptech.data.model.Movimentacoes
 import school.sptech.data.model.Movimentos
 import school.sptech.data.model.Produto
 import school.sptech.ui.theme.Amarelo
@@ -443,74 +447,114 @@ fun CardProduto(
 
 @Composable
 fun CardMovimentos(
-    movimentos: Movimentos,
+    movimentos: Movimentacoes,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier
-        .fillMaxWidth()
-        .drawBehind {
-            val borderSize = 1.dp.toPx()
-            val y = size.height - borderSize / 2
-
-            drawLine(
-                color = PretoOpacidade25,
-                start = Offset(0f, y),
-                end = Offset(size.width, y),
-                strokeWidth = borderSize
-            )
-        }
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 4.dp)
+            .shadow(
+                4.dp,
+                RoundedCornerShape(20.dp),
+                ambientColor = Color.Transparent,
+                spotColor = PretoOpacidade25
+            ),
+        colors = CardDefaults.cardColors(
+            containerColor = Branco
+        ),
     ) {
-        Spacer(modifier = Modifier.size(12.dp))
-
-        Row {
-            Text(
-                text = formatarData(movimentos.data),
-                fontSize = 11.sp,
-                fontWeight = FontWeight.Medium,
-                fontFamily = fontFamilyPoppins,
-                letterSpacing = letterSpacingPrincipal,
-                color = Cinza
-            )
+        val iconId = when (movimentos.descricao) {
+            "Despesas" -> R.mipmap.icone_dinheiro_despesa
+            "Agendamentos" -> R.mipmap.agendamentos
+            else -> R.mipmap.comissoes
         }
 
-        Spacer(modifier = Modifier.size(4.dp))
+        val corIcone = when (movimentos.descricao) {
+            "Despesas" -> VermelhoOpacidade15
+            "Agendamentos" -> AzulOpacidade15
+            else -> LaranjaOpacidade15
+        }
+
+        val corTexto = when (movimentos.descricao) {
+            "Despesas" -> Vermelho
+            "Agendamentos" -> Azul
+            else -> Laranja
+        }
 
         Row(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 12.dp),
-            Arrangement.SpaceBetween,
-            Alignment.CenterVertically
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            val isDespesa by remember { mutableStateOf(movimentos.descricao == "Despesas") }
-
-            Text(
-                text = movimentos.descricao,
-                fontSize = 13.5.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = fontFamilyPoppins,
-                letterSpacing = letterSpacingPrincipal,
-                color = RoxoNubank
+            Icon(
+                painter = painterResource(id = iconId),
+                contentDescription = "Ícone de ${movimentos.descricao ?: "Movimentos"}",
+                tint = corTexto,
+                modifier = Modifier.size(52.dp)
             )
 
-            Text(
-                text = stringResource(
-                    id = R.string.valorMovimentos,
-                    if (isDespesa) "-" else "+",
-                    formatarDecimal(movimentos.total.toFloat())
-                ),
-                fontSize = 15.sp,
-                fontWeight = FontWeight.ExtraBold,
-                fontFamily = fontFamilyPoppins,
-                letterSpacing = letterSpacingPrincipal,
-                color = if (isDespesa) Vermelho else Azul
+            Column(
+                modifier = Modifier.fillMaxWidth(0.8f),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.Start
+            ) {
+                Row {
+                    Text(
+                        text = formatarData(movimentos.data ?: "") ?: "",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Medium,
+                        fontFamily = fontFamilyPoppins,
+                        letterSpacing = letterSpacingPrincipal,
+                        color = Cinza
+                    )
+                }
+
+                Row(
+                    modifier = modifier
+                        .fillMaxWidth(),
+                    Arrangement.SpaceBetween,
+                    Alignment.CenterVertically
+                ) {
+                    val isDespesa by remember { mutableStateOf(movimentos.descricao == "Despesas") }
+
+                    Text(
+                        text = movimentos.descricao ?: "",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        fontFamily = fontFamilyPoppins,
+                        letterSpacing = letterSpacingPrincipal,
+                        color = Preto
+                    )
+
+                    Text(
+                        text = stringResource(
+                            id = R.string.valorMovimentos,
+                            if (isDespesa) "-" else "+",
+                            formatarDecimal(movimentos.total?.toFloat() ?: 0.0)
+                        ),
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        fontFamily = fontFamilyPoppins,
+                        letterSpacing = letterSpacingPrincipal,
+                        color = corTexto
+                    )
+                }
+            }
+
+            Icon(
+                Icons.AutoMirrored.Rounded.KeyboardArrowRight,
+                contentDescription = "Ver detalhes",
+                tint = Cinza
             )
         }
     }
 }
 
 @Composable
-fun CardDespesa(despesa: Despesa, corTexto: Color) {
+fun CardDespesa(despesa: Despesa) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -587,7 +631,7 @@ fun CardDespesa(despesa: Despesa, corTexto: Color) {
                             ?: "",
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp,
-                        color = corTexto,
+                        color = Preto,
                     )
 
                     Text(

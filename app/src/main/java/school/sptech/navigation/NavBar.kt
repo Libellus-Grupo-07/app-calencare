@@ -26,9 +26,9 @@ sealed class NavBar(
         icon = R.mipmap.financas
     )
 
-    object Dashboard: NavBar(
-        route = "dashboard",
-        titulo = "Dashboard",
-        icon = R.mipmap.dashboard
+    object Despesas: NavBar(
+        route = "despesas",
+        titulo = "Despesas",
+        icon = R.mipmap.despesas
     )
 }

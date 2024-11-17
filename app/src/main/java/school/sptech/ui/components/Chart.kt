@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -56,21 +57,24 @@ import school.sptech.ui.theme.letterSpacingPrincipal
 @Composable
 fun Chart() {
     ChartLine()
-    Spacer(modifier = Modifier.size(16.dp))
-    GroupButtons()
+    //Spacer(modifier = Modifier.size(16.dp))
+    //GroupButtons()
 }
 
 @Composable
 fun ChartLine(){
     Box(modifier = Modifier
         .fillMaxWidth(1f)
-        .fillMaxHeight(0.35f)
-        .border(
-            BorderStroke(
-                width = 1.dp,
-                color = PretoOpacidade15
-            ), RoundedCornerShape(20.dp)
+        .fillMaxHeight(0.45f)
+        .shadow(
+            4.dp, shape = RoundedCornerShape(20.dp)
         )
+//        .border(
+//            BorderStroke(
+//                width = 1.dp,
+//                color = PretoOpacidade15
+//            ), RoundedCornerShape(20.dp)
+//        )
         .clip(RoundedCornerShape(20.dp))
     ) {
         Column(modifier = Modifier

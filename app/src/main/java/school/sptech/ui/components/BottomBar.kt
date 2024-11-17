@@ -9,7 +9,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.text.font.FontWeight
@@ -22,7 +21,6 @@ import school.sptech.navigation.NavBar
 import school.sptech.ui.theme.Branco
 import school.sptech.ui.theme.Cinza
 import school.sptech.ui.theme.RoxoNubank
-import school.sptech.ui.theme.RoxoNubankOpacidade15
 import school.sptech.ui.theme.RoxoNubankOpacidade7
 import school.sptech.ui.theme.fontFamilyPoppins
 
@@ -36,7 +34,7 @@ fun BottomBar(
         NavBar.Inicio,
         NavBar.Estoque,
         NavBar.Financas,
-        NavBar.Dashboard,
+        NavBar.Despesas,
     )
 
     NavigationBar(

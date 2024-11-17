@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import school.sptech.data.model.CategoriaProduto
-import school.sptech.data.model.Filtro
+import school.sptech.data.model.FiltroEstoque
 import school.sptech.data.model.Produto
 import school.sptech.data.model.Validade
 import school.sptech.data.service.CategoriaProdutoService
@@ -28,7 +28,7 @@ class ProdutoViewModel : ViewModel() {
     private var _produtoAtual by mutableStateOf(Produto(empresaId = preferencesHelper.getIdEmpresa()))
     var categoriaProduto by mutableStateOf(CategoriaProduto())
     var validade by mutableStateOf(Validade())
-    var filtro by mutableStateOf(Filtro())
+    var filtro by mutableStateOf(FiltroEstoque())
     var qtdMaximaEstoque by mutableStateOf(0f)
     var deuErro by mutableStateOf(false)
     var mensagem by mutableStateOf("")
@@ -51,8 +51,7 @@ class ProdutoViewModel : ViewModel() {
         return produtos.filter { produto ->
             produto.qntdTotalEstoque!! >= filtro.rangeQtdEstoque.start &&
                     produto.qntdTotalEstoque!! <= filtro.rangeQtdEstoque.endInclusive &&
-                    (filtro.categorias.isEmpty() || filtro.categorias.map { it.nome }
-                        .contains(produto.categoriaProdutoNome))
+                    (filtro.categorias.isEmpty() || filtro.categorias.contains(produto.categoriaProdutoNome))
         }
     }
 
@@ -201,7 +200,7 @@ class ProdutoViewModel : ViewModel() {
     }
 
     fun limparFiltro() {
-        filtro = Filtro(rangeQtdEstoque = 0f .. qtdMaximaEstoque)
+        filtro = FiltroEstoque(rangeQtdEstoque = 0f .. qtdMaximaEstoque)
     }
 
     fun filtroIsEmpty(): Boolean {
