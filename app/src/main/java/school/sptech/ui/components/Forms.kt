@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonColors
@@ -34,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import formatarDataDatePicker
+import isDataValida
 import school.sptech.R
 import school.sptech.data.model.Empresa
 import school.sptech.data.model.Endereco
@@ -42,31 +44,42 @@ import school.sptech.ui.theme.Branco
 import school.sptech.ui.theme.Cinza
 import school.sptech.ui.theme.Preto
 import school.sptech.ui.theme.RoxoNubank
+import school.sptech.ui.theme.Vermelho
 import school.sptech.ui.theme.fontFamilyPoppins
 import school.sptech.ui.theme.letterSpacingPrincipal
+import school.sptech.ui.theme.letterSpacingSecundaria
 import school.sptech.ui.viewModel.EmpresaViewModel
 import school.sptech.ui.viewModel.UsuarioViewModel
+import transformarEmLocalDate
+import java.time.LocalDate
 
 @Composable
 fun FormFieldWithLabel(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
-    isMultiline: Boolean = false,
+    error: Boolean = false,
     readOnly: Boolean = false,
+    isMultiline: Boolean = false,
     isDateInput: Boolean = false,
     isNumericInput: Boolean = false,
     isSmallInput: Boolean = false,
     clickableInput: Boolean = false,
     onClickInput: () -> Unit = {},
     isObrigatorio: Boolean = true,
+    isDatePastOrPresent: Boolean = false,
     minSize:Int? = null
 ) {
     var enabledDatePicker by remember { mutableStateOf(false) }
     val dateValue: Long = if (isDateInput && value.isNotEmpty()) value.toLong() else 0L
+    val dateValueFormat = if (isDateInput && value.isNotEmpty()) formatarDataDatePicker(
+        inputFormat = true,
+        data = dateValue
+    ) else label
 
     Column(modifier = Modifier.fillMaxWidth()) {
         LabelInput(label = label, isSmallInput = isSmallInput)
+        val corDestaque = if (error) Vermelho else Cinza
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -77,12 +90,12 @@ fun FormFieldWithLabel(
                         enabledDatePicker = true
                     } else onClickInput()
                 },
-                border = BorderStroke(1.dp, Cinza),
+                border = BorderStroke(1.dp, corDestaque),
                 shape = RoundedCornerShape(if (isMultiline) 20.dp else 100.dp),
                 colors = ButtonColors(
-                    contentColor = Preto,
+                    contentColor = corDestaque,
                     containerColor = Color.Transparent,
-                    disabledContentColor = Preto,
+                    disabledContentColor = corDestaque,
                     disabledContainerColor = Color.Transparent,
                 ),
                 contentPadding = PaddingValues(
@@ -92,19 +105,13 @@ fun FormFieldWithLabel(
             ) {
                 Text(
                     text = if (isDateInput) {
-                        if (value.isNotEmpty()) {
-                            formatarDataDatePicker(
-                                inputFormat = true,
-                                data = dateValue
-                            )
-                        } else {
-                            label
-                        }
+                        dateValueFormat
                     } else value,
                     fontSize = if(isSmallInput) 11.5.sp else 13.5.sp,
                     fontFamily = fontFamilyPoppins,
                     fontWeight = FontWeight.Normal,
                     letterSpacing = letterSpacingPrincipal,
+                    color =  if(error) Vermelho else if(value.isEmpty()) Cinza else Preto
                 )
 
                 if (isDateInput) {
@@ -116,15 +123,31 @@ fun FormFieldWithLabel(
                         modifier = Modifier.let {
                             if (isSmallInput) it.size(16.dp) else it.size(20.dp)
                         },
-                        tint = Cinza
+                        tint = corDestaque
                     )
                 }
             }
+
+            if (error) {
+                Text(
+                    modifier = Modifier.padding(start = 24.dp),
+                    text = if (isDatePastOrPresent && value.isNotEmpty())
+                        stringResource(id = R.string.data_invalida, label)
+                            else stringResource(id = R.string.campo_obrigatorio),
+                    color = Vermelho,
+                    fontSize = 9.5.sp,
+                    fontWeight = FontWeight.Medium,
+                    fontFamily = fontFamilyPoppins,
+                    letterSpacing = letterSpacingSecundaria
+                )
+            }
+
         } else {
             InputMedium(
                 value = value,
                 onValueChange = onValueChange,
-                label = if (isNumericInput) "" else label,
+                label = label,
+                error = error,
                 readOnly = readOnly,
                 campoObrigatorio = isObrigatorio,
                 isNumericInput = isNumericInput,
@@ -154,6 +177,7 @@ fun DropdownFieldWithLabel(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
+    error: Boolean = false,
     options: List<String>,
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -175,7 +199,8 @@ fun DropdownFieldWithLabel(
                 trailingIcon = {
                     ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
                 },
-                modifier = Modifier.menuAnchor()
+                modifier = Modifier.menuAnchor(),
+                error = error,
             )
 
             ExposedDropdownMenu(

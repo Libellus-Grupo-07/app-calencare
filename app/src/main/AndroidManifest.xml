@@ -26,7 +26,7 @@
             android:label="@string/title_activity_teste_tela_modal"
             android:theme="@style/Theme.CalencareApp" />
         <activity
-            android:name=".ui.screens.Despesas"
+            android:name=".ui.screens.TelaDespesas"
             android:exported="false"
             android:label="@string/title_activity_dashboard"
             android:screenOrientation="portrait"

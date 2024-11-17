@@ -8,18 +8,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -28,41 +21,30 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import formatarData
-import formatarDataDatePicker
-import kotlinx.coroutines.delay
 import school.sptech.Routes
 import school.sptech.data.model.Despesa
 import school.sptech.preferencesHelper
-import school.sptech.ui.components.AlertError
 import school.sptech.ui.components.Background
 import school.sptech.ui.components.CardDespesa
-import school.sptech.ui.components.TextoButtonMedium
 import school.sptech.ui.components.TextoNenhumItemCadastrado
 import school.sptech.ui.components.TituloLarge
 import school.sptech.ui.components.TopBarSearch
 import school.sptech.ui.theme.CalencareAppTheme
-import school.sptech.ui.theme.Cinza
-import school.sptech.ui.theme.Preto
-import school.sptech.ui.theme.RoxoNubank
-import school.sptech.ui.theme.Vermelho
 import school.sptech.ui.viewModel.DespesaViewModel
-import school.sptech.ui.viewModel.FinancasViewModel
 
-class Despesas : ComponentActivity() {
+class TelaDespesas : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             CalencareAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    TelaDespesas(
+                    TelaDespesasScreen(
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -72,7 +54,7 @@ class Despesas : ComponentActivity() {
 }
 
 @Composable
-fun TelaDespesas(
+fun TelaDespesasScreen(
     navController: NavController = rememberNavController(),
     despesaViewModel: DespesaViewModel = viewModel(),
     modifier: Modifier = Modifier
@@ -94,7 +76,7 @@ fun TelaDespesas(
     }
 
     Background()
-    Column(modifier = Modifier.padding(vertical = 24.dp))
+    Column(modifier = modifier.padding(vertical = 24.dp))
     {
         TopBarSearch(
             onClickBack = { navController.popBackStack() },
@@ -165,9 +147,9 @@ fun ListaDespesas(despesas: List<Despesa>) {
 }
 
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun TelaDashboardPreview() {
+fun TelaDespesasPreview() {
     CalencareAppTheme {
         TelaDespesas()
     }

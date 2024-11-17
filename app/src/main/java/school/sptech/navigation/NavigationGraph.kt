@@ -13,7 +13,7 @@ import school.sptech.ui.screens.LoginScreen
 import school.sptech.ui.screens.SplashScreen
 import school.sptech.ui.screens.TelaAddDespesa
 import school.sptech.ui.screens.TelaAdicionarProdutoScreen
-import school.sptech.ui.screens.TelaDespesas
+import school.sptech.ui.screens.TelaDespesasScreen
 import school.sptech.ui.screens.TelaEstoqueScreen
 import school.sptech.ui.screens.TelaFinancas
 import school.sptech.ui.screens.TelaInformacoesProdutoScreen
@@ -62,7 +62,7 @@ fun NavigationGraph(
 
         composable(NavBar.Despesas.route) {
             onBottomBarVisibleChanged(true)
-            TelaDespesas(navController = navController)
+            TelaDespesasScreen(navController = navController)
         }
 
         composable(Routes.AdicionarProduto.route) {

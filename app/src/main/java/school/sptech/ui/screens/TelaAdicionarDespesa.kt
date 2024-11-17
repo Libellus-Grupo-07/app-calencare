@@ -8,12 +8,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import formatarDecimal
@@ -26,17 +24,19 @@ import school.sptech.ui.components.FormFieldWithLabel
 import school.sptech.ui.components.TopBarVoltar
 import school.sptech.ui.viewModel.DespesaViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import formatarData
+import formatarDataDatePicker
+import isDataValida
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import school.sptech.Routes
 import school.sptech.navigation.NavBar
 import school.sptech.ui.components.AlertError
 import school.sptech.ui.components.AlertSuccess
-import java.time.LocalDate
+import school.sptech.ui.components.LabelInput
+import school.sptech.ui.components.TituloMedium
+import school.sptech.ui.theme.Preto
 import kotlin.coroutines.cancellation.CancellationException
 
 class TelaAdicionarDespesa : ComponentActivity() {
@@ -57,9 +57,16 @@ fun TelaAddDespesa(
     viewModel: DespesaViewModel = viewModel(),
     navController: NavHostController = rememberNavController()
 ) {
+    var nomeVazio by remember { mutableStateOf(false) }
+    var observacaoVazia by remember { mutableStateOf(false) }
+    var categoriaVazia by remember { mutableStateOf(false) }
+    var valorVazio by remember { mutableStateOf(false) }
+    var formaPagamentoVazio by remember { mutableStateOf(false) }
+    var dtPagamentoVazio by remember { mutableStateOf(false) }
+    var dtPagamentoFutura by remember { mutableStateOf(false) }
+
     LaunchedEffect("categorias") {
         viewModel.getCategoriasDespesa()
-
     }
 
     Scaffold(
@@ -79,18 +86,54 @@ fun TelaAddDespesa(
                 .padding(horizontal = 28.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Spacer(modifier = Modifier.height(4.dp))
-            DespesaForm(viewModel)
+            Spacer(modifier = Modifier.height(0.dp))
+
+            DespesaForm(
+                viewModel = viewModel,
+                nomePreenchido = nomeVazio,
+                observacaoPreenchida = observacaoVazia,
+                categoriaPreenchida = categoriaVazia,
+                valorPreenchido = valorVazio,
+                formaPagamentoPreenchido = formaPagamentoVazio,
+                dtPagamentoPreenchido = dtPagamentoVazio,
+                onChangeDtPagamento = {
+                    viewModel.despesa = viewModel.despesa.copy(dtPagamento = it)
+
+                    val dtPagamentoString = formatarDataDatePicker(
+                        data = it.toLongOrNull() ?: 0L,
+                        inputFormat = true
+                    )
+                    dtPagamentoFutura = !isDataValida(dtPagamentoString)
+                    dtPagamentoVazio = it.isEmpty()
+                },
+                dtPagamentoFutura = dtPagamentoFutura
+            )
+
             FormButtons(
                 onCancelClick = { navController.popBackStack() },
                 onAddClick = {
-                    if(
-                        viewModel.despesa.nome?.isNotEmpty() == true &&
-                        viewModel.despesa.observacao?.isNotEmpty() == true &&
-                        viewModel.despesa.valor?.isNotEmpty() == true &&
-                        viewModel.despesa.formaPagamento?.isNotEmpty() == true &&
-                        viewModel.despesa.dtPagamento?.isNotEmpty() == true
-                    ){
+                    nomeVazio = viewModel.despesa.nome?.isEmpty() ?: true
+                    observacaoVazia = viewModel.despesa.observacao?.isEmpty() ?: true
+                    categoriaVazia = viewModel.categoriaDespesa.nome?.isEmpty() ?: true
+                    valorVazio =
+                        viewModel.despesa.valor!!.isEmpty() || viewModel.despesa.valor!!.equals("0,00")
+                    formaPagamentoVazio = viewModel.despesa.formaPagamento?.isEmpty() ?: true
+                    val dtPagamentoString = formatarDataDatePicker(
+                        data = viewModel.despesa.dtPagamento?.toLongOrNull() ?: 0L,
+                        inputFormat = true
+                    )
+                    dtPagamentoFutura = !isDataValida(dtPagamentoString)
+                    dtPagamentoVazio =
+                        viewModel.despesa.dtPagamento?.isEmpty() ?: true
+
+                    if (
+                        !nomeVazio &&
+                        !observacaoVazia &&
+                        !categoriaVazia &&
+                        !valorVazio &&
+                        !formaPagamentoVazio &&
+                        !dtPagamentoVazio && !dtPagamentoFutura
+                    ) {
                         viewModel.adicionarDespesa()
                     }
                 }
@@ -114,7 +157,7 @@ fun TelaAddDespesa(
                     try {
                         delay(3000)
                         viewModel.erro = ""
-                        navController.navigate(NavBar.Financas.route) {
+                        navController.navigate(NavBar.Despesas.route) {
                             popUpTo(Routes.AdicionarDespesa.route) {
                                 inclusive = true
                             }
@@ -136,7 +179,17 @@ fun TelaAddDespesa(
 }
 
 @Composable
-fun DespesaForm(viewModel: DespesaViewModel) {
+fun DespesaForm(
+    viewModel: DespesaViewModel,
+    nomePreenchido: Boolean = false,
+    observacaoPreenchida: Boolean = false,
+    categoriaPreenchida: Boolean = false,
+    valorPreenchido: Boolean = false,
+    formaPagamentoPreenchido: Boolean = false,
+    dtPagamentoPreenchido: Boolean = false,
+    dtPagamentoFutura: Boolean = false,
+    onChangeDtPagamento: (String) -> Unit
+) {
     val formasPagamento = listOf("Dinheiro", "Cartão", "Pix") // Payment methods list
 
     Column(modifier = Modifier.fillMaxWidth(), Arrangement.spacedBy(4.dp)) {
@@ -148,6 +201,7 @@ fun DespesaForm(viewModel: DespesaViewModel) {
                 viewModel.despesa = viewModel.despesa.copy(nome = it)
             },
             label = stringResource(R.string.nome),
+            error = nomePreenchido
         )
 
         // Name Field
@@ -155,6 +209,7 @@ fun DespesaForm(viewModel: DespesaViewModel) {
             value = viewModel.despesa.observacao ?: "",
             onValueChange = { viewModel.despesa = viewModel.despesa.copy(observacao = it) },
             label = stringResource(R.string.observacao),
+            error = observacaoPreenchida,
             minSize = 5
         )
 
@@ -165,7 +220,8 @@ fun DespesaForm(viewModel: DespesaViewModel) {
                 viewModel.categoriaDespesa = viewModel.categoriaDespesa.copy(nome = it)
             },
             label = stringResource(R.string.categoria),
-            options = viewModel.listaCategoriasDespesa.map { it.nome ?: "" }
+            options = viewModel.listaCategoriasDespesa.map { it.nome ?: "" },
+            error = categoriaPreenchida,
         )
 
         // Value Field
@@ -179,6 +235,7 @@ fun DespesaForm(viewModel: DespesaViewModel) {
                 viewModel.despesa = viewModel.despesa.copy(valor = valorFormatado)
             },
             label = stringResource(R.string.valor),
+            error = valorPreenchido
         )
 
         // Payment Method Dropdown
@@ -188,16 +245,19 @@ fun DespesaForm(viewModel: DespesaViewModel) {
                 viewModel.despesa = viewModel.despesa.copy(formaPagamento = it)
             },
             label = stringResource(R.string.forma_pagamento),
-            options = formasPagamento
+            options = formasPagamento,
+            error = formaPagamentoPreenchido
         )
 
         FormFieldWithLabel(
             value = viewModel.despesa.dtPagamento ?: "",
             onValueChange = {
-                viewModel.despesa = viewModel.despesa.copy(dtPagamento = it)
+                onChangeDtPagamento(it)
             },
             isDateInput = true,
             label = stringResource(R.string.data_pagamento),
+            error = dtPagamentoPreenchido || dtPagamentoFutura,
+            isDatePastOrPresent = dtPagamentoFutura
         )
     }
 }
