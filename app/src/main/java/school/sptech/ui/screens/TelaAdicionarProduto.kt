@@ -82,7 +82,7 @@ fun TelaAdicionarProdutoScreen(
     }
 
     if (viewModel.deuErro) {
-        AlertError(msg = viewModel.erro)
+        AlertError(msg = viewModel.mensagem)
 
         LaunchedEffect("error") {   
             delay(6000)
@@ -90,14 +90,14 @@ fun TelaAdicionarProdutoScreen(
         }
     }
 
-    if (!viewModel.deuErro && viewModel.erro.isNotEmpty()) {
+    if (!viewModel.deuErro && viewModel.mensagem.isNotEmpty()) {
         AlertSuccess("Produto adicionado com sucesso!")
 
         DisposableEffect(key1 = "Sucess") {
             val job = CoroutineScope(Dispatchers.Main).launch {
                 try {
                     delay(3000)
-                    viewModel.erro = ""
+                    viewModel.mensagem = ""
                     navController.navigate(NavBar.Estoque.route) {
                         popUpTo(Routes.AdicionarProduto.route) {
                             inclusive = true

@@ -50,7 +50,10 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.zIndex
@@ -286,42 +289,19 @@ fun ProductModal(
                     readOnly = true
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
-
-                if (isRepor) {
-                    Row(modifier = Modifier.fillMaxWidth(), Arrangement.spacedBy(8.dp)) {
-//                        LabelInput(label = stringResource(R.string.possui_validade))
-//                        Checkbox(
-//                            modifier = Modifier.size(24.dp),
-//                            checked = produto.? : false,
-//                            onCheckedChange = {
-//                                viewModel.validade = viewModel.validade.copy(enabledValidade = it)
-//                            },
-//                            colors = CheckboxDefaults.colors(
-//                                checkedColor = Preto,
-//                                uncheckedColor = Cinza,
-//                                checkmarkColor = Branco,
-//                                disabledCheckedColor = CinzaOpacidade35,
-//                                disabledUncheckedColor = CinzaOpacidade7,
-//                                disabledIndeterminateColor = CinzaOpacidade7
-//                            )
-//                        )
-                    }
-                }
-
-//                if (datesFromBackend.isNotEmpty() && datesFromBackend[0].isNotEmpty()) {
                 SelectableDatesRow(
                     dates = datesFromBackend,
                     onDateSelected = {
-                        data = it
-                        onDateSelected(it)
+                        if (it != data) {
+                            data = it
+                            onDateSelected(it)
+                        }
                     },
                     onClickAdicionarData = onClickAdicionarData,
                     isRepor = isRepor,
                     qtdEstoqueData = viewModel.quantidadeEstoqueData.value
-//                        quantidadeEstoque = viewModel.getQuantidadeMaxima()
                 )
-//                }
+
 
                 Spacer(modifier = Modifier.height(12.dp))
                 LabelInput(label = "Quantidade")
@@ -447,9 +427,12 @@ fun RetirarProductModal(
 }
 
 @Composable
-fun ModalConfirmarSair(
+fun ModalConfirmar(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
+    titulo: String,
+    texto: String,
+    nomeItem: String
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -462,9 +445,9 @@ fun ModalConfirmarSair(
         },
         title = {
             Row(
-                modifier =  Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
             ) {
-                TituloLarge(titulo = "Sair da Conta")
+                TituloLarge(titulo = titulo)
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(
                     onClick = onDismiss,
@@ -483,13 +466,19 @@ fun ModalConfirmarSair(
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "Deseja realmente sair da conta?",
-                    fontFamily = fontFamilyPoppins,
-                    color = Preto,
-                    fontWeight = FontWeight.Normal,
-                    letterSpacing = letterSpacingPrincipal
-                )
+                val fontStyle = SpanStyle(color = Cinza, fontFamily = fontFamilyPoppins, letterSpacing = letterSpacingPrincipal)
+
+                Text(buildAnnotatedString {
+                    withStyle(style = fontStyle) {
+                        append(texto)
+                    }
+                    withStyle(style = fontStyle.copy(color = Preto, fontWeight = FontWeight.Bold)) {
+                        append(nomeItem)
+                    }
+                    withStyle(style = fontStyle) {
+                        append("?")
+                    }
+                })
             }
         },
         shape = RoundedCornerShape(20.dp),
@@ -503,7 +492,38 @@ fun ModalConfirmarSair(
 }
 
 @Composable
-fun AlertError(msg: String) {
+fun ModalConfirmarExclusao(
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+    titulo: String,
+    texto: String,
+    nomeItem: String
+) {
+    ModalConfirmar(
+        onDismiss = onDismiss,
+        onConfirm = onConfirm,
+        titulo = titulo,
+        texto = texto,
+        nomeItem = nomeItem
+    )
+}
+
+@Composable
+fun ModalConfirmarSair(
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+) {
+    ModalConfirmar(
+        onDismiss = onDismiss,
+        onConfirm = onConfirm,
+        titulo = "Sair",
+        texto = "Deseja realmente sair de sua conta",
+        nomeItem = ""
+    )
+}
+
+@Composable
+fun AlertError(msg: String, onClick: () -> Unit = {}) {
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -522,8 +542,8 @@ fun AlertError(msg: String) {
 //                    color = VermelhoOpacidade15,
 //                    shape = RoundedCornerShape(16.dp)
 //                )
-                .fillMaxWidth(0.86f),
-            text = {
+            // .fillMaxWidth(0.86f),
+            , text = {
                 Text(
                     text = if (msg.isEmpty()) "Ops! Houve um erro inesperado. Tente novamente mais tarde." else msg,
                     color = Vermelho,
@@ -548,14 +568,7 @@ fun AlertError(msg: String) {
                     modifier = Modifier.size(18.dp)
                 )
             },
-            onClick = {
-                scope.launch {
-                    snackbarHostState.showSnackbar(
-                        message = "Erro!!! $msg",
-                        duration = SnackbarDuration.Short
-                    )
-                }
-            },
+            onClick = onClick
         )
     }
 }
@@ -581,7 +594,8 @@ fun AlertSuccess(msg: String, onClick: () -> Unit = {}) {
 //                    color = VerdeOpacidade15,
 //                    shape = RoundedCornerShape(16.dp)
 //                )
-                .fillMaxWidth(0.86f),
+            //.fillMaxWidth(0.86f)
+            ,
             elevation = FloatingActionButtonDefaults.elevation(
                 defaultElevation = 24.dp,
                 pressedElevation = 24.dp,
@@ -625,7 +639,7 @@ fun ModalEditarEndereco(
             dismissOnClickOutside = true
         ),
         title = {
-            Row(modifier =  Modifier.padding(horizontal = 8.dp, vertical = 8.dp)) {
+            Row(modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)) {
                 TituloLarge(titulo = stringResource(id = R.string.editarEndereco))
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(

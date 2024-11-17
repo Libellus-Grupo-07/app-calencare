@@ -111,6 +111,7 @@ fun BoxProdutos(
     produtos: List<Produto>,
     titulo: String,
     isTelaInicio: Boolean,
+    validadeViewModel: ValidadeViewModel,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = Modifier.fillMaxWidth()) {
@@ -136,7 +137,7 @@ fun BoxProdutos(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                   TextoNenhumItemCadastrado(texto = "Nenhum produto cadastrado")
+                   TextoNenhumItemCadastrado(texto = "Nenhum produto encontrado")
                 }
             } else {
                 LazyVerticalGrid(
@@ -152,28 +153,11 @@ fun BoxProdutos(
                             onClickCardProduto = {
                                 navController.navigate("${Routes.InformacoesProduto.route}/${produto.id}")
                             },
+                       //     validadeViewModel = validadeViewModel,
                             modifier = modifier.fillMaxSize(1f)
                         )
                     }
                 }
-
-//                FlowRow(
-//                    modifier = modifier,
-//                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-//                    verticalArrangement = Arrangement.spacedBy(12.dp),
-//                    maxItemsInEachRow = 2
-//                ) {
-//                    repeat(produtos.size) { i ->
-//                        CardProduto(
-//                            produto = produtos[i],
-//                            isTelaInicio = isTelaInicio,
-//                            onClickCardProduto = {
-//                                navController.navigate("${Routes.InformacoesProduto.route}/${produtos[i].id}")
-//                            },
-//                            modifier = modifier.weight(1f),
-//                        )
-//                    }
-//                }
             }
         }
     }
@@ -196,7 +180,7 @@ fun BoxMovimentos(movimentos: List<Movimentos>) {
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                TextoNenhumItemCadastrado(texto = "Nenhum movimento cadastrado")
+                TextoNenhumItemCadastrado(texto = "Nenhum movimento encontrado")
             }
         } else {
             LazyColumn {

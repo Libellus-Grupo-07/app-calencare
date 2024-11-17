@@ -21,9 +21,11 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
@@ -63,10 +65,10 @@ fun SelectableDatesRow(
     selectedDate: String? = null
 ) {
     var currentDate by remember { mutableStateOf(selectedDate) }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 11.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -78,7 +80,11 @@ fun SelectableDatesRow(
             if (isRepor) {
                 TextButton(
                     onClick = onClickAdicionarData,
-                    contentPadding = PaddingValues(horizontal = 4.dp),
+                    contentPadding = PaddingValues(horizontal = 4.dp, vertical = 0.dp),
+                    colors = ButtonDefaults.textButtonColors(
+                        containerColor = Color.Transparent,
+                        contentColor = Color.Transparent,
+                    )
                 ) {
                     Text(
                         text = "Adicionar Data",
@@ -133,8 +139,10 @@ fun SelectableDatesRow(
                     date = formatarData(date),
                     isSelected = date == currentDate,
                     onClick = {
-                        currentDate = date
-                        onDateSelected(date)
+                        //if(date != currentDate){
+                            currentDate = date
+                            onDateSelected(date)
+                        //}
                     }
                 )
             }
@@ -157,13 +165,13 @@ fun DateItem(
                 color = if (isSelected) RoxoNubankOpacidade15 else CinzaOpacidade7,
                 shape = RoundedCornerShape(50)
             )
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(horizontal = 13.dp, vertical = 5.dp)
     ) {
         Text(
             text = date,
             color = if (isSelected) RoxoNubank else Cinza,
             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-            fontSize = 12.sp,
+            fontSize = 11.sp,
             fontFamily = fontFamilyPoppins,
             letterSpacing = letterSpacingPrincipal,
             textAlign = TextAlign.Center
