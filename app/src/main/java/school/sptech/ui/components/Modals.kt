@@ -33,6 +33,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -74,6 +75,9 @@ import school.sptech.ui.theme.fontFamilyPoppins
 import school.sptech.ui.theme.letterSpacingPrincipal
 import school.sptech.ui.viewModel.EnderecoViewModel
 import school.sptech.ui.viewModel.ReporProdutoViewModel
+import androidx.compose.material3.Text
+import androidx.compose.ui.tooling.preview.Preview
+
 
 @Composable
 fun CustomMonthYearPickerDialog(
@@ -245,12 +249,15 @@ fun ProductModal(
     isRepor: Boolean = false
 ) {
     var data by remember { mutableStateOf("") }
-//    viewModel.setQuantidadeInicial(0)
+    var quantidadeError by remember { mutableStateOf(false) }  // Estado para gerenciar o erro de quantidade
+
+    // Função para validar a quantidade
+    fun isQuantidadeValida(): Boolean {
+        return viewModel.quantidade.value > 0
+    }
 
     AlertDialog(
-        onDismissRequest = {
-            onDismiss()
-        },
+        onDismissRequest = { onDismiss() },
         containerColor = Branco,
         titleContentColor = buttonColor,
         properties = DialogProperties(
@@ -302,7 +309,6 @@ fun ProductModal(
                     qtdEstoqueData = viewModel.quantidadeEstoqueData.value
                 )
 
-
                 Spacer(modifier = Modifier.height(12.dp))
                 LabelInput(label = "Quantidade")
                 Spacer(modifier = Modifier.height(4.dp))
@@ -313,9 +319,7 @@ fun ProductModal(
                     IconButton(onClick = {
                         viewModel.diminuirQuantidade()
                         onQuantidadeChanged(viewModel.quantidade.value)
-                    }
-
-                    ) {
+                    }) {
                         Image(
                             bitmap = ImageBitmap.imageResource(id = R.mipmap.image_remover_menos),
                             contentDescription = "Remover Produto"
@@ -347,6 +351,15 @@ fun ProductModal(
                     }
                 }
 
+                // Exibir mensagem de erro se a quantidade for inválida
+                if (!isQuantidadeValida()) {
+                    Text(
+                        text = "Quantidade inválida. A quantidade deve ser maior que 0.",
+                        color = Color.Red,
+                        style = MaterialTheme.typography.bodySmall // Ajuste para Material 3
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Row() {
@@ -362,7 +375,14 @@ fun ProductModal(
             ButtonBackground(
                 titulo = buttonText,
                 cor = buttonColor,
-                onClick = { onConfirm(viewModel.quantidade.value) }
+                onClick = {
+                    if (isQuantidadeValida()) {
+                        onConfirm(viewModel.quantidade.value)
+                    } else {
+                        quantidadeError = true  // Indica erro de validação
+                    }
+                },
+                enabled = isQuantidadeValida()  // Desabilita o botão se a quantidade for inválida
             )
         },
         dismissButton = {
@@ -370,6 +390,22 @@ fun ProductModal(
         }
     )
 }
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun preview(){
+    ProductModal(
+        title = "Despesa",
+        buttonColor = RoxoNubank,
+        buttonText = "repor",
+        produto = "",
+        quantidadeEstoque = 10,
+        onDismiss = { /*TODO*/ },
+        onConfirm = { /*TODO*/ },
+        datesFromBackend = listOf("1999/11/02")
+    )
+}
+
 
 @Composable
 fun ReporProductModal(
