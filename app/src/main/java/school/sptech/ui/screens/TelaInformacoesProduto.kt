@@ -86,6 +86,7 @@ fun TelaInformacoesProdutoScreen(
 
     val validades = validadeViewModel.getValidades(idProduto)
     produto.validades = validades
+
     val listaValidades = validades.map { it.dtValidade ?: "" }
 
     var exibirModalRetirar by remember {

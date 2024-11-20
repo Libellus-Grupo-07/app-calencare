@@ -199,8 +199,8 @@ class DespesaViewModel : ViewModel() {
             (filtro.categorias.isEmpty() || filtro.categorias.contains(it.categoriaDespesaNome))
                     && (filtro.dtPagamento.isEmpty() || dtPagamentoFiltroFormatada == formatarData(it.dtPagamento!!))
                     && (filtro.formasPagamento.isEmpty() || filtro.formasPagamento.contains(it.formaPagamento))
-                    && (filtro.valorMinimo <= it.valor!!.toDouble())
-                    && (filtro.valorMaximo == 0.0 || filtro.valorMaximo >= it.valor!!.toDouble())
+                    && (it.valor!!.toDouble() >= filtro.valorMinimo.div(100))
+                    && (it.valor!!.toDouble() <= filtro.valorMaximo.div(100))
         }
     }
 

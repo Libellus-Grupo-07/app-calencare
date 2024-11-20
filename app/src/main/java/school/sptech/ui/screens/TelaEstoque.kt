@@ -33,6 +33,7 @@ import school.sptech.ui.components.AlertError
 import school.sptech.ui.components.AlertSuccess
 import school.sptech.ui.components.Background
 import school.sptech.ui.components.BoxProdutos
+import school.sptech.ui.components.LabelInput
 import school.sptech.ui.components.TopBarSearch
 import school.sptech.ui.viewModel.ProdutoViewModel
 import school.sptech.ui.viewModel.ValidadeViewModel
@@ -59,12 +60,6 @@ fun TelaEstoqueScreen(
         produtoViewModel.getCategoriasProduto()
     }
 
-    var listaProdutos = remember {
-        mutableStateListOf<Produto>().apply {
-            addAll(produtoViewModel.getListaProdutos())
-        }
-    }
-
     var exibirFiltro by remember {
         mutableStateOf(false)
     }
@@ -74,20 +69,21 @@ fun TelaEstoqueScreen(
     Column(modifier = Modifier.padding(vertical = 24.dp)) {
         TopBarSearch(
             onClickBack = { navController.popBackStack() },
-            onClickAdd = { navController.navigate(Routes.AdicionarProduto.route) },
+            onClickAdd = {
+                navController.navigate(Routes.AdicionarProduto.route)
+            },
             onClickFiltro = { exibirFiltro = !exibirFiltro }
         )
+
+
         Row(
             modifier = Modifier
                 .padding(horizontal = 24.dp, vertical = 12.dp)
         ) {
             BoxProdutos(
-                produtos = listaProdutos.let {
-                    if (it.isEmpty() && produtoViewModel.filtroIsEmpty()) {
-                        it.addAll(produtoViewModel.getListaProdutos())
-                    }
-                    it
-                },
+                produtos =
+                    if (produtoViewModel.filtroIsEmpty()) produtoViewModel.getListaProdutos()
+                    else produtoViewModel.getListaProdutosPorFiltro(),
                 titulo = stringResource(id = R.string.estoque),
                 isTelaInicio = false,
                 modifier = Modifier.fillMaxWidth(),
@@ -102,7 +98,9 @@ fun TelaEstoqueScreen(
             msg = "Ops! Algo deu errado. Tente novamente mais tarde.",
             onClick = {
                 produtoViewModel.deuErro = false
+                produtoViewModel.mensagem = ""
                 validadeViewModel.deuErro = false
+                validadeViewModel.erro = ""
             }
         )
 
@@ -110,6 +108,7 @@ fun TelaEstoqueScreen(
             delay(6000)
             produtoViewModel.deuErro = false
             validadeViewModel.deuErro = false
+            produtoViewModel.mensagem = ""
             validadeViewModel.erro = ""
         }
     }
@@ -134,13 +133,9 @@ fun TelaEstoqueScreen(
             onDismiss = { exibirFiltro = false },
             onLimpar = {
                 produtoViewModel.limparFiltro()
-                listaProdutos.clear()
-                listaProdutos.addAll(produtoViewModel.getListaProdutos())
                 exibirFiltro = false
             },
             onSalvar = {
-                listaProdutos.clear()
-                listaProdutos.addAll(produtoViewModel.getListaProdutosPorFiltro())
                 exibirFiltro = false
             },
         )

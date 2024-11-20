@@ -2,6 +2,7 @@ package school.sptech.ui.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -27,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -62,13 +64,14 @@ fun FormFieldWithLabel(
     readOnly: Boolean = false,
     isMultiline: Boolean = false,
     isDateInput: Boolean = false,
+    enabledClearDate: Boolean = false,
     isNumericInput: Boolean = false,
     isSmallInput: Boolean = false,
     clickableInput: Boolean = false,
     onClickInput: () -> Unit = {},
     isObrigatorio: Boolean = true,
     isDatePastOrPresent: Boolean = false,
-    minSize:Int? = null
+    minSize: Int? = null
 ) {
     var enabledDatePicker by remember { mutableStateOf(false) }
     val dateValue: Long = if (isDateInput && value.isNotEmpty()) value.toLong() else 0L
@@ -78,10 +81,32 @@ fun FormFieldWithLabel(
     ) else label
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        LabelInput(label = label, isSmallInput = isSmallInput)
         val corDestaque = if (error) Vermelho else Cinza
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            LabelInput(label = label, isSmallInput = isSmallInput)
+
+            if (isDateInput && enabledClearDate) {
+                Text(
+                    text = stringResource(id = R.string.limpar_data),
+                    color = Preto,
+                    fontSize = 9.5.sp,
+                    fontFamily = fontFamilyPoppins,
+                    letterSpacing = letterSpacingSecundaria,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.clickable {
+                        onValueChange("")
+                    }
+                )
+
+            }
+        }
+
+        Spacer(modifier = Modifier.height(if (isObrigatorio) 4.dp else 8.dp))
 
         if (clickableInput || isDateInput) {
             TextButton(
@@ -100,18 +125,18 @@ fun FormFieldWithLabel(
                 ),
                 contentPadding = PaddingValues(
                     horizontal = 24.dp,
-                    vertical = if(isSmallInput) 14.dp else if(isDateInput) 17.5.dp else 20.dp
+                    vertical = if (isSmallInput) 14.dp else if (isDateInput) 17.5.dp else 20.dp
                 ),
             ) {
                 Text(
                     text = if (isDateInput) {
                         dateValueFormat
                     } else value,
-                    fontSize = if(isSmallInput) 11.5.sp else 13.5.sp,
+                    fontSize = if (isSmallInput) 11.5.sp else 13.5.sp,
                     fontFamily = fontFamilyPoppins,
                     fontWeight = FontWeight.Normal,
                     letterSpacing = letterSpacingPrincipal,
-                    color =  if(error) Vermelho else if(value.isEmpty()) Cinza else Preto
+                    color = if (error) Vermelho else if (value.isEmpty()) Cinza else Preto
                 )
 
                 if (isDateInput) {
@@ -133,7 +158,7 @@ fun FormFieldWithLabel(
                     modifier = Modifier.padding(start = 24.dp),
                     text = if (isDatePastOrPresent && value.isNotEmpty())
                         stringResource(id = R.string.data_invalida, label)
-                            else stringResource(id = R.string.campo_obrigatorio),
+                    else stringResource(id = R.string.campo_obrigatorio),
                     color = Vermelho,
                     fontSize = 9.5.sp,
                     fontWeight = FontWeight.Medium,
@@ -165,7 +190,7 @@ fun FormFieldWithLabel(
                 onDismiss = { enabledDatePicker = false },
                 onDateSelected = { date ->
                     onValueChange(date.toString())
-                }
+                },
             )
         }
     }

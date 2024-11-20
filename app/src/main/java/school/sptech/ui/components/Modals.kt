@@ -1,6 +1,7 @@
 package school.sptech.ui.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -159,7 +160,11 @@ fun CustomMonthYearPickerDialog(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DatePickerModal(dateSelected: Long, onDismiss: () -> Unit, onDateSelected: (Long?) -> Unit) {
+fun DatePickerModal(
+    dateSelected: Long,
+    onDismiss: () -> Unit,
+    onDateSelected: (Long?) -> Unit
+) {
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = if (dateSelected > 0) dateSelected else null,
         initialDisplayedMonthMillis = if (dateSelected > 0) dateSelected else null,
@@ -466,7 +471,11 @@ fun ModalConfirmar(
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                val fontStyle = SpanStyle(color = Cinza, fontFamily = fontFamilyPoppins, letterSpacing = letterSpacingPrincipal)
+                val fontStyle = SpanStyle(
+                    color = Cinza,
+                    fontFamily = fontFamilyPoppins,
+                    letterSpacing = letterSpacingPrincipal
+                )
 
                 Text(buildAnnotatedString {
                     withStyle(style = fontStyle) {
@@ -623,7 +632,19 @@ fun ModalEditarEndereco(
     onConfirm: () -> Unit,
     enderecoViewModel: EnderecoViewModel
 ) {
-    val endereco = enderecoViewModel.endereco
+    var endereco = enderecoViewModel.endereco
+    var cepPreenchido by remember { mutableStateOf(endereco.cep?.isNotEmpty() ?: false) }
+    var logradouroPreenchido by remember {
+        mutableStateOf(
+            endereco.logradouro?.isNotEmpty() ?: false
+        )
+    }
+    var numeroPreenchido by remember {
+        mutableStateOf(endereco.numero?.isNotEmpty() ?: false || endereco.numero.equals("0"))
+    }
+    var bairroPreenchido by remember { mutableStateOf(endereco.bairro?.isNotEmpty() ?: false) }
+    var cidadePreenchida by remember { mutableStateOf(endereco.localidade?.isNotEmpty() ?: false) }
+    var ufPreenchida by remember { mutableStateOf(endereco.uf?.isNotEmpty() ?: false) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -631,7 +652,20 @@ fun ModalEditarEndereco(
             ButtonCancelar(onClick = onDismiss)
         },
         confirmButton = {
-            ButtonBackground(titulo = "Salvar", cor = RoxoNubank, onClick = onConfirm)
+            ButtonBackground(
+                titulo = "Salvar",
+                cor = RoxoNubank,
+                onClick = {
+                    if (enderecoViewModel.endereco.cep?.isNotEmpty() == true
+                        && enderecoViewModel.endereco.logradouro?.isNotEmpty() == true
+                        && enderecoViewModel.endereco.numero?.isNotEmpty() == true
+                        && enderecoViewModel.endereco.localidade?.isNotEmpty() == true
+                        && enderecoViewModel.endereco.uf?.isNotEmpty() == true
+                    ) {
+                        onConfirm()
+                    }
+                }
+            )
         },
         containerColor = Branco,
         properties = DialogProperties(
@@ -639,7 +673,7 @@ fun ModalEditarEndereco(
             dismissOnClickOutside = true
         ),
         title = {
-            Row(modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)) {
+            Row(modifier = Modifier.padding(start = 8.dp, top = 8.dp, end = 8.dp)) {
                 TituloLarge(titulo = stringResource(id = R.string.editarEndereco))
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(
@@ -658,7 +692,7 @@ fun ModalEditarEndereco(
             Column(
                 modifier = Modifier.padding(horizontal = 8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(0.dp)
             ) {
                 // CEP
                 FormFieldWithLabel(
@@ -667,11 +701,15 @@ fun ModalEditarEndereco(
                     onValueChange = {
                         enderecoViewModel.endereco = enderecoViewModel.endereco.copy(cep = it)
 
-                        if (it.length >= 9) {
-                            enderecoViewModel.buscarEnderecoPorCep()
+                        if (it.length >= 8) {
+                            endereco = enderecoViewModel.getEnderecoViaCep()
                         }
+
+                        cepPreenchido = it.isNotEmpty()
                     },
-                    label = stringResource(id = R.string.cep)
+                    label = stringResource(id = R.string.cep),
+                    isObrigatorio = true,
+                    error = !cepPreenchido
                 )
 
                 FormFieldWithLabel(
@@ -680,24 +718,33 @@ fun ModalEditarEndereco(
                     onValueChange = {
                         enderecoViewModel.endereco =
                             enderecoViewModel.endereco.copy(logradouro = it)
+                        logradouroPreenchido = it.isNotEmpty()
                     },
-                    label = stringResource(id = R.string.logradouro)
+                    label = stringResource(id = R.string.logradouro),
+                    isObrigatorio = true,
+                    error = !logradouroPreenchido
                 )
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     Arrangement.SpaceBetween
                 ) {
-                    Column(modifier = Modifier.weight(0.3f)) {
+                    Column(modifier = Modifier.weight(0.35f)) {
                         FormFieldWithLabel(
                             isSmallInput = true,
                             value = endereco.numero.toString() ?: "",  // Valor alterado
                             onValueChange = {
                                 enderecoViewModel.endereco =
                                     enderecoViewModel.endereco.copy(numero = it)
+                                numeroPreenchido =
+                                    it.isNotEmpty() || it.equals(
+                                        "0"
+                                    )
                             },
                             isNumericInput = true,
-                            label = stringResource(id = R.string.numero)
+                            label = stringResource(id = R.string.numero),
+                            isObrigatorio = true,
+                            error = !numeroPreenchido
                         )
                     }
 
@@ -711,7 +758,8 @@ fun ModalEditarEndereco(
                                 enderecoViewModel.endereco =
                                     enderecoViewModel.endereco.copy(complemento = it)
                             },
-                            label = stringResource(id = R.string.complemento)
+                            label = stringResource(id = R.string.complemento),
+                            isObrigatorio = false
                         )
                     }
                 }
@@ -727,9 +775,12 @@ fun ModalEditarEndereco(
                             onValueChange = {
                                 enderecoViewModel.endereco =
                                     enderecoViewModel.endereco.copy(localidade = it)
+                                cidadePreenchida = it.isNotEmpty()
                             },
                             isNumericInput = true,
-                            label = stringResource(id = R.string.cidade)
+                            label = stringResource(id = R.string.cidade),
+                            isObrigatorio = true,
+                            error = !cidadePreenchida
                         )
                     }
 
@@ -742,8 +793,11 @@ fun ModalEditarEndereco(
                             onValueChange = {
                                 enderecoViewModel.endereco =
                                     enderecoViewModel.endereco.copy(uf = it)
+                                ufPreenchida = endereco.uf?.isNotEmpty() ?: false
                             },
-                            label = stringResource(id = R.string.uf)
+                            label = stringResource(id = R.string.uf),
+                            isObrigatorio = true,
+                            error = !ufPreenchida
                         )
                     }
                 }
