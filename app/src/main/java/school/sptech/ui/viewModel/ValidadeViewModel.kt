@@ -66,6 +66,7 @@ class ValidadeViewModel : ViewModel() {
     fun getValidades(produtoId: Int): List<Validade> {
         this.produtoId = produtoId
         getValidades()
+        //atualizarQtdEstoqueValidades()
         return listaValidades
     }
 
@@ -79,7 +80,6 @@ class ValidadeViewModel : ViewModel() {
                     listaValidades.addAll(response.body() ?: listOf())
                     deuErro = false
                     erro = ""
-                    //atualizarQtdEstoqueValidades()
                 } else if (response.code() == 404) {
                     deuErro = false
                 } else {
@@ -94,16 +94,21 @@ class ValidadeViewModel : ViewModel() {
     }
 
     fun atualizarQtdEstoqueValidades() {
-       GlobalScope.launch {
+        val novaLista = mutableListOf<Validade>()
+
+        GlobalScope.launch {
             listaValidades.forEach { validadeAtual ->
                 if(validadeAtual.qntdEstoque == null){
+                    validade =  Validade()
                     validade =  validadeAtual
-                    validadeAtual.qntdEstoque = getQuantidadeEstoqueDaValidade()
+                    novaLista.add(validadeAtual.copy(qntdEstoque = getQuantidadeEstoqueDaValidade()))
                 }
             }
         }
 
         validade =  Validade()
+        listaValidades.clear()
+        listaValidades.addAll(novaLista)
     }
 
     fun getTotalEstoqueProduto(produtoId: Int): Int {
@@ -137,28 +142,32 @@ class ValidadeViewModel : ViewModel() {
     }
 
     fun getQuantidadeEstoqueDaValidade(): Int {
+        quantidadeEstoqueValidade = 0
+        validade.qntdEstoque = null
         getQuantidadeEstoquePorValidade()
         return quantidadeEstoqueValidade
     }
 
     fun getQuantidadeEstoquePorValidade() {
-        GlobalScope.launch {
-            try {
-                val response =
-                    movimentacaoValidadeService.getQuantidadePorValidade(
-                        validadeId = validade.id ?: 0
-                    )
+        if(validade.qntdEstoque == null){
+            GlobalScope.launch {
+                try {
+                    val response =
+                        movimentacaoValidadeService.getQuantidadePorValidade(
+                            validadeId = validade.id ?: 0
+                        )
 
-                if (response.isSuccessful) {
-                    quantidadeEstoqueValidade = response.body()!!
-                    deuErro = false
-                } else {
+                    if (response.isSuccessful) {
+                        quantidadeEstoqueValidade = response.body()!!
+                        deuErro = false
+                    } else {
+                        deuErro = true
+                        erro = response.errorBody()?.string() ?: "Erro desconhecido"
+                    }
+                } catch (ex: Exception) {
                     deuErro = true
-                    erro = response.errorBody()?.string() ?: "Erro desconhecido"
+                    erro = ex.message ?: "Erro desconhecido"
                 }
-            } catch (ex: Exception) {
-                deuErro = true
-                erro = ex.message ?: "Erro desconhecido"
             }
         }
     }
@@ -184,6 +193,7 @@ class ValidadeViewModel : ViewModel() {
                     deuErro = false
                     erro = "Movimentação realizada com sucesso"
                     movimentacaoValidade = MovimentacaoValidade()
+                    listaValidades.clear()
                     //validade.qntdEstoque = getQuantidadeEstoqueDaValidade()
                 } else {
                     deuErro = true

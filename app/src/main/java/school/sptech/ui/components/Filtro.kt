@@ -233,7 +233,8 @@ fun FiltroDespesaModal(
                     },
                     label = "Data de Pagamento",
                     isDateInput = true,
-                    isSmallInput = true
+                    isSmallInput = true,
+                    enabledClearDate = true
                 )
 
                 Column {
@@ -286,8 +287,9 @@ fun FiltroDespesaModal(
                             ),
                             onValueChange = {
                                 val valor = it.replace(",", "").replace(".", "")
+                                val valorFormatado = valor.toDoubleOrNull() ?: 0.0
                                 despesaViewModel.filtro = despesaViewModel.filtro.copy(
-                                    valorMaximo = valor.toDoubleOrNull() ?: 0.0
+                                    valorMaximo = valorFormatado
                                 )
                             },
                             label = "Valor Máximo",

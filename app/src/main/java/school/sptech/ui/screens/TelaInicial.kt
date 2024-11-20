@@ -57,7 +57,6 @@ fun TelaInicio(
 ) {
     LaunchedEffect(Unit) {
         usuarioViewModel.getFuncionario(preferencesHelper.getIdUsuario())
-        produtoViewModel.getProdutos(preferencesHelper.getIdEmpresa())
     }
 
     val usuario = usuarioViewModel.usuario

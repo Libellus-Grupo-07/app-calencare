@@ -126,7 +126,7 @@ fun TelaConta(
                     modifier = Modifier
                         .padding(horizontal = 8.dp)
                         .verticalScroll(ScrollState(1)),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     when (targetState) {
                         Routes.DadosEmpresa.route -> {
@@ -169,7 +169,10 @@ fun TelaConta(
 
         if(exibirModalEndereco){
             ModalEditarEndereco(
-                onDismiss = { exibirModalEndereco = false },
+                onDismiss = {
+                    exibirModalEndereco = false
+                    enderecoViewModel.getEndereco(preferencesHelper.getIdEmpresa())
+                },
                 onConfirm = {
                     enderecoViewModel.atualizarEndereco()
 
@@ -192,8 +195,11 @@ fun TelaConta(
             LaunchedEffect("error") {
                 delay(5000)
                 usuarioViewModel.deuErro = false
+                usuarioViewModel.erro = ""
                 empresaViewModel.deuErro = false
+                empresaViewModel.erro = ""
                 enderecoViewModel.deuErro = false
+                enderecoViewModel.erro = ""
             }
         } else if(
             usuarioViewModel.erro.isNotEmpty() &&
@@ -204,7 +210,7 @@ fun TelaConta(
                 delay(5000)
                 navController.popBackStack()
             }
-        } else if(enderecoViewModel.erro.isNotEmpty()){
+        } else if(enderecoViewModel.erro.isNotEmpty() && !enderecoViewModel.deuErro){
             AlertSuccess(
                 msg = "Endereço atualizado com sucesso!",
                 onClick = { enderecoViewModel.erro = "" }

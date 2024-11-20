@@ -44,6 +44,10 @@ class ProdutoViewModel : ViewModel() {
     }
 
     fun getListaProdutosEstoqueBaixo(): List<Produto> {
+        if(produtos.isEmpty()){
+            getProdutos()
+        }
+
         return produtos.filter { it.qntdTotalEstoque!! < 10 }.toList()
     }
 

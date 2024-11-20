@@ -1,6 +1,7 @@
 package school.sptech.ui.viewModel
 
 import android.util.Log
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -22,48 +23,56 @@ class EnderecoViewModel : ViewModel() {
     }
 
     fun getEndereco(empresaId: Int) {
-        if (endereco.id == null) {
-            GlobalScope.launch {
-                try {
-                    var response = enderecoService.getEnderecoByEmpresaId(empresaId = empresaId)
+        GlobalScope.launch {
+            try {
+                var response = enderecoService.getEnderecoByEmpresaId(empresaId = empresaId)
 
-                    if (response.isSuccessful && response.body() != null) {
-                        endereco = response.body()!!
-                        deuErro = false
-                        erro = ""
-                    } else {
-                        Log.e(
-                            "api",
-                            "Erro ao tentar buscar endereco ${response.errorBody()?.string()}"
-                        )
-                        deuErro = true
-                    }
-                } catch (ex: Exception) {
-                    Log.e("api", "Erro ao tentar buscar endereco", ex)
+                if (response.isSuccessful && response.body() != null) {
+                    endereco = response.body()!!
+                    deuErro = false
+                    erro = ""
+                } else {
+                    Log.e(
+                        "api",
+                        "Erro ao tentar buscar endereco ${response.errorBody()?.string()}"
+                    )
                     deuErro = true
                 }
+            } catch (ex: Exception) {
+                Log.e("api", "Erro ao tentar buscar endereco", ex)
+                deuErro = true
             }
         }
+
+    }
+
+    fun getEnderecoViaCep() : Endereco {
+        buscarEnderecoPorCep()
+        return endereco
     }
 
     //    fun buscarEnderecoPorCep(abc:String) {
-    fun buscarEnderecoPorCep() {
+    fun buscarEnderecoPorCep(){
         GlobalScope.launch {
             try {
                 var response = enderecoService.getEnderecoByCep(endereco.cep!!)
 
                 if (response.isSuccessful) {
-                    endereco = endereco.copy(
+                    val novoEndereco = Endereco(
+                        id = endereco.id,
                         logradouro = response.body()?.logradouro,
                         bairro = response.body()?.bairro,
                         localidade = response.body()?.localidade,
                         uf = response.body()?.uf,
                         complemento = response.body()?.complemento,
-                        numero = ""
+                        cep = response.body()?.cep,
+                        numero = endereco.numero,
+                        descricaoEndereco = endereco.descricaoEndereco,
+                        empresa = endereco.empresa
                     )
+                    endereco = novoEndereco
                     deuErro = false
                     erro = ""
-
                 } else {
                     Log.e(
                         "api",
@@ -79,7 +88,7 @@ class EnderecoViewModel : ViewModel() {
         }
     }
 
-    fun atualizarEndereco(){
+    fun atualizarEndereco() {
         GlobalScope.launch {
             try {
                 var response = enderecoService.putEndereco(endereco.id!!, endereco)

@@ -133,11 +133,11 @@ fun InputMedium(
     isSmallInput: Boolean = false,
     tamanhoMinimo: Int? = null,
     campoObrigatorio: Boolean = true,
+
     modifier: Modifier = Modifier
 ) {
     var inputNaoPreenchida by remember { mutableStateOf(error) }
     var inputPreenchidaComQuantidadeMinima by remember { mutableStateOf(true) }
-    var inputNumericInvalida by remember { mutableStateOf(false) }
 
     val shapeSize = if (isMultiline) 20.dp else 40.dp
     val textStyle = TextStyle(
@@ -199,18 +199,18 @@ fun InputMedium(
             .let {
                 if (isMultiline) it.height(124.dp)
                 else if (!campoObrigatorio && isSmallInput) it.height(64.dp)
-                else if (isSmallInput) it.height(48.dp)
+                else if (isSmallInput) it.height(66.dp)
                 else it.height(70.dp)
             },
         shape = RoundedCornerShape(shapeSize),
         singleLine = !isMultiline,
         maxLines = if (isMultiline) Int.MAX_VALUE else 1,
         isError = (error && value.isEmpty())
-                || inputNaoPreenchida
+                || (inputNaoPreenchida && value.isEmpty())
                 || !inputPreenchidaComQuantidadeMinima
                 || (isNumericInput && (error && value == "0,00")),
         supportingText = {
-            if ((error && value.isEmpty()) || inputNaoPreenchida || !inputPreenchidaComQuantidadeMinima || (isNumericInput && (error && value == "0,00"))) {
+            if (campoObrigatorio && (error && value.isEmpty()) || (inputNaoPreenchida && value.isEmpty()) || !inputPreenchidaComQuantidadeMinima || (isNumericInput && (error && value == "0,00"))) {
                 Text(
                     text = if (!inputNaoPreenchida && !inputPreenchidaComQuantidadeMinima)
                         "$label deve ter no mínimo $tamanhoMinimo caracteres"
@@ -219,7 +219,7 @@ fun InputMedium(
                         id = R.string.valor_invalido,
                         label
                     )
-                    else stringResource(id = R.string.campo_obrigatorio),
+                    else stringResource(id = if(isSmallInput) R.string.obrigatorio else R.string.campo_obrigatorio),
                     color = Vermelho,
                     fontSize = 9.5.sp,
                     fontWeight = FontWeight.Medium,

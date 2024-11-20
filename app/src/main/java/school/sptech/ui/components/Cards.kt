@@ -56,12 +56,15 @@ import formatarData
 import formatarDataDatePicker
 import formatarDecimal
 import formatarValorMonetario
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import school.sptech.R
 import school.sptech.data.model.Despesa
 import school.sptech.data.model.Movimentacoes
 import school.sptech.data.model.Movimentos
 import school.sptech.data.model.Produto
+import school.sptech.data.model.Validade
 import school.sptech.ui.theme.Amarelo
 import school.sptech.ui.theme.Azul
 import school.sptech.ui.theme.AzulOpacidade15
@@ -178,6 +181,7 @@ fun CardProduto(
             modifier = Modifier
                 .padding(18.dp)
         ) {
+
             Column() {
                 Text(
                     text = produto.nome ?: "",
@@ -216,6 +220,7 @@ fun CardProduto(
                         shape = CircleShape,
                         onClick = {
                             validadeViewModel.deuErro = false
+                            validadeViewModel.erro = ""
                             exibirModalRepor = true
                         },
                         colors = ButtonDefaults.buttonColors(
@@ -254,6 +259,7 @@ fun CardProduto(
                             shape = CircleShape,
                             onClick = {
                                 validadeViewModel.deuErro = false
+                                validadeViewModel.erro = ""
                                 exibirModalRetirar = true
                             }, // Atualiza o estado para abrir o modal de retirada
                             colors = ButtonDefaults.buttonColors(
@@ -284,6 +290,7 @@ fun CardProduto(
                             shape = CircleShape,
                             onClick = {
                                 validadeViewModel.deuErro = false
+                                validadeViewModel.erro = ""
                                 exibirModalRepor = true
                             },
                             colors = ButtonDefaults.buttonColors(
@@ -307,8 +314,11 @@ fun CardProduto(
 
             // Exibe o modal de reposição de produto
             if (exibirModalRepor) {
+                validadeViewModel.deuErro = false
+                validadeViewModel.erro = ""
+
                 LaunchedEffect(Unit) {
-                    produto.validades = validadeViewModel.getValidades(produto.id ?: 0)
+                    validadeViewModel.getValidades(produto.id!!)
                 }
 
                 ReporProductModal(
@@ -317,11 +327,13 @@ fun CardProduto(
                         reporProdutoViewModel.quantidadeEstoqueData.value = 0
                         reporProdutoViewModel.setQuantidadeInicial(0)
                         reporProdutoViewModel.setQuantidadeMaxima(0)
+                        validadeViewModel.quantidadeEstoqueValidade = 0
                     },
                     produto = produto.nome ?: "",
                     quantidadeEstoque = produto.qntdTotalEstoque ?: 0,
                     onDateSelected = {
                         reporProdutoViewModel.quantidadeEstoqueData.value = 0
+                        validadeViewModel.validade = Validade()
                         val validade = produto.validades?.find { validadeAtual ->
                             it!!.equals((validadeAtual.dtValidade ?: ""))
                                     && validadeAtual.produtoId == produto.id
@@ -342,10 +354,18 @@ fun CardProduto(
                     },
                     onConfirm = {
                         validadeViewModel.reporEstoque()
+
                         if (!validadeViewModel.deuErro) {
-                            validadeViewModel.atualizarQtdEstoqueValidades()
+                            produto.qntdTotalEstoque = produto.qntdTotalEstoque?.plus(
+                                validadeViewModel.movimentacaoValidade.quantidade ?: 0
+                            )
+
+                            //validadeViewModel.atualizarQtdEstoqueValidades()
                             reporProdutoViewModel.setQuantidadeInicial(0)
                             reporProdutoViewModel.setQuantidadeMaxima(0)
+                            reporProdutoViewModel.quantidadeEstoqueData.value = 0
+                            validadeViewModel.quantidadeEstoqueValidade = 0
+
                             exibirModalRepor = false
                         }
                     },
@@ -355,6 +375,10 @@ fun CardProduto(
 
             // Exibe o modal de retirada de produto
             if (exibirModalRetirar) {
+                LaunchedEffect(Unit) {
+                    validadeViewModel.getValidades(produto.id!!)
+                }
+
                 RetirarProductModal(
                     produto = produto.nome ?: "",
                     quantidadeEstoque = produto.qntdTotalEstoque ?: 0,
@@ -363,14 +387,19 @@ fun CardProduto(
                         reporProdutoViewModel.setQuantidadeInicial(0)
                         reporProdutoViewModel.setQuantidadeMaxima(0)
                         reporProdutoViewModel.quantidadeEstoqueData.value = 0
+                        validadeViewModel.quantidadeEstoqueValidade = 0
                     },
                     onConfirm = {
                         validadeViewModel.retirarEstoque()
 
-                        if (!validadeViewModel.deuErro) {
+                        if (!validadeViewModel.deuErro && validadeViewModel.erro.isNotEmpty()) {
+                            produto.qntdTotalEstoque = produto.qntdTotalEstoque?.minus(
+                                validadeViewModel.movimentacaoValidade.quantidade ?: 0
+                            )
                             reporProdutoViewModel.setQuantidadeInicial(0)
                             reporProdutoViewModel.setQuantidadeMaxima(0)
                             reporProdutoViewModel.quantidadeEstoqueData.value = 0
+                            validadeViewModel.quantidadeEstoqueValidade = 0
                             exibirModalRetirar = false
                         }
                     },
@@ -383,11 +412,11 @@ fun CardProduto(
                         }
 
                         validadeViewModel.validade = validade!!
-                        val qtdMaxima =
-                            validadeViewModel.getQuantidadeEstoqueDaValidade()
+                        validadeViewModel.getQuantidadeEstoquePorValidade()
 
-                        reporProdutoViewModel.quantidadeEstoqueData.value = qtdMaxima
-                        reporProdutoViewModel.setQuantidadeMaxima(qtdMaxima)
+                        reporProdutoViewModel.quantidadeEstoqueData.value =
+                            validadeViewModel.quantidadeEstoqueValidade
+                        reporProdutoViewModel.setQuantidadeMaxima(validadeViewModel.quantidadeEstoqueValidade)
                         reporProdutoViewModel.setQuantidadeInicial(0)
                     },
                     onQuantidadeChanged = {
@@ -420,7 +449,9 @@ fun CardProduto(
                         )
 
                         validadeViewModel.adicionarValidade()
-                        produto.validades = validadeViewModel.getValidades(produto.id ?: 0)
+                        produto.validades = MutableList(produto.validades?.size ?: 0) {
+                            validadeViewModel.getValidades(produto.id ?: 0)?.get(it) ?: Validade()
+                        }
 
                         exibirModalAdicionarData = false
                         exibirModalRepor = true
