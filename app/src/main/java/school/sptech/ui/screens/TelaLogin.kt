@@ -205,12 +205,10 @@ fun LoginScreen(
 
                     if (emailPreenchido && senhaPreenchida) {
                         viewModel.logar()
-                        deuRuim = viewModel.deuErro
-                        msg = viewModel.erro
 
-                        if (!deuRuim && msg.isNotBlank()) {
+                        if (!viewModel.deuErro && viewModel.erro.isNotEmpty()) {
                             preferencesHelper.saveIdUsuario(
-                                viewModel.usuario.id ?: 0
+                                viewModel.usuario.id!!
                             )
                             navController.navigate(NavBar.Inicio.route)
                         }
@@ -236,18 +234,19 @@ fun LoginScreen(
                 modifier = Modifier.size(140.dp),
                 alignment = Alignment.Center
             )
+        }
 
-            if (viewModel.deuErro) {
-                AlertError(
-                    msg = "Ops! Houve um erro inesperado. Tente novamente mais tarde."
-                )
-                
-                LaunchedEffect("login"){
-                    delay(5000)
-                    deuRuim = false
-                }
+        if (viewModel.deuErro && viewModel.erro.isNotEmpty()) {
+            AlertError(
+                msg = viewModel.erro
+            )
 
+            LaunchedEffect("login"){
+                delay(5000)
+                viewModel.erro = ""
+                viewModel.deuErro = false
             }
+
         }
     }
 }

@@ -78,6 +78,7 @@ import school.sptech.ui.viewModel.EnderecoViewModel
 import school.sptech.ui.viewModel.ReporProdutoViewModel
 import androidx.compose.material3.Text
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.sp
 
 
 @Composable
@@ -632,7 +633,8 @@ fun AlertSuccess(msg: String, onClick: () -> Unit = {}) {
         ExtendedFloatingActionButton(
             shape = RoundedCornerShape(16.dp),
             contentColor = Verde,
-            containerColor = Color(0xFFD8F1D2),
+            containerColor = Color(0xFFD8F1D2).copy(alpha = 0.96f),
+//            containerColor = Color.Transparent,
             modifier = Modifier
 //                .border(
 //                    width = 1.dp,
@@ -653,7 +655,8 @@ fun AlertSuccess(msg: String, onClick: () -> Unit = {}) {
                     color = Verde,
                     fontFamily = fontFamilyPoppins,
                     fontWeight = FontWeight.Bold,
-                    letterSpacing = letterSpacingPrincipal
+                    letterSpacing = letterSpacingPrincipal,
+                    fontSize = 13.5.sp
                 )
             },
             icon = { Icon(Icons.Filled.Check, contentDescription = "") },

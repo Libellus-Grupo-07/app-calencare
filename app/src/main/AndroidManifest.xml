@@ -44,7 +44,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.CalencareApp" />
         <activity
-            android:name=".ui.screens.Conta"
+            android:name=".ui.screens.TelaConta"
             android:exported="false"
             android:label="@string/title_activity_conta"
             android:screenOrientation="portrait"
@@ -54,7 +54,7 @@
         <!-- android:label="@string/title_activity_nav_graph" -->
         <!-- android:theme="@style/Theme.CalencareApp" /> -->
         <activity
-            android:name=".ui.screens.TelaFinancasActivity"
+            android:name=".ui.screens.TelaFinancas"
             android:exported="true"
             android:label="@string/title_activity_tela_financas"
             android:screenOrientation="portrait"

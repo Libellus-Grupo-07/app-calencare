@@ -44,14 +44,14 @@ import school.sptech.ui.viewModel.EmpresaViewModel
 import school.sptech.ui.viewModel.EnderecoViewModel
 import school.sptech.ui.viewModel.UsuarioViewModel
 
-class Conta : ComponentActivity() {
+class TelaConta : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             CalencareAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    TelaConta(
+                    TelaContaScreen(
                         navController = rememberNavController(),
                         modifier = Modifier.padding(innerPadding)
                     )
@@ -62,7 +62,7 @@ class Conta : ComponentActivity() {
 }
 
 @Composable
-fun TelaConta(
+fun TelaContaScreen(
     usuarioViewModel: UsuarioViewModel = viewModel(),
     enderecoViewModel: EnderecoViewModel = viewModel(),
     empresaViewModel: EmpresaViewModel = viewModel(),
@@ -141,6 +141,8 @@ fun TelaConta(
                         }
 
                         else -> {
+                            enderecoViewModel.erro = ""
+                            enderecoViewModel.deuErro = false
                             FormDadosPessoais(usuario, usuarioViewModel)
                         }
                     }
@@ -218,6 +220,8 @@ fun TelaConta(
 
             LaunchedEffect("sucess") {
                 delay(5000)
+                enderecoViewModel.erro = ""
+                enderecoViewModel.deuErro = false
             }
         }
     }
@@ -228,6 +232,6 @@ fun TelaConta(
 @Composable
 fun GreetingPreview() {
     CalencareAppTheme {
-        TelaConta(navController = rememberNavController())
+        TelaContaScreen(navController = rememberNavController())
     }
 }

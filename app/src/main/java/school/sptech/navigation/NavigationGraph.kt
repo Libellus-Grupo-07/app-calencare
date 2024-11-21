@@ -8,14 +8,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import school.sptech.Routes
 import school.sptech.helper.PreferencesHelper
-import school.sptech.ui.screens.TelaConta
+import school.sptech.ui.screens.TelaContaScreen
 import school.sptech.ui.screens.LoginScreen
 import school.sptech.ui.screens.SplashScreen
 import school.sptech.ui.screens.TelaAddDespesa
 import school.sptech.ui.screens.TelaAdicionarProdutoScreen
 import school.sptech.ui.screens.TelaDespesasScreen
 import school.sptech.ui.screens.TelaEstoqueScreen
-import school.sptech.ui.screens.TelaFinancas
+import school.sptech.ui.screens.TelaFinancasScreen
+import school.sptech.ui.screens.TelaInformacoesMovimentosScreen
 import school.sptech.ui.screens.TelaInformacoesProdutoScreen
 import school.sptech.ui.screens.TelaInicio
 import school.sptech.ui.screens.TelaNotificacoesScreen
@@ -57,7 +58,7 @@ fun NavigationGraph(
 
         composable(NavBar.Financas.route) {
             onBottomBarVisibleChanged(true)
-            TelaFinancas(navController = navController)
+            TelaFinancasScreen(navController = navController)
         }
 
         composable(NavBar.Despesas.route) {
@@ -77,7 +78,7 @@ fun NavigationGraph(
 
         composable(Routes.DadosPessoais.route) {
             onBottomBarVisibleChanged(false)
-            TelaConta(navController = navController)
+            TelaContaScreen(navController = navController)
         }
 
         composable(
@@ -92,11 +93,11 @@ fun NavigationGraph(
         }
 
         composable(
-            "${Routes.InformacoesMovimentos.route}",
+            "${Routes.InformacoesMovimentacao.route}",
             //arguments = listOf(navArgument("movimentoId") { type = NavType.IntType })
         ) { backStackEntry ->
             onBottomBarVisibleChanged(false)
-            TelaInformacoesProdutoScreen(
+            TelaInformacoesMovimentosScreen(
                 navController = navController,
                 //idMovimentos = backStackEntry.arguments?.getInt("movimentoId") ?: 0
             )
