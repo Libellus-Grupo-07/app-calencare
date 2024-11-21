@@ -4,8 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,7 +19,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,7 +26,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -37,9 +33,7 @@ import getStringProduto
 import school.sptech.R
 import school.sptech.Routes
 import school.sptech.data.model.Movimentacoes
-import school.sptech.data.model.Movimentos
 import school.sptech.data.model.Produto
-import school.sptech.ui.theme.Cinza
 import school.sptech.ui.theme.CinzaOpacidade7
 import school.sptech.ui.theme.Preto
 import school.sptech.ui.theme.RoxoNubank
@@ -165,15 +159,15 @@ fun BoxProdutos(
 }
 
 @Composable
-fun BoxMovimentos(movimentos: List<Movimentacoes>) {
+fun BoxMovimentacoes(movimentacoes: List<Movimentacoes>, onClickCard: (Movimentacoes) -> Unit) {
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(vertical = 16.dp, horizontal = 8.dp)
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         TituloLarge(titulo = stringResource(id = R.string.movimentos))
 
-        if (movimentos.isEmpty()) {
+        if (movimentacoes.isEmpty()) {
             Row(
                 modifier = Modifier
                     .fillMaxSize()
@@ -184,9 +178,15 @@ fun BoxMovimentos(movimentos: List<Movimentacoes>) {
                 TextoNenhumItemCadastrado(texto = "Nenhum movimento encontrado")
             }
         } else {
-            LazyColumn {
-                items(movimentos) { movimento ->
-                    CardMovimentos(movimento)
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(0.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(movimentacoes) { movimento ->
+                    CardMovimentacoes(movimento, onClick = {
+                        onClickCard(movimento)
+                    })
                 }
             }
         }

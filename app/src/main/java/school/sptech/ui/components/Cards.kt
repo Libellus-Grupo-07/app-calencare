@@ -21,13 +21,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.KeyboardArrowRight
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -46,9 +44,12 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -56,13 +57,10 @@ import formatarData
 import formatarDataDatePicker
 import formatarDecimal
 import formatarValorMonetario
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import school.sptech.R
+import school.sptech.data.model.Agendamento
 import school.sptech.data.model.Despesa
 import school.sptech.data.model.Movimentacoes
-import school.sptech.data.model.Movimentos
 import school.sptech.data.model.Produto
 import school.sptech.data.model.Validade
 import school.sptech.ui.theme.Amarelo
@@ -88,7 +86,6 @@ import school.sptech.ui.theme.letterSpacingSecundaria
 import school.sptech.ui.viewModel.ReporProdutoViewModel
 import school.sptech.ui.viewModel.ValidadeViewModel
 import transformarEmLocalDateTime
-import java.time.LocalDate
 import java.util.Locale
 
 @Composable
@@ -477,41 +474,54 @@ fun CardProduto(
 }
 
 @Composable
-fun CardMovimentos(
-    movimentos: Movimentacoes,
+fun CardMovimentacoes(
+    movimentacoes: Movimentacoes,
+    onClick: () -> Unit,
+    isLargeCard: Boolean = false,
+    isClickableCard: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 4.dp)
+            .padding(horizontal = if(isLargeCard) 0.dp else 4.dp)
             .shadow(
                 4.dp,
                 RoundedCornerShape(20.dp),
                 ambientColor = Color.Transparent,
                 spotColor = PretoOpacidade25
-            ),
+            )
+            .clickable(enabled = isClickableCard) {
+                onClick()
+            },
         colors = CardDefaults.cardColors(
             containerColor = Branco
         ),
     ) {
-        val iconId = when (movimentos.descricao) {
+        val iconId = when (movimentacoes.descricao) {
             "Despesas" -> R.mipmap.icone_dinheiro_despesa
             "Agendamentos" -> R.mipmap.agendamentos
             else -> R.mipmap.comissoes
         }
 
-        val corIcone = when (movimentos.descricao) {
+        val corIcone = when (movimentacoes.descricao) {
             "Despesas" -> VermelhoOpacidade15
             "Agendamentos" -> AzulOpacidade15
             else -> LaranjaOpacidade15
         }
 
-        val corTexto = when (movimentos.descricao) {
+        val corTexto = when (movimentacoes.descricao) {
             "Despesas" -> Vermelho
             "Agendamentos" -> Azul
             else -> Laranja
         }
+
+        val isDespesa by remember { mutableStateOf(movimentacoes.descricao == "Despesas") }
+        val valorFormatado = stringResource(
+            id = R.string.valorMovimentos,
+            if (isDespesa) "-" else "+",
+            formatarDecimal(movimentacoes.total?.toFloat() ?: 0.0)
+        )
 
         Row(
             modifier = Modifier
@@ -522,19 +532,19 @@ fun CardMovimentos(
         ) {
             Icon(
                 painter = painterResource(id = iconId),
-                contentDescription = "Ícone de ${movimentos.descricao ?: "Movimentos"}",
+                contentDescription = "Ícone de ${movimentacoes.descricao ?: "Movimentos"}",
                 tint = corTexto,
-                modifier = Modifier.size(52.dp)
+                modifier = Modifier.size(if (isLargeCard) 58.dp else 52.dp)
             )
 
             Column(
-                modifier = Modifier.fillMaxWidth(0.8f),
+                modifier = Modifier.fillMaxWidth(if (isLargeCard) 0.94f else 0.8f),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.Start
             ) {
                 Row {
                     Text(
-                        text = formatarData(movimentos.data ?: "") ?: "",
+                        text = formatarData(movimentacoes.data ?: "") ?: "",
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Medium,
                         fontFamily = fontFamilyPoppins,
@@ -549,39 +559,250 @@ fun CardMovimentos(
                     Arrangement.SpaceBetween,
                     Alignment.CenterVertically
                 ) {
-                    val isDespesa by remember { mutableStateOf(movimentos.descricao == "Despesas") }
 
                     Text(
-                        text = movimentos.descricao ?: "",
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.SemiBold,
+                        text = movimentacoes.descricao ?: "",
+                        fontSize = if(isLargeCard) 14.sp else 13.sp,
+                        fontWeight = if (isLargeCard) FontWeight.Bold else FontWeight.SemiBold,
                         fontFamily = fontFamilyPoppins,
                         letterSpacing = letterSpacingPrincipal,
                         color = Preto
                     )
 
-                    Text(
-                        text = stringResource(
-                            id = R.string.valorMovimentos,
-                            if (isDespesa) "-" else "+",
-                            formatarDecimal(movimentos.total?.toFloat() ?: 0.0)
-                        ),
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        fontFamily = fontFamilyPoppins,
-                        letterSpacing = letterSpacingPrincipal,
-                        color = corTexto
+                    TextoValorColorido(
+                        texto = valorFormatado,
+                        cor = corTexto
                     )
+
                 }
             }
 
-            Icon(
-                Icons.AutoMirrored.Rounded.KeyboardArrowRight,
-                contentDescription = "Ver detalhes",
-                tint = Cinza
-            )
+            if (isClickableCard) {
+                Icon(
+                    Icons.AutoMirrored.Rounded.KeyboardArrowRight,
+                    contentDescription = "Ver detalhes",
+                    tint = Cinza,
+                    modifier = Modifier.clickable(enabled = isClickableCard) {
+                        onClick()
+                    }
+                )
+            }
         }
     }
+}
+
+@Composable
+fun CardDescricaoMovimentacao(
+    valor: Double,
+    titulo: String,
+    data: String,
+    profissional: String = "",
+    cliente: String = "",
+    tipoCard: String,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .shadow(
+                4.dp,
+                RoundedCornerShape(20.dp),
+                ambientColor = Color.Transparent,
+                spotColor = PretoOpacidade25
+            ),
+        colors = CardDefaults.cardColors(
+            containerColor = Branco
+        ),
+    ) {
+        val iconId = when (tipoCard) {
+            "Despesas" -> R.mipmap.despesa_extrato
+            "Agendamentos" -> R.mipmap.agendamento_ticket
+            else -> R.mipmap.comissao_pessoa
+        }
+
+        val corTexto = when (tipoCard) {
+            "Despesas" -> Laranja
+            "Agendamentos" -> Verde
+            else -> Amarelo
+        }
+
+        val isAgendamento by remember { mutableStateOf(tipoCard == "Agendamentos") }
+        val valorFormatado = stringResource(
+            id = R.string.valorMovimentos,
+            if (isAgendamento) "+" else "-",
+            formatarDecimal(valor.toFloat())
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 20.dp, top = 16.dp, end = 20.dp, bottom = if(isAgendamento) 6.dp else 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Icon(
+                painter = painterResource(id = iconId),
+                contentDescription = "Ícone de $tipoCard",
+                tint = corTexto,
+                modifier = Modifier.size(54.dp)
+            )
+
+            Column(
+                modifier = Modifier.fillMaxWidth(0.92f),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.Start
+            ) {
+                Row {
+                    Text(
+                        text = data,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Medium,
+                        fontFamily = fontFamilyPoppins,
+                        letterSpacing = letterSpacingPrincipal,
+                        color = Cinza
+                    )
+                }
+
+                Row(
+                    modifier = modifier
+                        .fillMaxWidth(),
+                    Arrangement.SpaceBetween,
+                    Alignment.CenterVertically
+                ) {
+
+                    Text(
+                        text = titulo,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = fontFamilyPoppins,
+                        letterSpacing = letterSpacingPrincipal,
+                        color = Preto
+                    )
+
+                    TextoValorColorido(
+                        texto = valorFormatado,
+                        cor = corTexto
+                    )
+                }
+            }
+        }
+
+        if (isAgendamento) {
+            Box(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp, start = 16.dp, end = 16.dp)
+                    .drawBehind {
+                        drawLine(
+                            color = Cinza,
+                            start = Offset(0f, 0f),
+                            end = Offset(size.width, 0f),
+                            strokeWidth = 1f
+                        )
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                val spanStyleCinza = SpanStyle(
+                    color = Cinza,
+                    fontFamily = fontFamilyPoppins,
+                    letterSpacing = letterSpacingPrincipal,
+                    fontSize = 12.5.sp,
+                    fontWeight = FontWeight.Normal
+                )
+
+                val spanStylePreto = SpanStyle(
+                    color = Preto,
+                    fontFamily = fontFamilyPoppins,
+                    letterSpacing = letterSpacingPrincipal,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 12.5.sp,
+                )
+
+                Row(
+                    modifier = modifier
+                        .fillMaxWidth(0.95f)
+                        .padding(top = 10.dp, bottom = 12.dp),
+                    Arrangement.SpaceBetween,
+                    Alignment.CenterVertically
+                ) {
+                    val primeiraLetraSobrenomeProfissional =
+                        profissional.substringAfter(" ").substring(0, 1).uppercase()
+                    val nomeProfissional =
+                        profissional.replaceAfter(" ", "$primeiraLetraSobrenomeProfissional.")
+                    val primeiraLetraSobrenomeCliente =
+                        cliente.substringAfter(" ").substring(0, 1).uppercase()
+                    val nomeCliente = cliente.replaceAfter(" ", "$primeiraLetraSobrenomeCliente.")
+
+                    Text(
+                        buildAnnotatedString {
+                            withStyle(
+                                spanStyleCinza
+                            ) {
+                                append("Profissional: ")
+                            }
+                            withStyle(
+                                spanStylePreto
+                            ) {
+                                append(nomeProfissional)
+                            }
+                        },
+                    )
+
+                    Text(
+                        buildAnnotatedString {
+                            withStyle(
+                                spanStyleCinza
+                            ) {
+                                append("Cliente: ")
+                            }
+                            withStyle(
+                                spanStylePreto
+                            ) {
+                                append(nomeCliente)
+                            }
+                        },
+                    )
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun CardDespesaMovimentacao(despesa: Despesa) {
+    CardDescricaoMovimentacao(
+        valor = despesa.valor?.toDoubleOrNull() ?: 0.0,
+        titulo = despesa.nome ?: "",
+        data = "Pago em ${despesa.dtPagamento?.let { formatarData(it) }}",
+        tipoCard = "Despesas"
+    )
+}
+
+@Composable
+fun CardAgendamentoMovimentacao(agendamento: Agendamento) {
+    val dia = agendamento.dia?.let { formatarData(it) } ?: ""
+    val hrInicio = agendamento.horario?.substring(0, 5)
+    val hrFim = agendamento.horarioFinalizacao?.substring(0, 5)
+
+    CardDescricaoMovimentacao(
+        valor = agendamento.preco ?: 0.0,
+        titulo = agendamento.nomeServico ?: "",
+        data = "$dia $hrInicio às $hrFim",
+        profissional = agendamento.nomeFuncionario ?: "",
+        cliente = agendamento.nomeCliente ?: "",
+        tipoCard = "Agendamentos"
+    )
+}
+
+@Composable
+fun CardComissaoMovimentacao(comissao: Movimentacoes) {
+    CardDescricaoMovimentacao(
+        valor = comissao.total?.toDoubleOrNull() ?: 0.0,
+        titulo = comissao.descricao ?: "",
+        data = "Pago em ${comissao.data?.let { formatarData(it) }}",
+        tipoCard = "Comissões"
+    )
 }
 
 @Composable

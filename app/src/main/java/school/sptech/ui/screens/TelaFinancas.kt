@@ -5,8 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,16 +18,15 @@ import formatarDecimal
 import getMonthInt
 import kotlinx.coroutines.delay
 import school.sptech.R
+import school.sptech.Routes
 import school.sptech.data.model.Movimentacoes
 import school.sptech.preferencesHelper
 import school.sptech.ui.components.AlertError
 import school.sptech.ui.components.Background
+import school.sptech.ui.components.BoxMovimentacoes
 import school.sptech.ui.components.CardKpi
-import school.sptech.ui.components.CardMovimentos
 import school.sptech.ui.components.Chart
 import school.sptech.ui.components.SeletorData
-import school.sptech.ui.components.TextoNenhumItemCadastrado
-import school.sptech.ui.components.TituloLarge
 import school.sptech.ui.components.TopBarComSelecaoData
 import school.sptech.ui.theme.*
 import school.sptech.ui.viewModel.DespesaViewModel
@@ -38,20 +35,20 @@ import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.Locale
 
-class TelaFinancasActivity : ComponentActivity() {
+class TelaFinancas : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             CalencareAppTheme {
-                TelaFinancas()
+                TelaFinancasScreen()
             }
         }
     }
 }
 
 @Composable
-fun TelaFinancas(
+fun TelaFinancasScreen(
     financasViewModel: MovimentacoesViewModel = viewModel(),
     despesaViewModel: DespesaViewModel = viewModel(),
     navController: NavController = rememberNavController()
@@ -125,7 +122,8 @@ fun TelaFinancas(
         despesasTotais = despesasTotais,
         faturamento = faturamento.value,
         comissoes = comissoes.value,
-        movimentos = financasViewModel.movimentacoes
+        movimentacoes = financasViewModel.movimentacoes,
+        navController = navController
     )
 
     if (despesaViewModel.deuErro) {
@@ -147,7 +145,8 @@ fun ConteudoTelaFinancas(
     despesasTotais: Double,
     faturamento: Double,
     comissoes: Double,
-    movimentos: List<Movimentacoes>
+    movimentacoes: List<Movimentacoes>,
+    navController: NavController
 ) {
     Background()
     Column(
@@ -170,27 +169,10 @@ fun ConteudoTelaFinancas(
 
         Chart()
 
-        Column {
-            TituloLarge(titulo = stringResource(id = R.string.movimentos))
+        BoxMovimentacoes(movimentacoes = movimentacoes, onClickCard = {
+            navController.navigate(Routes.InformacoesMovimentacao.route)
+        })
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            if (movimentos.isEmpty()) {
-                Row(
-                    modifier = Modifier.fillMaxSize().padding(bottom = 24.dp),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    TextoNenhumItemCadastrado(texto = "Nenhum movimento encontrado")
-                }
-            } else {
-                LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    items(movimentos.size) { i ->
-                        CardMovimentos(movimentos = movimentos[i])
-                    }
-                }
-            }
-        }
     }
 }
 
@@ -257,5 +239,5 @@ fun ResumoFinanceiro(
 @Preview(showSystemUi = true)
 @Composable
 fun PreviaTelaFinancas() {
-    TelaFinancas()
+    TelaFinancasScreen()
 }

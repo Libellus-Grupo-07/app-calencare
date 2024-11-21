@@ -2,8 +2,10 @@ package school.sptech.network
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import school.sptech.data.service.AgendamentoService
 import school.sptech.data.service.CategoriaDespesaService
 import school.sptech.data.service.CategoriaProdutoService
+import school.sptech.data.service.DashFinancasService
 import school.sptech.data.service.DespesaService
 import school.sptech.data.service.EmpresaService
 import school.sptech.data.service.EnderecoService
@@ -124,6 +126,26 @@ object RetrofitService{
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(FinancasService::class.java)
+
+        return client
+    }
+
+    fun getClientDashFinancas(): DashFinancasService {
+        val client = Retrofit.Builder()
+            .baseUrl(BASE_URL_API)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(DashFinancasService::class.java)
+
+        return client
+    }
+
+    fun getClientAgendamento(): AgendamentoService {
+        val client = Retrofit.Builder()
+            .baseUrl(BASE_URL_API)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(AgendamentoService::class.java)
 
         return client
     }

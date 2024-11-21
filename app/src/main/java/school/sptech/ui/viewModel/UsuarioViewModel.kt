@@ -30,7 +30,7 @@ class UsuarioViewModel : ViewModel() {
                     val usuarioResponse = response.body()!!
                     usuario.id = usuarioResponse.userId
                     deuErro = false
-                    erro = "Logado com sucesso"
+                    erro = "sucess"
                 } else {
                     Log.e("api", "Erro ao tentar logar ${response.errorBody()?.string()}")
                     deuErro = true

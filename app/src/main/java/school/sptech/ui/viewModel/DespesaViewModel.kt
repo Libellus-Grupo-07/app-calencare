@@ -157,7 +157,6 @@ class DespesaViewModel : ViewModel() {
         return totalDespesas
     }
 
-
     fun getTotalDespesasByMes(mes: Int, ano: Int) {
         GlobalScope.launch {
             try {
