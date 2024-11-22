@@ -13,6 +13,7 @@
     <string name="title_activity_tela_estoque" translatable="false">TelaEstoque</string>
     <string name="title_activity_dashboard" translatable="false">Dashboard</string>
     <string name="title_activity_teste_tela_modal">TesteTelaModal</string>
+    <string name="title_activity_tela_editar_despesa">TelaEditarDespesa</string>
     <string name="valor">Valor</string>
     <string name="categoria">Categoria</string>
     <string name="nome">Nome</string>
