@@ -12,6 +12,8 @@
     <string name="title_activity_tela_adicionar_despesa" translatable="false">TelaAdicionarDespesa</string>
     <string name="title_activity_tela_estoque" translatable="false">TelaEstoque</string>
     <string name="title_activity_dashboard" translatable="false">Dashboard</string>
+    <string name="title_activity_teste_tela_modal">TesteTelaModal</string>
+    <string name="title_activity_tela_editar_despesa">TelaEditarDespesa</string>
     <string name="valor">Valor</string>
     <string name="categoria">Categoria</string>
     <string name="nome">Nome</string>
@@ -74,5 +76,14 @@
     <string name="possui_validade">Possui Validade?</string>
     <string name="campo_obrigatorio">Campo obrigatório.</string>
     <string name="observacao">Observação</string>
-    <string name="title_activity_tela_editar_despesa">TelaEditarDespesa</string>
+    <string name="intervaloAtendimento">Intervalo entre Atendimentos</string>
+    <string name="editarEndereco">Editar Endereço</string>
+    <string name="uf">UF</string>
+    <string name="endereco">Endereço</string>
+    <string name="cidade">Cidade</string>
+    <string name="title_activity_tela_informacoes_movimentos">TelaInformacoesMovimentos</string>
+    <string name="valor_invalido">O %1$s deve ser maior que 0.0.</string>
+    <string name="data_invalida">A %1$s deve ser uma data presente ou passada.</string>
+    <string name="obrigatorio">Obrigatório.</string>
+    <string name="limpar_data">Limpar Data</string>
 </resources>

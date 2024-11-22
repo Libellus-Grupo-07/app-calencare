@@ -1,30 +1,29 @@
 package school.sptech.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import school.sptech.R
 import school.sptech.Routes
 import school.sptech.helper.PreferencesHelper
-import school.sptech.ui.screens.TelaConta
+import school.sptech.ui.screens.TelaContaScreen
 import school.sptech.ui.screens.LoginScreen
 import school.sptech.ui.screens.SplashScreen
 import school.sptech.ui.screens.TelaAddDespesa
 import school.sptech.ui.screens.TelaAdicionarProdutoScreen
-import school.sptech.ui.screens.TelaDashboard
-import school.sptech.ui.screens.TelaEstoque
-import school.sptech.ui.screens.TelaFinancas
+import school.sptech.ui.screens.TelaDespesasScreen
+import school.sptech.ui.screens.TelaEstoqueScreen
+import school.sptech.ui.screens.TelaFinancasScreen
+import school.sptech.ui.screens.TelaInformacoesMovimentosScreen
 import school.sptech.ui.screens.TelaInformacoesProdutoScreen
 import school.sptech.ui.screens.TelaInicio
-import school.sptech.ui.screens.TelaNotificacoes
+import school.sptech.ui.screens.TelaNotificacoesScreen
 
 @Composable
 fun NavigationGraph(
-    preferencesHelper:PreferencesHelper? = null,
+    preferencesHelper: PreferencesHelper? = null,
     navController: NavHostController,
     onBottomBarVisibleChanged: (Boolean) -> Unit,
 ) {
@@ -49,22 +48,22 @@ fun NavigationGraph(
 
         composable(Routes.Notificacoes.route) {
             onBottomBarVisibleChanged(false)
-            TelaNotificacoes(navController = navController)
+            TelaNotificacoesScreen(navController = navController)
         }
 
         composable(NavBar.Estoque.route) {
             onBottomBarVisibleChanged(true)
-            TelaEstoque(navController = navController)
+            TelaEstoqueScreen(navController = navController)
         }
 
         composable(NavBar.Financas.route) {
             onBottomBarVisibleChanged(true)
-            TelaFinancas(navController = navController)
+            TelaFinancasScreen(navController = navController)
         }
 
-        composable(NavBar.Dashboard.route) {
+        composable(NavBar.Despesas.route) {
             onBottomBarVisibleChanged(true)
-            TelaDashboard()
+            TelaDespesasScreen(navController = navController)
         }
 
         composable(Routes.AdicionarProduto.route) {
@@ -79,19 +78,30 @@ fun NavigationGraph(
 
         composable(Routes.DadosPessoais.route) {
             onBottomBarVisibleChanged(false)
-            TelaConta(navController =  navController)
+            TelaContaScreen(navController = navController)
         }
 
         composable(
             "${Routes.InformacoesProduto.route}/{produtoId}",
             arguments = listOf(navArgument("produtoId") { type = NavType.IntType })
-        ) {backStackEntry ->
+        ) { backStackEntry ->
             onBottomBarVisibleChanged(false)
             TelaInformacoesProdutoScreen(
                 navController = navController,
                 idProduto = backStackEntry.arguments?.getInt("produtoId") ?: 0
-//                idProduto = 1
             )
+        }
+
+        composable(
+            "${Routes.InformacoesMovimentacao.route}",
+            //arguments = listOf(navArgument("movimentoId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            onBottomBarVisibleChanged(false)
+            TelaInformacoesMovimentosScreen(
+                navController = navController,
+                //idMovimentos = backStackEntry.arguments?.getInt("movimentoId") ?: 0
+            )
+
         }
     }
 }

@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -37,14 +38,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -53,9 +58,11 @@ import formatarDataDatePicker
 import formatarDecimal
 import formatarValorMonetario
 import school.sptech.R
+import school.sptech.data.model.Agendamento
 import school.sptech.data.model.Despesa
-import school.sptech.data.model.Movimentos
+import school.sptech.data.model.Movimentacoes
 import school.sptech.data.model.Produto
+import school.sptech.data.model.Validade
 import school.sptech.ui.theme.Amarelo
 import school.sptech.ui.theme.Azul
 import school.sptech.ui.theme.AzulOpacidade15
@@ -75,9 +82,11 @@ import school.sptech.ui.theme.Vermelho
 import school.sptech.ui.theme.VermelhoOpacidade15
 import school.sptech.ui.theme.fontFamilyPoppins
 import school.sptech.ui.theme.letterSpacingPrincipal
+import school.sptech.ui.theme.letterSpacingSecundaria
 import school.sptech.ui.viewModel.ReporProdutoViewModel
 import school.sptech.ui.viewModel.ValidadeViewModel
 import transformarEmLocalDateTime
+import java.util.Locale
 
 @Composable
 fun CardKpi(titulo: String, valor: String, cor: String, modifier: Modifier = Modifier) {
@@ -141,11 +150,10 @@ fun CardProduto(
 
     LaunchedEffect("estoque") {
         validadeViewModel.getValidades(produto.id!!)
-//        validadeViewModel.getTotalEstoqueProduto(produto.id!!)
+        //validadeViewModel.getTotalEstoqueProduto(produto.id!!)
+        //validadeViewModel.atualizarQtdEstoqueValidades()
     }
 
-//    val qtdEstoque = validadeViewModel.getTotalEstoqueProduto(produto.id!!)
-    val qtdEstoque = 0
     produto.validades = validadeViewModel.listaValidades
 
     Row(
@@ -170,6 +178,7 @@ fun CardProduto(
             modifier = Modifier
                 .padding(18.dp)
         ) {
+
             Column() {
                 Text(
                     text = produto.nome ?: "",
@@ -198,8 +207,7 @@ fun CardProduto(
                 Spacer(modifier = Modifier.size(8.dp))
 
                 ButtonEstoque(
-//                    qtdEstoque =  validadeViewModel.getTotalEstoqueProduto(produto.id!!),
-                    qtdEstoque =  0
+                    qtdEstoque = produto.qntdTotalEstoque ?: 0,
                 )
 
                 if (isTelaInicio) {
@@ -207,7 +215,11 @@ fun CardProduto(
                         modifier = Modifier
                             .fillMaxWidth(),
                         shape = CircleShape,
-                        onClick = { exibirModalRepor = true },
+                        onClick = {
+                            validadeViewModel.deuErro = false
+                            validadeViewModel.erro = ""
+                            exibirModalRepor = true
+                        },
                         colors = ButtonDefaults.buttonColors(
                             contentColor = Branco,
                             containerColor = RoxoNubank,
@@ -230,7 +242,7 @@ fun CardProduto(
                         )
                     }
                 } else {
-                    val buttonRetirarEnabled = qtdEstoque ?: 0 > 0
+                    val buttonRetirarEnabled = produto.qntdTotalEstoque ?: 0 > 0
 
                     Row(
                         modifier = modifier.fillMaxWidth(),
@@ -243,6 +255,8 @@ fun CardProduto(
                                 .height(36.dp),
                             shape = CircleShape,
                             onClick = {
+                                validadeViewModel.deuErro = false
+                                validadeViewModel.erro = ""
                                 exibirModalRetirar = true
                             }, // Atualiza o estado para abrir o modal de retirada
                             colors = ButtonDefaults.buttonColors(
@@ -271,7 +285,11 @@ fun CardProduto(
                                 .weight(0.5f)
                                 .height(36.dp),
                             shape = CircleShape,
-                            onClick = { exibirModalRepor = true },
+                            onClick = {
+                                validadeViewModel.deuErro = false
+                                validadeViewModel.erro = ""
+                                exibirModalRepor = true
+                            },
                             colors = ButtonDefaults.buttonColors(
                                 contentColor = Branco,
                                 containerColor = RoxoNubank,
@@ -291,94 +309,112 @@ fun CardProduto(
                 }
             }
 
-
-            LaunchedEffect(Unit) {
-                produto.validades = validadeViewModel.getValidades(produto.id ?: 0)
-            }
-
             // Exibe o modal de reposição de produto
             if (exibirModalRepor) {
-                LaunchedEffect("exibirModalRepor") {
-                    validadeViewModel.getTotalEstoqueProduto(produto.id ?: 0)
-                }
+                validadeViewModel.deuErro = false
+                validadeViewModel.erro = ""
 
-                produto.validades = validadeViewModel.getValidades(produto.id ?: 0)
-                produto.qtdEstoque = validadeViewModel.quantidadeTotalEstoque
+                LaunchedEffect(Unit) {
+                    validadeViewModel.getValidades(produto.id!!)
+                }
 
                 ReporProductModal(
                     onDismiss = {
                         exibirModalRepor = false
-
+                        reporProdutoViewModel.quantidadeEstoqueData.value = 0
                         reporProdutoViewModel.setQuantidadeInicial(0)
                         reporProdutoViewModel.setQuantidadeMaxima(0)
+                        validadeViewModel.quantidadeEstoqueValidade = 0
                     },
                     produto = produto.nome ?: "",
-                    quantidadeEstoque = qtdEstoque ?: 0,
+                    quantidadeEstoque = produto.qntdTotalEstoque ?: 0,
                     onDateSelected = {
+                        reporProdutoViewModel.quantidadeEstoqueData.value = 0
+                        validadeViewModel.validade = Validade()
                         val validade = produto.validades?.find { validadeAtual ->
-                            it!!.equals(validadeAtual.dtValidade ?: "")
+                            it!!.equals((validadeAtual.dtValidade ?: ""))
+                                    && validadeAtual.produtoId == produto.id
                         }
 
                         validadeViewModel.validade = validade!!
                         reporProdutoViewModel.quantidadeEstoqueData.value =
                             validadeViewModel.getQuantidadeEstoqueDaValidade()
-
-                        reporProdutoViewModel.setQuantidadeMaxima(0)
+                        reporProdutoViewModel.setQuantidadeMaxima(null)
                     },
                     onQuantidadeChanged = {
                         validadeViewModel.movimentacaoValidade =
                             validadeViewModel.movimentacaoValidade.copy(quantidade = it)
                     },
                     viewModel = reporProdutoViewModel,
-                    onClickAdicionarData = { exibirModalAdicionarData = true },
+                    onClickAdicionarData = {
+                        exibirModalAdicionarData = true
+                    },
                     onConfirm = {
                         validadeViewModel.reporEstoque()
+
                         if (!validadeViewModel.deuErro) {
+                            produto.qntdTotalEstoque = produto.qntdTotalEstoque?.plus(
+                                validadeViewModel.movimentacaoValidade.quantidade ?: 0
+                            )
+
+                            //validadeViewModel.atualizarQtdEstoqueValidades()
                             reporProdutoViewModel.setQuantidadeInicial(0)
                             reporProdutoViewModel.setQuantidadeMaxima(0)
+                            reporProdutoViewModel.quantidadeEstoqueData.value = 0
+                            validadeViewModel.quantidadeEstoqueValidade = 0
+
                             exibirModalRepor = false
                         }
                     },
-                    datesFromBackend = produto.validades!!.map { it.dtValidade ?: "" } ?: listOf()
+                    datesFromBackend = produto.validades?.map { it.dtValidade ?: "" } ?: listOf()
                 )
             }
 
             // Exibe o modal de retirada de produto
             if (exibirModalRetirar) {
+                LaunchedEffect(Unit) {
+                    validadeViewModel.getValidades(produto.id!!)
+                }
+
                 RetirarProductModal(
                     produto = produto.nome ?: "",
-                    quantidadeEstoque = qtdEstoque ?: 0,
+                    quantidadeEstoque = produto.qntdTotalEstoque ?: 0,
                     onDismiss = {
                         exibirModalRetirar = false
                         reporProdutoViewModel.setQuantidadeInicial(0)
                         reporProdutoViewModel.setQuantidadeMaxima(0)
                         reporProdutoViewModel.quantidadeEstoqueData.value = 0
+                        validadeViewModel.quantidadeEstoqueValidade = 0
                     },
                     onConfirm = {
                         validadeViewModel.retirarEstoque()
 
-                        if (!validadeViewModel.deuErro) {
+                        if (!validadeViewModel.deuErro && validadeViewModel.erro.isNotEmpty()) {
+                            produto.qntdTotalEstoque = produto.qntdTotalEstoque?.minus(
+                                validadeViewModel.movimentacaoValidade.quantidade ?: 0
+                            )
                             reporProdutoViewModel.setQuantidadeInicial(0)
                             reporProdutoViewModel.setQuantidadeMaxima(0)
                             reporProdutoViewModel.quantidadeEstoqueData.value = 0
+                            validadeViewModel.quantidadeEstoqueValidade = 0
                             exibirModalRetirar = false
-
                         }
                     },
                     viewModel = reporProdutoViewModel,
                     onDateSelected = {
+                        reporProdutoViewModel.quantidadeEstoqueData.value = 0
+
                         val validade = produto.validades?.find { validadeAtual ->
                             it!!.equals(validadeAtual.dtValidade ?: "")
                         }
 
                         validadeViewModel.validade = validade!!
-                        val qtdMaxima =
-                            validadeViewModel.getQuantidadeEstoqueDaValidade()
+                        validadeViewModel.getQuantidadeEstoquePorValidade()
 
-                        reporProdutoViewModel.quantidadeEstoqueData.value = qtdMaxima
-                        reporProdutoViewModel.setQuantidadeMaxima(qtdMaxima)
+                        reporProdutoViewModel.quantidadeEstoqueData.value =
+                            validadeViewModel.quantidadeEstoqueValidade
+                        reporProdutoViewModel.setQuantidadeMaxima(validadeViewModel.quantidadeEstoqueValidade)
                         reporProdutoViewModel.setQuantidadeInicial(0)
-
                     },
                     onQuantidadeChanged = {
                         validadeViewModel.movimentacaoValidade =
@@ -410,6 +446,9 @@ fun CardProduto(
                         )
 
                         validadeViewModel.adicionarValidade()
+                        produto.validades = MutableList(produto.validades?.size ?: 0) {
+                            validadeViewModel.getValidades(produto.id ?: 0)?.get(it) ?: Validade()
+                        }
 
                         exibirModalAdicionarData = false
                         exibirModalRepor = true
@@ -417,102 +456,368 @@ fun CardProduto(
                 )
             }
 
-//            if(validadeViewModel.deuErro){
-//                AlertError(msg = "Ops! Algo deu errado. Tente novamente.")
-//            }
-//
-//            if(exibirModalRepor || exibirModalRetirar){
-//                if(!validadeViewModel.deuErro && validadeViewModel.erro.isNotEmpty()){
-//                    exibirModalRepor = false
-//                    exibirModalRetirar = false
-//                    AlertSuccess(msg = "Estoque atualizado com sucesso!")
-//
-//                    LaunchedEffect("sucess") {
-//                        delay(6000)
-//                        validadeViewModel.deuErro = false
-//                    }
-//                }
-//            }
+            if (validadeViewModel.deuErro) {
+                exibirModalRepor = false
+                exibirModalRetirar = false
+                exibirModalAdicionarData = false
+            }
 
+            if (exibirModalRepor || exibirModalRetirar) {
+                if (!validadeViewModel.deuErro && validadeViewModel.erro.isNotEmpty()) {
+                    exibirModalRepor = false
+                    exibirModalRetirar = false
+                    exibirModalAdicionarData = false
+                }
+            }
         }
     }
 }
 
 @Composable
-fun CardMovimentos(
-    movimentos: Movimentos,
+fun CardMovimentacoes(
+    movimentacoes: Movimentacoes,
+    onClick: () -> Unit,
+    isLargeCard: Boolean = false,
+    isClickableCard: Boolean = true,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier
-        .fillMaxWidth()
-        .drawBehind {
-            val borderSize = 1.dp.toPx()
-            val y = size.height - borderSize / 2
-
-            drawLine(
-                color = PretoOpacidade25,
-                start = Offset(0f, y),
-                end = Offset(size.width, y),
-                strokeWidth = borderSize
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = if(isLargeCard) 0.dp else 4.dp)
+            .shadow(
+                4.dp,
+                RoundedCornerShape(20.dp),
+                ambientColor = Color.Transparent,
+                spotColor = PretoOpacidade25
             )
-        }
+            .clickable(enabled = isClickableCard) {
+                onClick()
+            },
+        colors = CardDefaults.cardColors(
+            containerColor = Branco
+        ),
     ) {
-        Spacer(modifier = Modifier.size(12.dp))
-
-        Row {
-            Text(
-                text = formatarData(movimentos.dtMovimentos),
-                fontSize = 11.sp,
-                fontWeight = FontWeight.Medium,
-                fontFamily = fontFamilyPoppins,
-                letterSpacing = letterSpacingPrincipal,
-                color = Cinza
-            )
+        val iconId = when (movimentacoes.descricao) {
+            "Despesas" -> R.mipmap.icone_dinheiro_despesa
+            "Agendamentos" -> R.mipmap.agendamentos
+            else -> R.mipmap.comissoes
         }
 
-        Spacer(modifier = Modifier.size(4.dp))
+        val corIcone = when (movimentacoes.descricao) {
+            "Despesas" -> VermelhoOpacidade15
+            "Agendamentos" -> AzulOpacidade15
+            else -> LaranjaOpacidade15
+        }
+
+        val corTexto = when (movimentacoes.descricao) {
+            "Despesas" -> Vermelho
+            "Agendamentos" -> Azul
+            else -> Laranja
+        }
+
+        val isDespesa by remember { mutableStateOf(movimentacoes.descricao == "Despesas") }
+        val valorFormatado = stringResource(
+            id = R.string.valorMovimentos,
+            if (isDespesa) "-" else "+",
+            formatarDecimal(movimentacoes.total?.toFloat() ?: 0.0)
+        )
 
         Row(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 12.dp),
-            Arrangement.SpaceBetween,
-            Alignment.CenterVertically
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            val isDespesa by remember { mutableStateOf(movimentos.tipoMovimentos == "Despesa") }
-
-            Text(
-                text = movimentos.nome,
-                fontSize = 13.5.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = fontFamilyPoppins,
-                letterSpacing = letterSpacingPrincipal,
-                color = RoxoNubank
+            Icon(
+                painter = painterResource(id = iconId),
+                contentDescription = "Ícone de ${movimentacoes.descricao ?: "Movimentos"}",
+                tint = corTexto,
+                modifier = Modifier.size(if (isLargeCard) 58.dp else 52.dp)
             )
 
-            Text(
-                text = stringResource(
-                    id = R.string.valorMovimentos,
-                    if (isDespesa) "-" else "+",
-                    formatarDecimal(movimentos.valor.toFloat())
-                ),
-                fontSize = 15.sp,
-                fontWeight = FontWeight.ExtraBold,
-                fontFamily = fontFamilyPoppins,
-                letterSpacing = letterSpacingPrincipal,
-                color = if (isDespesa) Vermelho else Azul
-            )
+            Column(
+                modifier = Modifier.fillMaxWidth(if (isLargeCard) 0.94f else 0.8f),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.Start
+            ) {
+                Row {
+                    Text(
+                        text = formatarData(movimentacoes.data ?: "") ?: "",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Medium,
+                        fontFamily = fontFamilyPoppins,
+                        letterSpacing = letterSpacingPrincipal,
+                        color = Cinza
+                    )
+                }
+
+                Row(
+                    modifier = modifier
+                        .fillMaxWidth(),
+                    Arrangement.SpaceBetween,
+                    Alignment.CenterVertically
+                ) {
+
+                    Text(
+                        text = movimentacoes.descricao ?: "",
+                        fontSize = if(isLargeCard) 14.sp else 13.sp,
+                        fontWeight = if (isLargeCard) FontWeight.Bold else FontWeight.SemiBold,
+                        fontFamily = fontFamilyPoppins,
+                        letterSpacing = letterSpacingPrincipal,
+                        color = Preto
+                    )
+
+                    TextoValorColorido(
+                        texto = valorFormatado,
+                        cor = corTexto
+                    )
+
+                }
+            }
+
+            if (isClickableCard) {
+                Icon(
+                    Icons.AutoMirrored.Rounded.KeyboardArrowRight,
+                    contentDescription = "Ver detalhes",
+                    tint = Cinza,
+                    modifier = Modifier.clickable(enabled = isClickableCard) {
+                        onClick()
+                    }
+                )
+            }
         }
     }
 }
 
 @Composable
-fun CardDespesa(despesa: Despesa, corTexto: Color) {
+fun CardDescricaoMovimentacao(
+    valor: Double,
+    titulo: String,
+    data: String,
+    profissional: String = "",
+    cliente: String = "",
+    tipoCard: String,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .shadow(
+                4.dp,
+                RoundedCornerShape(20.dp),
+                ambientColor = Color.Transparent,
+                spotColor = PretoOpacidade25
+            ),
+        colors = CardDefaults.cardColors(
+            containerColor = Branco
+        ),
+    ) {
+        val iconId = when (tipoCard) {
+            "Despesas" -> R.mipmap.despesa_extrato
+            "Agendamentos" -> R.mipmap.agendamento_ticket
+            else -> R.mipmap.comissao_pessoa
+        }
+
+        val corTexto = when (tipoCard) {
+            "Despesas" -> Laranja
+            "Agendamentos" -> Verde
+            else -> Amarelo
+        }
+
+        val isAgendamento by remember { mutableStateOf(tipoCard == "Agendamentos") }
+        val valorFormatado = stringResource(
+            id = R.string.valorMovimentos,
+            if (isAgendamento) "+" else "-",
+            formatarDecimal(valor.toFloat())
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 20.dp, top = 16.dp, end = 20.dp, bottom = if(isAgendamento) 6.dp else 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Icon(
+                painter = painterResource(id = iconId),
+                contentDescription = "Ícone de $tipoCard",
+                tint = corTexto,
+                modifier = Modifier.size(54.dp)
+            )
+
+            Column(
+                modifier = Modifier.fillMaxWidth(0.92f),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.Start
+            ) {
+                Row {
+                    Text(
+                        text = data,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Medium,
+                        fontFamily = fontFamilyPoppins,
+                        letterSpacing = letterSpacingPrincipal,
+                        color = Cinza
+                    )
+                }
+
+                Row(
+                    modifier = modifier
+                        .fillMaxWidth(),
+                    Arrangement.SpaceBetween,
+                    Alignment.CenterVertically
+                ) {
+
+                    Text(
+                        text = titulo,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = fontFamilyPoppins,
+                        letterSpacing = letterSpacingPrincipal,
+                        color = Preto
+                    )
+
+                    TextoValorColorido(
+                        texto = valorFormatado,
+                        cor = corTexto
+                    )
+                }
+            }
+        }
+
+        if (isAgendamento) {
+            Box(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp, start = 16.dp, end = 16.dp)
+                    .drawBehind {
+                        drawLine(
+                            color = Cinza,
+                            start = Offset(0f, 0f),
+                            end = Offset(size.width, 0f),
+                            strokeWidth = 1f
+                        )
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                val spanStyleCinza = SpanStyle(
+                    color = Cinza,
+                    fontFamily = fontFamilyPoppins,
+                    letterSpacing = letterSpacingPrincipal,
+                    fontSize = 12.5.sp,
+                    fontWeight = FontWeight.Normal
+                )
+
+                val spanStylePreto = SpanStyle(
+                    color = Preto,
+                    fontFamily = fontFamilyPoppins,
+                    letterSpacing = letterSpacingPrincipal,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 12.5.sp,
+                )
+
+                Row(
+                    modifier = modifier
+                        .fillMaxWidth(0.95f)
+                        .padding(top = 10.dp, bottom = 12.dp),
+                    Arrangement.SpaceBetween,
+                    Alignment.CenterVertically
+                ) {
+                    val primeiraLetraSobrenomeProfissional =
+                        profissional.substringAfter(" ").substring(0, 1).uppercase()
+                    val nomeProfissional =
+                        profissional.replaceAfter(" ", "$primeiraLetraSobrenomeProfissional.")
+                    val primeiraLetraSobrenomeCliente =
+                        cliente.substringAfter(" ").substring(0, 1).uppercase()
+                    val nomeCliente = cliente.replaceAfter(" ", "$primeiraLetraSobrenomeCliente.")
+
+                    Text(
+                        buildAnnotatedString {
+                            withStyle(
+                                spanStyleCinza
+                            ) {
+                                append("Profissional: ")
+                            }
+                            withStyle(
+                                spanStylePreto
+                            ) {
+                                append(nomeProfissional)
+                            }
+                        },
+                    )
+
+                    Text(
+                        buildAnnotatedString {
+                            withStyle(
+                                spanStyleCinza
+                            ) {
+                                append("Cliente: ")
+                            }
+                            withStyle(
+                                spanStylePreto
+                            ) {
+                                append(nomeCliente)
+                            }
+                        },
+                    )
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun CardDespesaMovimentacao(despesa: Despesa) {
+    CardDescricaoMovimentacao(
+        valor = despesa.valor?.toDoubleOrNull() ?: 0.0,
+        titulo = despesa.nome ?: "",
+        data = "Pago em ${despesa.dtPagamento?.let { formatarData(it) }}",
+        tipoCard = "Despesas"
+    )
+}
+
+@Composable
+fun CardAgendamentoMovimentacao(agendamento: Agendamento) {
+    val dia = agendamento.dia?.let { formatarData(it) } ?: ""
+    val hrInicio = agendamento.horario?.substring(0, 5)
+    val hrFim = agendamento.horarioFinalizacao?.substring(0, 5)
+
+    CardDescricaoMovimentacao(
+        valor = agendamento.preco ?: 0.0,
+        titulo = agendamento.nomeServico ?: "",
+        data = "$dia $hrInicio às $hrFim",
+        profissional = agendamento.nomeFuncionario ?: "",
+        cliente = agendamento.nomeCliente ?: "",
+        tipoCard = "Agendamentos"
+    )
+}
+
+@Composable
+fun CardComissaoMovimentacao(comissao: Movimentacoes) {
+    CardDescricaoMovimentacao(
+        valor = comissao.total?.toDoubleOrNull() ?: 0.0,
+        titulo = comissao.descricao ?: "",
+        data = "Pago em ${comissao.data?.let { formatarData(it) }}",
+        tipoCard = "Comissões"
+    )
+}
+
+@Composable
+fun CardDespesa(despesa: Despesa) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp, horizontal = 8.dp)
-            .border(1.dp, PretoOpacidade15, RoundedCornerShape(20.dp)),
+            .padding(vertical = 4.dp, horizontal = 4.dp)
+            .border(0.dp, PretoOpacidade15, RoundedCornerShape(20.dp))
+            .shadow(
+                shape = RoundedCornerShape(20.dp),
+                ambientColor = Color.Transparent,
+                spotColor = PretoOpacidade25,
+                elevation = 4.dp,
+            ),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = Branco)
     ) {
@@ -558,27 +863,35 @@ fun CardDespesa(despesa: Despesa, corTexto: Color) {
                             ),
                             onClick = { /*TODO*/ }
                         ) {
-                            Text(text = despesa.dtPagamento?.let { formatarData(it) } ?: "",
+                            Text(
+                                text = "Pago em ${despesa.dtPagamento?.let { formatarData(it) }}",
                                 //                text = despesa.dtPagamento ?: "",
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 11.sp,
-                                fontFamily = fontFamilyPoppins
+                                fontSize = 10.sp,
+                                fontFamily = fontFamilyPoppins,
+                                letterSpacing = letterSpacingSecundaria
                             )
                         }
                     }
 
                     Text(
-                        text = despesa.nome?.capitalize() ?: "",
+                        text = despesa.nome?.replaceFirstChar {
+                            if (it.isLowerCase()) it.titlecase(
+                                Locale.ROOT
+                            ) else it.toString()
+                        }
+                            ?: "",
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp,
-                        color = corTexto,
+                        color = Preto,
                     )
 
                     Text(
                         text = despesa.valor?.let { formatarValorMonetario(it.toFloat()) } ?: "",
                         fontSize = 16.sp,
                         color = Vermelho,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = letterSpacingPrincipal
                     )
                 }
             }

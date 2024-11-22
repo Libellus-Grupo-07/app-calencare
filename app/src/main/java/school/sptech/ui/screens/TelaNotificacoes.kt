@@ -27,20 +27,20 @@ import school.sptech.ui.components.CardNotificacoes
 import school.sptech.ui.components.TopBarVoltar
 import school.sptech.ui.theme.CalencareAppTheme
 
-class Notificacoes : ComponentActivity() {
+class TelaNotificacoes : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             CalencareAppTheme {
-                TelaNotificacoes(navController = rememberNavController())
+                TelaNotificacoesScreen(navController = rememberNavController())
             }
         }
     }
 }
 
 @Composable
-fun TelaNotificacoes(navController: NavController, modifier: Modifier = Modifier) {
+fun TelaNotificacoesScreen(navController: NavController, modifier: Modifier = Modifier) {
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
             topBar = {
@@ -86,6 +86,6 @@ fun TelaNotificacoes(navController: NavController, modifier: Modifier = Modifier
 @Composable
 fun GreetingPreview2() {
     CalencareAppTheme {
-        TelaNotificacoes(rememberNavController())
+        TelaNotificacoesScreen(rememberNavController())
     }
 }

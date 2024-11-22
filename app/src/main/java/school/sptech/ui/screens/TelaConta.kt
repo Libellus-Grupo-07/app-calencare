@@ -27,29 +27,31 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import okhttp3.Route
+import kotlinx.coroutines.delay
 import school.sptech.Routes
-import school.sptech.data.model.Funcionario
 import school.sptech.preferencesHelper
+import school.sptech.ui.components.AlertError
+import school.sptech.ui.components.AlertSuccess
 import school.sptech.ui.components.Background
 import school.sptech.ui.components.BoxPerfil
 import school.sptech.ui.components.FormDadosEmpresa
 import school.sptech.ui.components.FormDadosPessoais
 import school.sptech.ui.components.ModalConfirmarSair
+import school.sptech.ui.components.ModalEditarEndereco
 import school.sptech.ui.components.TopBarConta
 import school.sptech.ui.theme.CalencareAppTheme
 import school.sptech.ui.viewModel.EmpresaViewModel
 import school.sptech.ui.viewModel.EnderecoViewModel
 import school.sptech.ui.viewModel.UsuarioViewModel
 
-class Conta : ComponentActivity() {
+class TelaConta : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             CalencareAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    TelaConta(
+                    TelaContaScreen(
                         navController = rememberNavController(),
                         modifier = Modifier.padding(innerPadding)
                     )
@@ -60,7 +62,7 @@ class Conta : ComponentActivity() {
 }
 
 @Composable
-fun TelaConta(
+fun TelaContaScreen(
     usuarioViewModel: UsuarioViewModel = viewModel(),
     enderecoViewModel: EnderecoViewModel = viewModel(),
     empresaViewModel: EmpresaViewModel = viewModel(),
@@ -76,7 +78,8 @@ fun TelaConta(
     val usuario = usuarioViewModel.usuario
     val empresa = empresaViewModel.empresa
     val endereco = enderecoViewModel.endereco
-    var exibirModal by remember { mutableStateOf(false) }
+    var exibirModalSair by remember { mutableStateOf(false) }
+    var exibirModalEndereco by remember { mutableStateOf(false) }
 
     var telaAtual by remember {
         mutableStateOf(navController.currentBackStackEntry?.destination?.route)
@@ -95,9 +98,13 @@ fun TelaConta(
             // Linha para os botões "Voltar", "Sair da Conta" e "Salvar"
 
             TopBarConta(
-                onClickSalvar = {},
+                onClickSalvar = {
+                    empresaViewModel.atualizarEmpresa()
+                    usuarioViewModel.atualizarFuncionario()
+                    enderecoViewModel.atualizarEndereco()
+                },
                 onClickSair = {
-                    exibirModal = true
+                    exibirModalSair = true
                 },
                 navController = navController,
                 enabledButtonSalvar = enabledButtonSalvar
@@ -119,32 +126,36 @@ fun TelaConta(
                     modifier = Modifier
                         .padding(horizontal = 8.dp)
                         .verticalScroll(ScrollState(1)),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     when (targetState) {
                         Routes.DadosEmpresa.route -> {
                             FormDadosEmpresa(
                                 empresaViewModel = empresaViewModel,
-                                enderecoViewModel = enderecoViewModel,
                                 empresa = empresa,
-                                endereco = endereco
+                                endereco = endereco,
+                                onClickInputEndereco = {
+                                    exibirModalEndereco = true
+                                }
                             )
                         }
 
                         else -> {
-                            FormDadosPessoais(usuario)
+                            enderecoViewModel.erro = ""
+                            enderecoViewModel.deuErro = false
+                            FormDadosPessoais(usuario, usuarioViewModel)
                         }
                     }
                 }
             }
         }
 
-        if(exibirModal){
+        if (exibirModalSair) {
             ModalConfirmarSair(
                 onConfirm = {
                     preferencesHelper.saveIdEmpresa(-1)
                     preferencesHelper.saveIdUsuario(-1)
-                    exibirModal = false
+                    exibirModalSair = false
                     navController.navigate(Routes.Login.route) {
                         popUpTo(0) {
                             inclusive = true
@@ -153,9 +164,65 @@ fun TelaConta(
                     }
                 },
                 onDismiss = {
-                    exibirModal = false
+                    exibirModalSair = false
                 }
             )
+        }
+
+        if(exibirModalEndereco){
+            ModalEditarEndereco(
+                onDismiss = {
+                    exibirModalEndereco = false
+                    enderecoViewModel.getEndereco(preferencesHelper.getIdEmpresa())
+                },
+                onConfirm = {
+                    enderecoViewModel.atualizarEndereco()
+
+                    if(!enderecoViewModel.deuErro){
+                        exibirModalEndereco = false
+                    }
+                },
+                enderecoViewModel = enderecoViewModel
+            )
+        }
+
+        if (usuarioViewModel.deuErro || empresaViewModel.deuErro || enderecoViewModel.deuErro) {
+            AlertError(msg =
+                if (usuarioViewModel.deuErro) {
+                    usuarioViewModel.erro
+                } else
+                    empresaViewModel.erro
+            )
+
+            LaunchedEffect("error") {
+                delay(5000)
+                usuarioViewModel.deuErro = false
+                usuarioViewModel.erro = ""
+                empresaViewModel.deuErro = false
+                empresaViewModel.erro = ""
+                enderecoViewModel.deuErro = false
+                enderecoViewModel.erro = ""
+            }
+        } else if(
+            usuarioViewModel.erro.isNotEmpty() &&
+            empresaViewModel.erro.isNotEmpty()) {
+            AlertSuccess(msg = "Informações atualizadas com sucesso!")
+
+            LaunchedEffect("sucess") {
+                delay(5000)
+                navController.popBackStack()
+            }
+        } else if(enderecoViewModel.erro.isNotEmpty() && !enderecoViewModel.deuErro){
+            AlertSuccess(
+                msg = "Endereço atualizado com sucesso!",
+                onClick = { enderecoViewModel.erro = "" }
+            )
+
+            LaunchedEffect("sucess") {
+                delay(5000)
+                enderecoViewModel.erro = ""
+                enderecoViewModel.deuErro = false
+            }
         }
     }
 }
@@ -165,6 +232,6 @@ fun TelaConta(
 @Composable
 fun GreetingPreview() {
     CalencareAppTheme {
-        TelaConta(navController = rememberNavController())
+        TelaContaScreen(navController = rememberNavController())
     }
 }

@@ -28,6 +28,7 @@ import school.sptech.ui.components.FormButtons
 import school.sptech.ui.components.FormFieldWithLabel
 import school.sptech.ui.components.TopBarVoltar
 import school.sptech.ui.theme.CalencareAppTheme
+import school.sptech.ui.theme.Preto
 import school.sptech.ui.viewModel.ProdutoViewModel
 import kotlin.coroutines.cancellation.CancellationException
 
@@ -69,11 +70,72 @@ fun TelaAdicionarProdutoScreen(
                     .padding(horizontal = 28.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+                var nomePreenchido by remember { mutableStateOf(true) }
+                var marcaPreenchida by remember { mutableStateOf(true) }
+                var categoriaPreenchida by remember { mutableStateOf(true) }
+                var descricaoPreenchida by remember { mutableStateOf(true) }
+
                 Spacer(modifier = Modifier.height(4.dp))
-                ProductForm(viewModel = viewModel)
+
+                Column(modifier = Modifier.fillMaxWidth(), Arrangement.spacedBy(4.dp)) {
+                    FormFieldWithLabel(
+                        value = viewModel.produto.nome ?: "",
+                        onValueChange = {
+                            viewModel.produto = viewModel.produto.copy(nome = it)
+                            nomePreenchido = it.isNotEmpty()
+                        },
+                        label = stringResource(R.string.nome),
+                        error = !nomePreenchido
+                    )
+
+                    FormFieldWithLabel(
+                        value = viewModel.produto.marca ?: "",
+                        onValueChange = {
+                            viewModel.produto = viewModel.produto.copy(marca = it)
+                            marcaPreenchida = it.isNotEmpty()
+                        },
+                        label = stringResource(R.string.marca),
+                        error = !marcaPreenchida
+                    )
+
+                    DropdownFieldWithLabel(
+                        value = viewModel.categoriaProduto.nome ?: "",
+                        onValueChange = {
+                            viewModel.categoriaProduto = viewModel.categoriaProduto.copy(nome = it)
+                            categoriaPreenchida = it.isNotEmpty()
+                        },
+                        label = stringResource(R.string.categoria),
+                        options = viewModel.categoriasProduto.map { it.nome ?: "" },
+                        error = !categoriaPreenchida
+                    )
+
+                    FormFieldWithLabel(
+                        value = viewModel.produto.descricao ?: "",
+                        onValueChange = {
+                            viewModel.produto = viewModel.produto.copy(descricao = it)
+                            descricaoPreenchida = it.isNotEmpty()
+                        },
+                        label = stringResource(R.string.descricao),
+                        isMultiline = true,
+                        error = !descricaoPreenchida
+                    )
+                }
+
                 FormButtons(
                     onAddClick = {
-                        viewModel.adicionarProduto()
+                        nomePreenchido = viewModel.produto.nome?.isNotEmpty() == true
+                        marcaPreenchida = viewModel.produto.marca?.isNotEmpty() == true
+                        categoriaPreenchida = viewModel.categoriaProduto.nome?.isNotEmpty() == true
+                        descricaoPreenchida = viewModel.produto.descricao?.isNotEmpty() == true
+
+                        if (
+                            nomePreenchido &&
+                            marcaPreenchida &&
+                            categoriaPreenchida &&
+                            descricaoPreenchida
+                        ) {
+                            viewModel.adicionarProduto()
+                        }
                     },
                     onCancelClick = { navController.popBackStack() }
                 )
@@ -82,22 +144,22 @@ fun TelaAdicionarProdutoScreen(
     }
 
     if (viewModel.deuErro) {
-        AlertError(msg = viewModel.erro)
+        AlertError(msg = viewModel.mensagem)
 
-        LaunchedEffect("error") {   
+        LaunchedEffect("error") {
             delay(6000)
             viewModel.deuErro = false
         }
     }
 
-    if (!viewModel.deuErro && viewModel.erro.isNotEmpty()) {
+    if (!viewModel.deuErro && viewModel.mensagem.isNotEmpty()) {
         AlertSuccess("Produto adicionado com sucesso!")
 
         DisposableEffect(key1 = "Sucess") {
             val job = CoroutineScope(Dispatchers.Main).launch {
                 try {
                     delay(3000)
-                    viewModel.erro = ""
+                    viewModel.mensagem = ""
                     navController.navigate(NavBar.Estoque.route) {
                         popUpTo(Routes.AdicionarProduto.route) {
                             inclusive = true
@@ -114,39 +176,6 @@ fun TelaAdicionarProdutoScreen(
                 job.cancel()
             }
         }
-    }
-}
-
-@Composable
-fun ProductForm(viewModel: ProdutoViewModel) {
-    Column(modifier = Modifier.fillMaxWidth(), Arrangement.spacedBy(16.dp)) {
-        FormFieldWithLabel(
-            value = viewModel.produto.nome ?: "",
-            onValueChange = { viewModel.produto = viewModel.produto.copy(nome = it) },
-            label = stringResource(R.string.nome)
-        )
-
-        FormFieldWithLabel(
-            value = viewModel.produto.marca ?: "",
-            onValueChange = { viewModel.produto = viewModel.produto.copy(marca = it) },
-            label = stringResource(R.string.marca)
-        )
-
-        DropdownFieldWithLabel(
-            value = viewModel.categoriaProduto.nome ?: "",
-            onValueChange = {
-                viewModel.categoriaProduto = viewModel.categoriaProduto.copy(nome = it)
-            },
-            label = stringResource(R.string.categoria),
-            options = viewModel.categoriasProduto.map { it.nome ?: "" }
-        )
-
-        FormFieldWithLabel(
-            value = viewModel.produto.descricao ?: "",
-            onValueChange = { viewModel.produto = viewModel.produto.copy(descricao = it) },
-            label = stringResource(R.string.descricao),
-            isMultiline = true
-        )
     }
 }
 

@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -18,7 +19,7 @@ import school.sptech.ui.theme.letterSpacingPrincipal
 import school.sptech.ui.theme.letterSpacingSecundaria
 
 @Composable
-fun TituloLarge(titulo:String, defaultColor: Boolean = true) {
+fun TituloLarge(titulo: String, defaultColor: Boolean = true) {
     Text(
         text = titulo,
         fontSize = 18.sp,
@@ -30,7 +31,7 @@ fun TituloLarge(titulo:String, defaultColor: Boolean = true) {
 }
 
 @Composable
-fun TituloMedium(titulo:String) {
+fun TituloMedium(titulo: String) {
     Text(
         text = titulo,
         color = Preto,
@@ -42,20 +43,20 @@ fun TituloMedium(titulo:String) {
 }
 
 @Composable
-fun LabelInput(label:String, color: Color = Cinza){
+fun LabelInput(label: String, color: Color = Cinza, isSmallInput: Boolean = false) {
     Text(
         text = label,
         color = color,
         fontWeight = FontWeight.Bold,
         letterSpacing = letterSpacingPrincipal,
         fontFamily = fontFamilyPoppins,
-        fontSize = 14.sp,
+        fontSize = if (isSmallInput) 11.5.sp else 14.sp,
         modifier = Modifier.padding(bottom = 4.dp)
     )
 }
 
 @Composable
-fun TextoInput(texto:String){
+fun TextoInput(texto: String) {
     Text(
         text = texto,
         fontWeight = FontWeight.Normal,
@@ -66,7 +67,7 @@ fun TextoInput(texto:String){
 }
 
 @Composable
-fun TextoKpi(valor:String, cor: Color){
+fun TextoKpi(valor: String, cor: Color) {
     Text(
         text = valor,
         fontSize = 16.sp,
@@ -78,7 +79,7 @@ fun TextoKpi(valor:String, cor: Color){
 }
 
 @Composable
-fun LabelKpi(label:String){
+fun LabelKpi(label: String) {
     Text(
         text = label,
         fontSize = 9.5.sp,
@@ -90,7 +91,7 @@ fun LabelKpi(label:String){
 }
 
 @Composable
-fun TextoButtonExtraLarge(texto:String){
+fun TextoButtonExtraLarge(texto: String) {
     Text(
         text = texto,
         fontWeight = FontWeight.SemiBold,
@@ -101,7 +102,7 @@ fun TextoButtonExtraLarge(texto:String){
 }
 
 @Composable
-fun TextoButtonLarge(texto:String){
+fun TextoButtonLarge(texto: String) {
     Text(
         text = texto,
         fontWeight = FontWeight.SemiBold,
@@ -112,7 +113,7 @@ fun TextoButtonLarge(texto:String){
 }
 
 @Composable
-fun TextoButtonMedium(texto:String){
+fun TextoButtonMedium(texto: String) {
     Text(
         text = texto,
         fontWeight = FontWeight.SemiBold,
@@ -123,7 +124,7 @@ fun TextoButtonMedium(texto:String){
 }
 
 @Composable
-fun TextoButtonSmall(texto:String){
+fun TextoButtonSmall(texto: String) {
     Text(
         text = texto,
         fontWeight = FontWeight.SemiBold,
@@ -134,7 +135,7 @@ fun TextoButtonSmall(texto:String){
 }
 
 @Composable
-fun LabelChart(label:String){
+fun LabelChart(label: String) {
     Text(
         text = label,
         fontSize = 8.sp,
@@ -142,6 +143,35 @@ fun LabelChart(label:String){
         fontFamily = fontFamilyPoppins,
         letterSpacing = letterSpacingPrincipal,
         color = Cinza
+    )
+}
+
+@Composable
+fun TextoNenhumItemCadastrado(texto: String) {
+    Text(
+        text = texto,
+        fontSize = 16.sp,
+        fontWeight = FontWeight.Medium,
+        fontFamily = fontFamilyPoppins,
+        letterSpacing = letterSpacingPrincipal,
+        color = Cinza,
+        modifier = Modifier.padding(top = 16.dp)
+    )
+}
+
+@Composable
+fun TextoValorColorido(
+    texto: String,
+    cor: Color,
+) {
+    Text(
+        text = texto,
+        fontSize = 15.sp,
+        fontFamily = fontFamilyPoppins,
+        letterSpacing = -0.7.sp,
+        color = cor,
+        fontWeight = FontWeight.ExtraBold,
+        overflow = TextOverflow.Ellipsis,
     )
 }
 

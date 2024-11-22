@@ -10,10 +10,12 @@ import kotlinx.coroutines.launch
 import school.sptech.data.model.Empresa
 import school.sptech.data.service.EmpresaService
 import school.sptech.network.RetrofitService
+import school.sptech.preferencesHelper
 
 class EmpresaViewModel : ViewModel() {
     private val empresaService: EmpresaService
     var empresa by mutableStateOf(Empresa())
+    var erro by mutableStateOf("")
     var deuErro by mutableStateOf(false)
 
     init {
@@ -32,11 +34,33 @@ class EmpresaViewModel : ViewModel() {
                     } else {
                         Log.e("api", "Erro ao tentar buscar empresa ${response.errorBody()?.string()}")
                         deuErro = true
+                        erro = response.message()
                     }
                 } catch (ex: Exception){
                     Log.e("api", "Erro ao tentar buscar empresa", ex)
                     deuErro = true
                 }
+            }
+        }
+    }
+
+    fun atualizarEmpresa() {
+        GlobalScope.launch {
+            try {
+                var response = empresaService.atualizarEmpresa(preferencesHelper.getIdEmpresa(), empresa)
+
+                if(response.isSuccessful){
+                    deuErro = false
+                    erro = "Empresa atualizada com sucesso!"
+                } else {
+                    Log.e("api", "Erro ao tentar atualizar empresa ${response.errorBody()?.string()}")
+                    deuErro = true
+                    erro = response.message() ?: "Erro desconhecido"
+                }
+            } catch (ex: Exception){
+                Log.e("api", "Erro ao tentar atualizar empresa", ex)
+                deuErro = true
+                erro = ex.message ?: "Erro desconhecido"
             }
         }
     }

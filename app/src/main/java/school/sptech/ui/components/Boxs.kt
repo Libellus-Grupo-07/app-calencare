@@ -4,8 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,10 +15,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,15 +26,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import getStringProduto
 import school.sptech.R
 import school.sptech.Routes
-import school.sptech.data.model.Movimentos
+import school.sptech.data.model.Movimentacoes
 import school.sptech.data.model.Produto
-import school.sptech.ui.theme.Cinza
 import school.sptech.ui.theme.CinzaOpacidade7
 import school.sptech.ui.theme.Preto
 import school.sptech.ui.theme.RoxoNubank
@@ -58,7 +55,7 @@ fun BoxKpisEstoque(
                 Column(modifier = modifier.weight(0.4f)) {
                     CardKpi(
                         titulo = stringResource(id = R.string.produtoEstoqueAlto),
-                        valor = "$qtdProdutosEstoqueAlto produtos",
+                        valor = "$qtdProdutosEstoqueAlto ${getStringProduto(qtdProdutosEstoqueAlto)}",
                         cor = "Verde"
                     )
                 }
@@ -68,7 +65,7 @@ fun BoxKpisEstoque(
                 Column(modifier = modifier.weight(0.4f)) {
                     CardKpi(
                         titulo = stringResource(id = R.string.produtoSemEstoque),
-                        valor = "$qtdProdutosSemEstoque produtos",
+                        valor = "$qtdProdutosSemEstoque ${getStringProduto(qtdProdutosSemEstoque)}",
                         cor = "Vermelho"
                     )
                 }
@@ -80,7 +77,11 @@ fun BoxKpisEstoque(
                 Column(modifier = modifier.weight(0.5f)) {
                     CardKpi(
                         titulo = stringResource(id = R.string.produtosRepostosDia),
-                        valor = "$qtdProdutosRepostosNoDia produtos",
+                        valor = "$qtdProdutosRepostosNoDia ${
+                            getStringProduto(
+                                qtdProdutosRepostosNoDia
+                            )
+                        }",
                         cor = "Azul"
                     )
                 }
@@ -90,7 +91,7 @@ fun BoxKpisEstoque(
                 Column(modifier = modifier.weight(0.5f)) {
                     CardKpi(
                         titulo = stringResource(id = R.string.produtosEstoqueBaixo),
-                        valor = "$qtdProdutosEstoqueBaixo produtos",
+                        valor = "$qtdProdutosEstoqueBaixo ${getStringProduto(qtdProdutosEstoqueBaixo)}",
                         cor = "Laranja"
                     )
                 }
@@ -105,6 +106,7 @@ fun BoxProdutos(
     produtos: List<Produto>,
     titulo: String,
     isTelaInicio: Boolean,
+    validadeViewModel: ValidadeViewModel,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = Modifier.fillMaxWidth()) {
@@ -124,19 +126,13 @@ fun BoxProdutos(
 
             if (produtos.isEmpty()) {
                 Row(
-                    modifier = modifier.fillMaxSize().padding(bottom = 32.dp),
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(bottom = 32.dp),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "Nenhum produto encontrado",
-                        textAlign = TextAlign.Center,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium,
-                        fontFamily = fontFamilyPoppins,
-                        letterSpacing = letterSpacingPrincipal,
-                        color = Cinza
-                    )
+                   TextoNenhumItemCadastrado(texto = "Nenhum produto encontrado")
                 }
             } else {
                 LazyVerticalGrid(
@@ -152,45 +148,46 @@ fun BoxProdutos(
                             onClickCardProduto = {
                                 navController.navigate("${Routes.InformacoesProduto.route}/${produto.id}")
                             },
+                       //     validadeViewModel = validadeViewModel,
                             modifier = modifier.fillMaxSize(1f)
                         )
                     }
                 }
-
-//                FlowRow(
-//                    modifier = modifier,
-//                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-//                    verticalArrangement = Arrangement.spacedBy(12.dp),
-//                    maxItemsInEachRow = 2
-//                ) {
-//                    repeat(produtos.size) { i ->
-//                        CardProduto(
-//                            produto = produtos[i],
-//                            isTelaInicio = isTelaInicio,
-//                            onClickCardProduto = {
-//                                navController.navigate("${Routes.InformacoesProduto.route}/${produtos[i].id}")
-//                            },
-//                            modifier = modifier.weight(1f),
-//                        )
-//                    }
-//                }
             }
         }
     }
 }
 
 @Composable
-fun BoxMovimentos(movimentos: List<Movimentos>) {
+fun BoxMovimentacoes(movimentacoes: List<Movimentacoes>, onClickCard: (Movimentacoes) -> Unit) {
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(vertical = 16.dp, horizontal = 8.dp)
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         TituloLarge(titulo = stringResource(id = R.string.movimentos))
 
-        LazyColumn {
-            items(movimentos.size) { index ->
-                CardMovimentos(movimentos[index])
+        if (movimentacoes.isEmpty()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 16.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                TextoNenhumItemCadastrado(texto = "Nenhum movimento encontrado")
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(0.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(movimentacoes) { movimento ->
+                    CardMovimentacoes(movimento, onClick = {
+                        onClickCard(movimento)
+                    })
+                }
             }
         }
     }

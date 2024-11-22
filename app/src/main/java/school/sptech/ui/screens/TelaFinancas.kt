@@ -5,13 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -23,15 +19,14 @@ import getMonthInt
 import kotlinx.coroutines.delay
 import school.sptech.R
 import school.sptech.Routes
-import school.sptech.data.model.Despesa
+import school.sptech.data.model.Movimentacoes
 import school.sptech.preferencesHelper
 import school.sptech.ui.components.AlertError
 import school.sptech.ui.components.Background
-import school.sptech.ui.components.CardDespesa
+import school.sptech.ui.components.BoxMovimentacoes
 import school.sptech.ui.components.CardKpi
+import school.sptech.ui.components.Chart
 import school.sptech.ui.components.SeletorData
-import school.sptech.ui.components.TextoButtonMedium
-import school.sptech.ui.components.TituloLarge
 import school.sptech.ui.components.TopBarComSelecaoData
 import school.sptech.ui.theme.*
 import school.sptech.ui.viewModel.DespesaViewModel
@@ -40,20 +35,20 @@ import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.Locale
 
-class TelaFinancasActivity : ComponentActivity() {
+class TelaFinancas : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             CalencareAppTheme {
-                TelaFinancas()
+                TelaFinancasScreen()
             }
         }
     }
 }
 
 @Composable
-fun TelaFinancas(
+fun TelaFinancasScreen(
     financasViewModel: MovimentacoesViewModel = viewModel(),
     despesaViewModel: DespesaViewModel = viewModel(),
     navController: NavController = rememberNavController()
@@ -79,16 +74,8 @@ fun TelaFinancas(
     var mostrarSeletorData by remember { mutableStateOf(false) }
     val idEmpresa = preferencesHelper.getIdEmpresa()
 
-    var despesas = despesaViewModel.listaDespesas
-
     LaunchedEffect(Unit) {
-        financasViewModel.getFinancas(
-            empresaId = idEmpresa,
-            ano = anoSelecionado,
-            mes = getMonthInt(mesSelecionado)?.value ?: 0
-        )
-
-        despesaViewModel.getDespesas(
+        financasViewModel.getMovimentacoes(
             empresaId = idEmpresa,
             ano = anoSelecionado,
             mes = getMonthInt(mesSelecionado)?.value ?: 0
@@ -112,11 +99,17 @@ fun TelaFinancas(
                 anoSelecionado = ano
                 mostrarSeletorData = false
 
-                despesaViewModel.getDespesas(
+                financasViewModel.getMovimentacoes(
                     empresaId = idEmpresa,
                     ano = anoSelecionado,
                     mes = getMonthInt(mesSelecionado)?.value ?: 0
                 )
+
+                despesaViewModel.getTotalDespesasMes(
+                    ano = anoSelecionado,
+                    mes = getMonthInt(mesSelecionado)?.value ?: 0
+                )
+
             }
         )
     }
@@ -129,12 +122,11 @@ fun TelaFinancas(
         despesasTotais = despesasTotais,
         faturamento = faturamento.value,
         comissoes = comissoes.value,
-        despesas = despesas,
-        corTitulo = Preto,
-        adicionarDespesa = { navController.navigate(Routes.AdicionarDespesa.route) }
+        movimentacoes = financasViewModel.movimentacoes,
+        navController = navController
     )
 
-    if(despesaViewModel.deuErro){
+    if (despesaViewModel.deuErro) {
         AlertError(msg = despesaViewModel.erro)
 
         LaunchedEffect("error") {
@@ -153,29 +145,34 @@ fun ConteudoTelaFinancas(
     despesasTotais: Double,
     faturamento: Double,
     comissoes: Double,
-    despesas: List<Despesa>,
-    corTitulo: Color,
-    adicionarDespesa: (Despesa) -> Unit
+    movimentacoes: List<Movimentacoes>,
+    navController: NavController
 ) {
-
-
     Background()
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(20.dp)
-            .padding(top = 16.dp)
+            .padding(top = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        TopBarComSelecaoData(
-            stringResource(id = R.string.financas),
-            mesSelecionado,
-            anoSelecionado,
-            aoClicarSeletorData
-        )
+        Column {
+            TopBarComSelecaoData(
+                stringResource(id = R.string.financas),
+                mesSelecionado,
+                anoSelecionado,
+                aoClicarSeletorData
+            )
 
-        ResumoFinanceiro(receitas, despesasTotais, faturamento, comissoes)
-        Spacer(modifier = Modifier.height(16.dp))
-        ListaDespesas(despesas, corTitulo, adicionarDespesa)
+            ResumoFinanceiro(receitas, despesasTotais, faturamento, comissoes)
+        }
+
+        Chart()
+
+        BoxMovimentacoes(movimentacoes = movimentacoes, onClickCard = {
+            navController.navigate(Routes.InformacoesMovimentacao.route)
+        })
+
     }
 }
 
@@ -238,49 +235,9 @@ fun ResumoFinanceiro(
     }
 }
 
-@Composable
-fun ListaDespesas(despesas: List<Despesa>, corTexto: Color, adicionarDespesa: (Despesa) -> Unit) {
-    Column {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            TituloLarge(titulo = "Despesas")
-            TextButton(
-                onClick = {
-                    adicionarDespesa(
-                        Despesa(
-                            nome = "Nova Despesa",
-                            valor = "100.00",
-                            dtCriacao = "2024-10-01",
-                            categoriaDespesaNome = "Categoria C"
-                        )
-                    )
-                },
-                colors = ButtonColors(
-                    contentColor = Cinza,
-                    containerColor = Color.Transparent,
-                    disabledContentColor = Cinza,
-                    disabledContainerColor = Color.Transparent
-                )
-            ) {
-                TextoButtonMedium(texto = "Adicionar Despesa")
-            }
-        }
-
-        LazyColumn {
-            items(despesas) { despesa ->
-                CardDespesa(despesa, corTexto)
-            }
-        }
-    }
-}
 
 @Preview(showSystemUi = true)
 @Composable
 fun PreviaTelaFinancas() {
-    TelaFinancas()
+    TelaFinancasScreen()
 }

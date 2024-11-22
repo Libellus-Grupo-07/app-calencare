@@ -27,7 +27,19 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.CalencareApp" />
         <activity
-            android:name=".ui.screens.Estoque"
+            android:name=".ui.screens.TelaInformacoesMovimentos"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:label="@string/title_activity_tela_informacoes_movimentos"
+            android:theme="@style/Theme.CalencareApp" />
+        <activity
+            android:name=".ui.screens.TelaDespesas"
+            android:exported="false"
+            android:label="@string/title_activity_dashboard"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.CalencareApp" />
+        <activity
+            android:name=".ui.screens.TelaEstoque"
             android:exported="false"
             android:label="@string/title_activity_tela_estoque"
             android:screenOrientation="portrait"
@@ -39,17 +51,18 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.CalencareApp" />
         <activity
-            android:name=".ui.screens.Conta"
+            android:name=".ui.screens.TelaConta"
             android:exported="false"
             android:label="@string/title_activity_conta"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.CalencareApp" /> <!-- activity -->
+            android:theme="@style/Theme.CalencareApp" /> 
+        <!-- activity -->
         <!-- android:name=".NavGraph" -->
         <!-- android:exported="false" -->
         <!-- android:label="@string/title_activity_nav_graph" -->
         <!-- android:theme="@style/Theme.CalencareApp" /> -->
         <activity
-            android:name=".ui.screens.TelaFinancasActivity"
+            android:name=".ui.screens.TelaFinancas"
             android:exported="true"
             android:label="@string/title_activity_tela_financas"
             android:screenOrientation="portrait"
@@ -73,7 +86,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.CalencareApp" />
         <activity
-            android:name=".ui.screens.Notificacoes"
+            android:name=".ui.screens.TelaNotificacoes"
             android:exported="false"
             android:label="@string/title_activity_notificacoes"
             android:screenOrientation="portrait"
@@ -92,7 +105,6 @@
             android:theme="@style/Theme.CalencareApp">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

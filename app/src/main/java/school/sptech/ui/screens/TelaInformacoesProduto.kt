@@ -34,13 +34,16 @@ import school.sptech.ui.components.AlertError
 import school.sptech.ui.components.AlertSuccess
 import school.sptech.ui.components.Background
 import school.sptech.ui.components.ButtonBackground
+import school.sptech.ui.components.ButtonIconExcluir
 import school.sptech.ui.components.ButtonOutline
 import school.sptech.ui.components.DatePickerModal
 import school.sptech.ui.components.DropdownFieldWithLabel
 import school.sptech.ui.components.FormFieldWithLabel
 import school.sptech.ui.components.LabelInput
+import school.sptech.ui.components.ModalConfirmarExclusao
 import school.sptech.ui.components.ReporProductModal
 import school.sptech.ui.components.RetirarProductModal
+import school.sptech.ui.components.SelectableDatesRow
 import school.sptech.ui.components.TopBarInformacoesProduto
 import school.sptech.ui.theme.CalencareAppTheme
 import school.sptech.ui.theme.RoxoNubank
@@ -75,13 +78,15 @@ fun TelaInformacoesProdutoScreen(
     LaunchedEffect(Unit) {
         produtoViewModel.getCategoriasProduto()
         produtoViewModel.getProdutoById(empresaId = idEmpresa, produtoId = idProduto)
-//        validadeViewModel.getValidades(idProduto)
+        validadeViewModel.getValidades(idProduto)
     }
 
     val produto = produtoViewModel.getProdutoAtual()
-    produto.qtdEstoque = validadeViewModel.getTotalEstoqueProduto(idProduto)
+    // produto.qntdTotalEstoque = validadeViewModel.getTotalEstoqueProduto(idProduto)
 
     val validades = validadeViewModel.getValidades(idProduto)
+    produto.validades = validades
+
     val listaValidades = validades.map { it.dtValidade ?: "" }
 
     var exibirModalRetirar by remember {
@@ -92,6 +97,10 @@ fun TelaInformacoesProdutoScreen(
     }
 
     var exibirAdicionarData by remember {
+        mutableStateOf(false)
+    }
+
+    var exibirModalExcluir by remember {
         mutableStateOf(false)
     }
 
@@ -114,16 +123,20 @@ fun TelaInformacoesProdutoScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .padding(horizontal = 24.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                    .padding(horizontal = 24.dp, vertical = 0.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                Form(produto, produtoViewModel)
+                Form(
+                    produto = produto,
+                    viewModel = produtoViewModel,
+                    validadeViewModel = validadeViewModel
+                )
 
-                StockQuantity(produto?.qtdEstoque ?: 0)
+                StockQuantity(produto?.qntdTotalEstoque ?: 0)
 
                 BoxButtons(
                     enabledButtonRetirar = getEnabledButtonRetirarEstoque(
-                        produto?.qtdEstoque ?: 0
+                        produto?.qntdTotalEstoque ?: 0
                     ),
                     onRetirarClick = {
                         validadeViewModel.deuErro = false
@@ -134,7 +147,31 @@ fun TelaInformacoesProdutoScreen(
                         exibirModalRepor = true
                     }
                 )
+
+                Spacer(modifier = Modifier.height(2.dp))
+
+                ButtonIconExcluir(
+                    onClick = {
+                        exibirModalExcluir = true
+                    }
+                )
+
             }
+        }
+
+        if (exibirModalExcluir) {
+            ModalConfirmarExclusao(
+                onDismiss = {
+                    exibirModalExcluir = false
+                },
+                onConfirm = {
+                    produtoViewModel.excluirProduto()
+                    exibirModalExcluir = false
+                },
+                titulo = "Excluir Produto",
+                texto = "Você tem certeza que deseja excluir o produto ",
+                nomeItem = produto.nome ?: ""
+            )
         }
 
         // Exibe o modal de reposição de produto
@@ -147,9 +184,11 @@ fun TelaInformacoesProdutoScreen(
                     reporProdutoViewModel.quantidadeEstoqueData.value = 0
                 },
                 produto = produto.nome ?: "",
-                quantidadeEstoque = produto.qtdEstoque ?: 0,
+                quantidadeEstoque = produto.qntdTotalEstoque ?: 0,
                 viewModel = reporProdutoViewModel,
                 onDateSelected = {
+                    reporProdutoViewModel.quantidadeEstoqueData.value = 0
+
                     val validade = validades.find { validadeAtual ->
                         it!!.equals(validadeAtual.dtValidade ?: "")
                     }
@@ -158,7 +197,8 @@ fun TelaInformacoesProdutoScreen(
                     reporProdutoViewModel.quantidadeEstoqueData.value =
                         validadeViewModel.getQuantidadeEstoqueDaValidade()
 
-                    reporProdutoViewModel.setQuantidadeMaxima(0)
+                    reporProdutoViewModel.setQuantidadeMaxima(null)
+                    reporProdutoViewModel.setQuantidadeInicial(0)
 
                 },
                 onQuantidadeChanged = {
@@ -176,14 +216,12 @@ fun TelaInformacoesProdutoScreen(
 
         }
 
-        if (exibirAdicionarData) {
-            exibirModalRepor = false
 
+        if (exibirAdicionarData) {
             DatePickerModal(
                 dateSelected = dateValue,
                 onDismiss = {
                     exibirAdicionarData = false
-                    exibirModalRepor = true
                 },
                 onDateSelected = { date ->
                     validadeViewModel.validade =
@@ -198,7 +236,6 @@ fun TelaInformacoesProdutoScreen(
                     )
 
                     validadeViewModel.adicionarValidade()
-
                     exibirAdicionarData = false
                 }
             )
@@ -206,19 +243,25 @@ fun TelaInformacoesProdutoScreen(
 
         if (produtoViewModel.deuErro) {
             AlertError(
-                msg = produtoViewModel.erro
+                msg = produtoViewModel.mensagem
             )
+
+            LaunchedEffect("error") {
+                delay(6000)
+                produtoViewModel.deuErro = false
+            }
         }
 
-        if (!produtoViewModel.deuErro && produtoViewModel.erro.isNotEmpty()) {
-            AlertSuccess(msg = "Produto atualizado com sucesso!")
+        if (!produtoViewModel.deuErro && produtoViewModel.mensagem.isNotEmpty()) {
+            AlertSuccess(msg = produtoViewModel.mensagem)
 
             DisposableEffect(key1 = "Sucess") {
                 val job = CoroutineScope(Dispatchers.Main).launch {
                     try {
                         delay(3000)
-                        produtoViewModel.erro = ""
-                        val ultimaRota = navController.previousBackStackEntry?.destination?.route
+                        produtoViewModel.mensagem = ""
+                        val ultimaRota =
+                            navController.previousBackStackEntry?.destination?.route
                         navController.navigate(ultimaRota ?: NavBar.Inicio.route) {
                             popUpTo(Routes.InformacoesProduto.route) {
                                 inclusive = true
@@ -244,6 +287,8 @@ fun TelaInformacoesProdutoScreen(
                 produto = produto.nome ?: "",
                 viewModel = reporProdutoViewModel,
                 onDateSelected = {
+                    reporProdutoViewModel.quantidadeEstoqueData.value = 0
+
                     val validade = validades.find { validadeAtual ->
                         it!!.equals(validadeAtual.dtValidade ?: "")
                     }
@@ -253,12 +298,13 @@ fun TelaInformacoesProdutoScreen(
 
                     reporProdutoViewModel.quantidadeEstoqueData.value = qtdMaxima
                     reporProdutoViewModel.setQuantidadeMaxima(qtdMaxima)
+                    reporProdutoViewModel.setQuantidadeInicial(0)
                 },
                 onQuantidadeChanged = {
                     validadeViewModel.movimentacaoValidade =
                         validadeViewModel.movimentacaoValidade.copy(quantidade = it)
                 },
-                quantidadeEstoque = produto.qtdEstoque ?: 0,
+                quantidadeEstoque = produto.qntdTotalEstoque ?: 0,
                 onDismiss = {
                     exibirModalRetirar = false
                     reporProdutoViewModel.setQuantidadeInicial(0)
@@ -273,21 +319,23 @@ fun TelaInformacoesProdutoScreen(
             )
         }
 
-        if(validadeViewModel.deuErro){
+        if (validadeViewModel.deuErro) {
+            exibirModalRepor = false
+            exibirModalRetirar = false
             AlertError(msg = validadeViewModel.erro)
         }
 
-        if(!validadeViewModel.deuErro && validadeViewModel.erro.isNotEmpty()){
-            AlertSuccess(msg = "Estoque atualizado com sucesso!")
+        if (!validadeViewModel.deuErro && validadeViewModel.erro.isNotEmpty()) {
             exibirModalRepor = false
             exibirModalRetirar = false
 
             reporProdutoViewModel.setQuantidadeInicial(0)
             reporProdutoViewModel.setQuantidadeMaxima(0)
             reporProdutoViewModel.quantidadeEstoqueData.value = 0
+            AlertSuccess(msg = "Estoque atualizado com sucesso!")
 
             LaunchedEffect("success") {
-                delay(3000)
+                delay(6000)
                 validadeViewModel.erro = ""
             }
         }
@@ -325,12 +373,16 @@ fun BoxButtons(
 }
 
 @Composable
-fun Form(produto: Produto, viewModel: ProdutoViewModel) {
+fun Form(
+    validadeViewModel: ValidadeViewModel,
+    produto: Produto, viewModel: ProdutoViewModel
+) {
+    var qtdEstoqueData by remember { mutableStateOf(0) }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 4.dp),
-        Arrangement.spacedBy(16.dp)
     ) {
         FormFieldWithLabel(
             value = produto.nome ?: "",
@@ -368,6 +420,20 @@ fun Form(produto: Produto, viewModel: ProdutoViewModel) {
             },
             label = stringResource(R.string.descricao),
             isMultiline = true
+        )
+
+        SelectableDatesRow(
+            dates = produto.validades.let { it?.map { date -> date.dtValidade ?: ""} } ?: emptyList(),
+            qtdEstoqueData = qtdEstoqueData,
+            onDateSelected = { date ->
+                val validade = produto.validades?.find { validadeAtual ->
+                    date.equals(validadeAtual.dtValidade ?: "")
+                }
+
+                validadeViewModel.validade = validade!!
+                qtdEstoqueData = validadeViewModel.getQuantidadeEstoqueDaValidade()
+
+            }
         )
     }
 }

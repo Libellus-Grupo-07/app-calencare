@@ -7,7 +7,8 @@ data class Endereco(
     var numero:String? = null,
     var complemento: String? = null,
     var bairro: String? = null,
-    var cidade: String? = null,
+    var localidade: String? = null,
     var uf: String? = null,
+    var descricaoEndereco: String? = null,
     var empresa: Empresa? = null
 )

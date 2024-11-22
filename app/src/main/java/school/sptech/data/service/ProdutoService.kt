@@ -2,6 +2,7 @@ package school.sptech.data.service
 
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
@@ -17,4 +18,6 @@ interface ProdutoService {
     suspend fun adicionarProduto(@Body produto: Produto): Response<Produto>
     @PUT("/api/produto/{empresaId}/{produtoId}")
     suspend fun atualizarProduto(@Path("empresaId") empresaId: Int, @Path("produtoId") produtoId: Int, @Body produto: Produto): Response<Produto>
+    @DELETE("/api/produto/{empresaId}/{produtoId}")
+    suspend fun excluirProduto(@Path("empresaId") empresaId: Int, @Path("produtoId") produtoId: Int): Response<Void>
 }

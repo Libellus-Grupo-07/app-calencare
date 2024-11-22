@@ -37,7 +37,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             CalencareAppTheme {
                 val navController = rememberNavController()
-                var buttonVisible by remember { mutableStateOf(true) }
+                var buttonVisible by remember { mutableStateOf(false) }
 
                 Scaffold(
                     modifier = Modifier

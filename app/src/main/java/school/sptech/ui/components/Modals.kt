@@ -1,6 +1,7 @@
 package school.sptech.ui.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,6 +34,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -50,7 +52,10 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.zIndex
@@ -69,7 +74,12 @@ import school.sptech.ui.theme.Vermelho
 import school.sptech.ui.theme.VermelhoOpacidade15
 import school.sptech.ui.theme.fontFamilyPoppins
 import school.sptech.ui.theme.letterSpacingPrincipal
+import school.sptech.ui.viewModel.EnderecoViewModel
 import school.sptech.ui.viewModel.ReporProdutoViewModel
+import androidx.compose.material3.Text
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.sp
+
 
 @Composable
 fun CustomMonthYearPickerDialog(
@@ -155,7 +165,11 @@ fun CustomMonthYearPickerDialog(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DatePickerModal(dateSelected: Long, onDismiss: () -> Unit, onDateSelected: (Long?) -> Unit) {
+fun DatePickerModal(
+    dateSelected: Long,
+    onDismiss: () -> Unit,
+    onDateSelected: (Long?) -> Unit
+) {
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = if (dateSelected > 0) dateSelected else null,
         initialDisplayedMonthMillis = if (dateSelected > 0) dateSelected else null,
@@ -241,12 +255,15 @@ fun ProductModal(
     isRepor: Boolean = false
 ) {
     var data by remember { mutableStateOf("") }
-//    viewModel.setQuantidadeInicial(0)
+    var quantidadeError by remember { mutableStateOf(false) }  // Estado para gerenciar o erro de quantidade
+
+    // Função para validar a quantidade
+    fun isQuantidadeValida(): Boolean {
+        return viewModel.quantidade.value > 0
+    }
 
     AlertDialog(
-        onDismissRequest = {
-            onDismiss()
-        },
+        onDismissRequest = { onDismiss() },
         containerColor = Branco,
         titleContentColor = buttonColor,
         properties = DialogProperties(
@@ -285,42 +302,18 @@ fun ProductModal(
                     readOnly = true
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
-
-                if (isRepor) {
-                    Row(modifier = Modifier.fillMaxWidth(), Arrangement.spacedBy(8.dp)) {
-//                        LabelInput(label = stringResource(R.string.possui_validade))
-//                        Checkbox(
-//                            modifier = Modifier.size(24.dp),
-//                            checked = produto.? : false,
-//                            onCheckedChange = {
-//                                viewModel.validade = viewModel.validade.copy(enabledValidade = it)
-//                            },
-//                            colors = CheckboxDefaults.colors(
-//                                checkedColor = Preto,
-//                                uncheckedColor = Cinza,
-//                                checkmarkColor = Branco,
-//                                disabledCheckedColor = CinzaOpacidade35,
-//                                disabledUncheckedColor = CinzaOpacidade7,
-//                                disabledIndeterminateColor = CinzaOpacidade7
-//                            )
-//                        )
-                    }
-                }
-
-//                if (datesFromBackend.isNotEmpty() && datesFromBackend[0].isNotEmpty()) {
                 SelectableDatesRow(
                     dates = datesFromBackend,
                     onDateSelected = {
-                        data = it
-                        onDateSelected(it)
+                        if (it != data) {
+                            data = it
+                            onDateSelected(it)
+                        }
                     },
                     onClickAdicionarData = onClickAdicionarData,
                     isRepor = isRepor,
                     qtdEstoqueData = viewModel.quantidadeEstoqueData.value
-//                        quantidadeEstoque = viewModel.getQuantidadeMaxima()
                 )
-//                }
 
                 Spacer(modifier = Modifier.height(12.dp))
                 LabelInput(label = "Quantidade")
@@ -332,9 +325,7 @@ fun ProductModal(
                     IconButton(onClick = {
                         viewModel.diminuirQuantidade()
                         onQuantidadeChanged(viewModel.quantidade.value)
-                    }
-
-                    ) {
+                    }) {
                         Image(
                             bitmap = ImageBitmap.imageResource(id = R.mipmap.image_remover_menos),
                             contentDescription = "Remover Produto"
@@ -366,6 +357,15 @@ fun ProductModal(
                     }
                 }
 
+                // Exibir mensagem de erro se a quantidade for inválida
+                if (!isQuantidadeValida()) {
+                    Text(
+                        text = "Quantidade inválida. A quantidade deve ser maior que 0.",
+                        color = Color.Red,
+                        style = MaterialTheme.typography.bodySmall // Ajuste para Material 3
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Row() {
@@ -381,7 +381,14 @@ fun ProductModal(
             ButtonBackground(
                 titulo = buttonText,
                 cor = buttonColor,
-                onClick = { onConfirm(viewModel.quantidade.value) }
+                onClick = {
+                    if (isQuantidadeValida()) {
+                        onConfirm(viewModel.quantidade.value)
+                    } else {
+                        quantidadeError = true  // Indica erro de validação
+                    }
+                },
+                enabled = isQuantidadeValida()  // Desabilita o botão se a quantidade for inválida
             )
         },
         dismissButton = {
@@ -389,6 +396,22 @@ fun ProductModal(
         }
     )
 }
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun preview(){
+    ProductModal(
+        title = "Despesa",
+        buttonColor = RoxoNubank,
+        buttonText = "repor",
+        produto = "",
+        quantidadeEstoque = 10,
+        onDismiss = { /*TODO*/ },
+        onConfirm = { /*TODO*/ },
+        datesFromBackend = listOf("1999/11/02")
+    )
+}
+
 
 @Composable
 fun ReporProductModal(
@@ -446,9 +469,12 @@ fun RetirarProductModal(
 }
 
 @Composable
-fun ModalConfirmarSair(
+fun ModalConfirmar(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
+    titulo: String,
+    texto: String,
+    nomeItem: String
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -460,8 +486,10 @@ fun ModalConfirmarSair(
             ButtonCancelar(onClick = onDismiss)
         },
         title = {
-            Row {
-                TituloLarge(titulo = "Sair da Conta")
+            Row(
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+            ) {
+                TituloLarge(titulo = titulo)
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(
                     onClick = onDismiss,
@@ -480,13 +508,23 @@ fun ModalConfirmarSair(
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "Deseja realmente sair da conta?",
+                val fontStyle = SpanStyle(
+                    color = Cinza,
                     fontFamily = fontFamilyPoppins,
-                    color = Preto,
-                    fontWeight = FontWeight.Normal,
                     letterSpacing = letterSpacingPrincipal
                 )
+
+                Text(buildAnnotatedString {
+                    withStyle(style = fontStyle) {
+                        append(texto)
+                    }
+                    withStyle(style = fontStyle.copy(color = Preto, fontWeight = FontWeight.Bold)) {
+                        append(nomeItem)
+                    }
+                    withStyle(style = fontStyle) {
+                        append("?")
+                    }
+                })
             }
         },
         shape = RoundedCornerShape(20.dp),
@@ -500,7 +538,38 @@ fun ModalConfirmarSair(
 }
 
 @Composable
-fun AlertError(msg: String) {
+fun ModalConfirmarExclusao(
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+    titulo: String,
+    texto: String,
+    nomeItem: String
+) {
+    ModalConfirmar(
+        onDismiss = onDismiss,
+        onConfirm = onConfirm,
+        titulo = titulo,
+        texto = texto,
+        nomeItem = nomeItem
+    )
+}
+
+@Composable
+fun ModalConfirmarSair(
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+) {
+    ModalConfirmar(
+        onDismiss = onDismiss,
+        onConfirm = onConfirm,
+        titulo = "Sair",
+        texto = "Deseja realmente sair de sua conta",
+        nomeItem = ""
+    )
+}
+
+@Composable
+fun AlertError(msg: String, onClick: () -> Unit = {}) {
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -514,13 +583,13 @@ fun AlertError(msg: String) {
     ) {
         ExtendedFloatingActionButton(
             modifier = Modifier
-                .border(
-                    width = 1.dp,
-                    color = VermelhoOpacidade15,
-                    shape = RoundedCornerShape(16.dp)
-                )
-                .fillMaxWidth(0.86f),
-            text = {
+//                .border(
+//                    width = 1.dp,
+//                    color = VermelhoOpacidade15,
+//                    shape = RoundedCornerShape(16.dp)
+//                )
+            // .fillMaxWidth(0.86f),
+            , text = {
                 Text(
                     text = if (msg.isEmpty()) "Ops! Houve um erro inesperado. Tente novamente mais tarde." else msg,
                     color = Vermelho,
@@ -545,20 +614,13 @@ fun AlertError(msg: String) {
                     modifier = Modifier.size(18.dp)
                 )
             },
-            onClick = {
-                scope.launch {
-                    snackbarHostState.showSnackbar(
-                        message = "Erro!!! $msg",
-                        duration = SnackbarDuration.Short
-                    )
-                }
-            },
+            onClick = onClick
         )
     }
 }
 
 @Composable
-fun AlertSuccess(msg: String) {
+fun AlertSuccess(msg: String, onClick: () -> Unit = {}) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -571,14 +633,16 @@ fun AlertSuccess(msg: String) {
         ExtendedFloatingActionButton(
             shape = RoundedCornerShape(16.dp),
             contentColor = Verde,
-            containerColor = Color(0xFFD8F1D2),
+            containerColor = Color(0xFFD8F1D2).copy(alpha = 0.96f),
+//            containerColor = Color.Transparent,
             modifier = Modifier
-                .border(
-                    width = 1.dp,
-                    color = VerdeOpacidade15,
-                    shape = RoundedCornerShape(16.dp)
-                )
-                .fillMaxWidth(0.86f),
+//                .border(
+//                    width = 1.dp,
+//                    color = VerdeOpacidade15,
+//                    shape = RoundedCornerShape(16.dp)
+//                )
+            //.fillMaxWidth(0.86f)
+            ,
             elevation = FloatingActionButtonDefaults.elevation(
                 defaultElevation = 24.dp,
                 pressedElevation = 24.dp,
@@ -591,12 +655,192 @@ fun AlertSuccess(msg: String) {
                     color = Verde,
                     fontFamily = fontFamilyPoppins,
                     fontWeight = FontWeight.Bold,
-                    letterSpacing = letterSpacingPrincipal
+                    letterSpacing = letterSpacingPrincipal,
+                    fontSize = 13.5.sp
                 )
             },
             icon = { Icon(Icons.Filled.Check, contentDescription = "") },
-            onClick = {
-            }
+            onClick = onClick
         )
     }
+}
+
+@Composable
+fun ModalEditarEndereco(
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+    enderecoViewModel: EnderecoViewModel
+) {
+    var endereco = enderecoViewModel.endereco
+    var cepPreenchido by remember { mutableStateOf(endereco.cep?.isNotEmpty() ?: false) }
+    var logradouroPreenchido by remember {
+        mutableStateOf(
+            endereco.logradouro?.isNotEmpty() ?: false
+        )
+    }
+    var numeroPreenchido by remember {
+        mutableStateOf(endereco.numero?.isNotEmpty() ?: false || endereco.numero.equals("0"))
+    }
+    var bairroPreenchido by remember { mutableStateOf(endereco.bairro?.isNotEmpty() ?: false) }
+    var cidadePreenchida by remember { mutableStateOf(endereco.localidade?.isNotEmpty() ?: false) }
+    var ufPreenchida by remember { mutableStateOf(endereco.uf?.isNotEmpty() ?: false) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        dismissButton = {
+            ButtonCancelar(onClick = onDismiss)
+        },
+        confirmButton = {
+            ButtonBackground(
+                titulo = "Salvar",
+                cor = RoxoNubank,
+                onClick = {
+                    if (enderecoViewModel.endereco.cep?.isNotEmpty() == true
+                        && enderecoViewModel.endereco.logradouro?.isNotEmpty() == true
+                        && enderecoViewModel.endereco.numero?.isNotEmpty() == true
+                        && enderecoViewModel.endereco.localidade?.isNotEmpty() == true
+                        && enderecoViewModel.endereco.uf?.isNotEmpty() == true
+                    ) {
+                        onConfirm()
+                    }
+                }
+            )
+        },
+        containerColor = Branco,
+        properties = DialogProperties(
+            dismissOnBackPress = true,
+            dismissOnClickOutside = true
+        ),
+        title = {
+            Row(modifier = Modifier.padding(start = 8.dp, top = 8.dp, end = 8.dp)) {
+                TituloLarge(titulo = stringResource(id = R.string.editarEndereco))
+                Spacer(modifier = Modifier.weight(1f))
+                IconButton(
+                    onClick = onDismiss,
+                    modifier = Modifier.size(24.dp),
+                    colors = IconButtonDefaults.iconButtonColors(
+                        contentColor = Preto,
+                        containerColor = Color.Transparent,
+                    )
+                ) {
+                    Icon(Icons.Filled.Close, contentDescription = "Fechar")
+                }
+            }
+        },
+        text = {
+            Column(
+                modifier = Modifier.padding(horizontal = 8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(0.dp)
+            ) {
+                // CEP
+                FormFieldWithLabel(
+                    isSmallInput = true,
+                    value = endereco.cep ?: "",  // Valor alterado
+                    onValueChange = {
+                        enderecoViewModel.endereco = enderecoViewModel.endereco.copy(cep = it)
+
+                        if (it.length >= 8) {
+                            endereco = enderecoViewModel.getEnderecoViaCep()
+                        }
+
+                        cepPreenchido = it.isNotEmpty()
+                    },
+                    label = stringResource(id = R.string.cep),
+                    isObrigatorio = true,
+                    error = !cepPreenchido
+                )
+
+                FormFieldWithLabel(
+                    isSmallInput = true,
+                    value = endereco.logradouro ?: "",  // Valor alterado
+                    onValueChange = {
+                        enderecoViewModel.endereco =
+                            enderecoViewModel.endereco.copy(logradouro = it)
+                        logradouroPreenchido = it.isNotEmpty()
+                    },
+                    label = stringResource(id = R.string.logradouro),
+                    isObrigatorio = true,
+                    error = !logradouroPreenchido
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    Arrangement.SpaceBetween
+                ) {
+                    Column(modifier = Modifier.weight(0.35f)) {
+                        FormFieldWithLabel(
+                            isSmallInput = true,
+                            value = endereco.numero.toString() ?: "",  // Valor alterado
+                            onValueChange = {
+                                enderecoViewModel.endereco =
+                                    enderecoViewModel.endereco.copy(numero = it)
+                                numeroPreenchido =
+                                    it.isNotEmpty() || it.equals(
+                                        "0"
+                                    )
+                            },
+                            isNumericInput = true,
+                            label = stringResource(id = R.string.numero),
+                            isObrigatorio = true,
+                            error = !numeroPreenchido
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.size(8.dp))
+
+                    Column(modifier = Modifier.weight(0.5f)) {
+                        FormFieldWithLabel(
+                            isSmallInput = true,
+                            value = endereco.complemento ?: "",  // Valor alterado
+                            onValueChange = {
+                                enderecoViewModel.endereco =
+                                    enderecoViewModel.endereco.copy(complemento = it)
+                            },
+                            label = stringResource(id = R.string.complemento),
+                            isObrigatorio = false
+                        )
+                    }
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    Arrangement.SpaceBetween
+                ) {
+                    Column(modifier = Modifier.weight(0.7f)) {
+                        FormFieldWithLabel(
+                            isSmallInput = true,
+                            value = endereco.localidade ?: "",  // Valor alterado
+                            onValueChange = {
+                                enderecoViewModel.endereco =
+                                    enderecoViewModel.endereco.copy(localidade = it)
+                                cidadePreenchida = it.isNotEmpty()
+                            },
+                            isNumericInput = true,
+                            label = stringResource(id = R.string.cidade),
+                            isObrigatorio = true,
+                            error = !cidadePreenchida
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.size(8.dp))
+
+                    Column(modifier = Modifier.weight(0.4f)) {
+                        FormFieldWithLabel(
+                            isSmallInput = true,
+                            value = endereco.uf ?: "",  // Valor alterado
+                            onValueChange = {
+                                enderecoViewModel.endereco =
+                                    enderecoViewModel.endereco.copy(uf = it)
+                                ufPreenchida = endereco.uf?.isNotEmpty() ?: false
+                            },
+                            label = stringResource(id = R.string.uf),
+                            isObrigatorio = true,
+                            error = !ufPreenchida
+                        )
+                    }
+                }
+            }
+        }
+    )
 }

@@ -40,9 +40,9 @@ fun transformarEmLocalDateTime(data: String): LocalDateTime {
 }
 
 
-fun formatarDecimal(valor: Number, isValueInput:Boolean = false): String {
+fun formatarDecimal(valor: Number, isValueInput: Boolean = false): String {
     val format = DecimalFormat("#,##0.00")
-    val formatted = format.format(valor.toDouble() / if(isValueInput) 100 else 1)
+    val formatted = format.format(valor.toDouble() / if (isValueInput) 100 else 1)
     return formatted
 }
 
@@ -60,6 +60,17 @@ fun formatarData(data: LocalDate): String {
 
 fun formatarData(data: String): String {
     val format = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+
+    if (data.length == 10) {
+        val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val date = LocalDate.parse(data, inputFormatter)
+        return date.format(format)
+    }
+
+    if(data.isEmpty()){
+        return ""
+    }
+
     val formatted = LocalDateTime.parse(data).format(format)
     return formatted
 }
@@ -70,6 +81,7 @@ fun formatarDataBd(data: LocalDate): String {
     return formatted
 }
 
+
 fun formatarDoubleBd(valor: String): String {
     val format = valor.replace(".", "").replace(",", ".")
     return format
@@ -77,6 +89,10 @@ fun formatarDoubleBd(valor: String): String {
 
 @OptIn(ExperimentalMaterial3Api::class)
 fun formatarDataDatePicker(inputFormat: Boolean = false, data: Long?): String {
+    if(data == null || data == 0L){
+        return ""
+    }
+
     val dateFormatter = DatePickerDefaults.dateFormatter(
         selectedDateSkeleton = if (inputFormat) "dd MM yyyy" else "dd MMMM yyyy",
     )
@@ -92,21 +108,25 @@ fun getEnabledButtonRetirarEstoque(qtdEstoque: Int): Boolean {
     return qtdEstoque > 0
 }
 
-fun getEnabledInputDataValidade(descricaoValidade:String): Boolean{
+fun getEnabledInputDataValidade(descricaoValidade: String): Boolean {
     return !descricaoValidade.equals("Indefinido")
 }
 
+fun getStringProduto(qtdEstoque: Int): String {
+    return if (qtdEstoque == 1) "produto" else "produtos"
+}
+
 fun getColorTextEstoque(qtdEstoque: Int): Color {
-    return when{
+    return when {
         qtdEstoque == 0 -> Vermelho
         qtdEstoque in 1..5 -> Laranja
-        qtdEstoque in 6 until 15-> Amarelo
+        qtdEstoque in 6 until 15 -> Amarelo
         else -> Verde
     }
 }
 
-fun getMonthInt(month:String) : Month?{
-    Month.values().forEach{ mes ->
+fun getMonthInt(month: String): Month? {
+    Month.values().forEach { mes ->
         val nomeEmLocale = mes.getDisplayName(TextStyle.FULL, Locale("pt", "BR"));
         if (nomeEmLocale.equals(month, ignoreCase = true)) {
             return mes;
@@ -114,4 +134,11 @@ fun getMonthInt(month:String) : Month?{
     }
 
     return null
+}
+
+fun isDataValida(data: String): Boolean {
+    if(data.isEmpty()){
+        return false
+    }
+   return data.isNotEmpty() && transformarEmLocalDate(data).isBefore(LocalDate.now().plusDays(1))
 }
