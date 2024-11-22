@@ -16,6 +16,7 @@ import school.sptech.ui.screens.TelaAdicionarProdutoScreen
 import school.sptech.ui.screens.TelaDespesasScreen
 import school.sptech.ui.screens.TelaEstoqueScreen
 import school.sptech.ui.screens.TelaFinancasScreen
+import school.sptech.ui.screens.TelaInformacoesDespesaScreen
 import school.sptech.ui.screens.TelaInformacoesMovimentosScreen
 import school.sptech.ui.screens.TelaInformacoesProdutoScreen
 import school.sptech.ui.screens.TelaInicio
@@ -92,6 +93,16 @@ fun NavigationGraph(
             )
         }
 
+        composable(
+            "${Routes.InformacoesDespesa.route}/{despesaId}",
+            arguments = listOf(navArgument("despesaId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            onBottomBarVisibleChanged(false)
+            TelaInformacoesDespesaScreen(
+                navController = navController,
+                despesaId = backStackEntry.arguments?.getInt("despesaId") ?: 0
+            )
+        }
         composable(
             "${Routes.InformacoesMovimentacao.route}",
             //arguments = listOf(navArgument("movimentoId") { type = NavType.IntType })

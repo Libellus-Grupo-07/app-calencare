@@ -16,7 +16,7 @@
         android:theme="@style/Theme.CalencareApp"
         tools:targetApi="31">
         <activity
-            android:name=".ui.screens.TelaEditarDespesa"
+            android:name=".ui.screens.TelaInformacoesDespesa"
             android:exported="false"
             android:label="@string/title_activity_tela_editar_despesa"
             android:theme="@style/Theme.CalencareApp" />

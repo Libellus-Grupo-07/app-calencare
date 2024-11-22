@@ -10,6 +10,7 @@ import school.sptech.ui.theme.Vermelho
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Month
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Date
@@ -28,17 +29,31 @@ fun transformarEmLocalDate(data: String): LocalDate {
 }
 
 fun transformarEmLocalDateTime(data: String): LocalDateTime {
+    // 2024-01-12
+    val dateTimeParse: LocalDateTime
+    val dataIsFormatadaBd = data.length > 10
+
+    if(dataIsFormatadaBd){
+        dateTimeParse = LocalDateTime.parse(data)
+        return dateTimeParse
+    }
+
     val ano = data.substring(6, 10).toInt()
     val mes = data.substring(3, 5).toInt()
     val dia = data.substring(0, 2).toInt()
 
-    val dateTimeParse = LocalDateTime.of(
+    dateTimeParse = LocalDateTime.of(
         ano, mes, dia, 0, 0, 0
     )
 
     return dateTimeParse
 }
 
+fun getLongDate(data: String): Long {
+    val dataParse = transformarEmLocalDateTime(data)
+    val zonedDateTime = dataParse.atZone(ZoneId.of("UTC"));
+    return zonedDateTime.toInstant().toEpochMilli()
+}
 
 fun formatarDecimal(valor: Number, isValueInput: Boolean = false): String {
     val format = DecimalFormat("#,##0.00")

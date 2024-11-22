@@ -36,7 +36,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import formatarData
 import formatarDataDatePicker
+import getLongDate
 import isDataValida
 import school.sptech.R
 import school.sptech.data.model.Empresa
@@ -53,6 +55,7 @@ import school.sptech.ui.theme.letterSpacingSecundaria
 import school.sptech.ui.viewModel.EmpresaViewModel
 import school.sptech.ui.viewModel.UsuarioViewModel
 import transformarEmLocalDate
+import transformarEmLocalDateTime
 import java.time.LocalDate
 
 @Composable
@@ -74,14 +77,20 @@ fun FormFieldWithLabel(
     minSize: Int? = null
 ) {
     var enabledDatePicker by remember { mutableStateOf(false) }
-    val dateValue: Long = if (isDateInput && value.isNotEmpty()) value.toLong() else 0L
-    val dateValueFormat = if (isDateInput && value.isNotEmpty()) formatarDataDatePicker(
-        inputFormat = true,
-        data = dateValue
-    ) else label
+    val dateValue: Long =
+        if(!isDateInput || value.isEmpty()) 0L
+        else if (isDateInput && value.length > 10) getLongDate(value)
+        else value.toLong()
+    val dateValueFormat =
+        if(!isDateInput || value.isEmpty()) label
+        else if (isDateInput && value.length > 10) formatarData(value)
+        else formatarDataDatePicker(
+            inputFormat = true,
+            data = dateValue
+        )
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        val corDestaque = if (error) Vermelho else Cinza
+        val corDestaque = if (error && (isDateInput && dateValueFormat.isNotEmpty())) Vermelho else Cinza
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -262,7 +271,8 @@ fun DropdownFieldWithLabel(
 @Composable
 fun FormButtons(
     onCancelClick: () -> Unit = { /* TODO: Handle cancel */ },
-    onAddClick: () -> Unit = { /* TODO: Handle add */ }
+    onAddClick: () -> Unit = { /* TODO: Handle add */ },
+    addButtonText: String = stringResource(R.string.adicionar)
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -273,7 +283,7 @@ fun FormButtons(
         Spacer(modifier = Modifier.size(4.dp))
 
         ButtonBackground(
-            titulo = stringResource(R.string.adicionar),
+            titulo = addButtonText,
             cor = RoxoNubank,
             onClick = onAddClick
         )
