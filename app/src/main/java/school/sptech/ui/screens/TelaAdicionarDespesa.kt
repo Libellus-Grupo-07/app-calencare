@@ -114,7 +114,7 @@ fun TelaAddDespesa(
                 onAddClick = {
                     nomeVazio = viewModel.despesa.nome?.isEmpty() ?: true
                     observacaoVazia = viewModel.despesa.observacao?.isEmpty() ?: true
-                    categoriaVazia = viewModel.categoriaDespesa.nome?.isEmpty() ?: true
+                    categoriaVazia = viewModel.despesa.categoriaDespesaNome?.isEmpty() ?: true
                     valorVazio =
                         viewModel.despesa.valor!!.isEmpty() || viewModel.despesa.valor!!.equals("0,00")
                     formaPagamentoVazio = viewModel.despesa.formaPagamento?.isEmpty() ?: true
@@ -215,9 +215,9 @@ fun DespesaForm(
 
         // Category Dropdown
         DropdownFieldWithLabel(
-            value = viewModel.categoriaDespesa.nome ?: "",
+            value = viewModel.despesa.categoriaDespesaNome ?: "",
             onValueChange = {
-                viewModel.categoriaDespesa = viewModel.categoriaDespesa.copy(nome = it)
+                viewModel.despesa = viewModel.despesa.copy(categoriaDespesaNome = it)
             },
             label = stringResource(R.string.categoria),
             options = viewModel.listaCategoriasDespesa.map { it.nome ?: "" },

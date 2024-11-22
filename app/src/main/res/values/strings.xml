@@ -86,4 +86,5 @@
     <string name="data_invalida">A %1$s deve ser uma data presente ou passada.</string>
     <string name="obrigatorio">Obrigatório.</string>
     <string name="limpar_data">Limpar Data</string>
+    <string name="informacoes_despesa">Informações da Despesa</string>
 </resources>

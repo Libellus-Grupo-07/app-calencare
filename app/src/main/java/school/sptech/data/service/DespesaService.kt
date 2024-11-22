@@ -2,6 +2,7 @@ package school.sptech.data.service
 
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
@@ -44,5 +45,11 @@ interface DespesaService {
         @Path("categoriaDespesaId") categoriaDespesaId: Int,
         @Body despesa: Despesa
     ): Response<Despesa>
+
+    @DELETE("/api/despesas/{empresaId}/{despesaId}")
+    suspend fun deleteDespesa(
+        @Path("empresaId") empresaId: Int,
+        @Path("despesaId") despesaId: Int
+    ): Response<Void>
 
 }

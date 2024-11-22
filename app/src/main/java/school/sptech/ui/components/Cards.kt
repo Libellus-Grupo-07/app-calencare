@@ -806,7 +806,7 @@ fun CardComissaoMovimentacao(comissao: Movimentacoes) {
 }
 
 @Composable
-fun CardDespesa(despesa: Despesa) {
+fun CardDespesa(despesa: Despesa, onClickDespesa: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -817,7 +817,10 @@ fun CardDespesa(despesa: Despesa) {
                 ambientColor = Color.Transparent,
                 spotColor = PretoOpacidade25,
                 elevation = 4.dp,
-            ),
+            ).clickable {
+                onClickDespesa()
+            }
+        ,
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = Branco)
     ) {

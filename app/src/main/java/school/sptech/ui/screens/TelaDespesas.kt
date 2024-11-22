@@ -90,6 +90,7 @@ fun TelaDespesasScreen(
 
         ListaDespesas(
             despesas = despesas,
+            navController = navController
         )
     }
 
@@ -115,7 +116,7 @@ fun TelaDespesasScreen(
 
 
 @Composable
-fun ListaDespesas(despesas: List<Despesa>) {
+fun ListaDespesas(despesas: List<Despesa>, navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -137,12 +138,12 @@ fun ListaDespesas(despesas: List<Despesa>) {
         } else {
             LazyColumn {
                 items(despesas) { despesa ->
-                    CardDespesa(despesa)
+                    CardDespesa(despesa, onClickDespesa = {
+                        navController.navigate("${Routes.InformacoesDespesa.route}/${despesa.id}")
+                    })
                 }
             }
         }
-
-
     }
 }
 

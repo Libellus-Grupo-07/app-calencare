@@ -11,4 +11,5 @@ sealed class Routes(val route:String) {
 //    object InformacoesProduto: Routes("informacoes_produto/{produtoId}")
     object InformacoesProduto: Routes("informacoes_produto")
     object InformacoesMovimentacao: Routes("informacoes_movimentos")
+    object InformacoesDespesa: Routes("informacoes_despesa")
 }
