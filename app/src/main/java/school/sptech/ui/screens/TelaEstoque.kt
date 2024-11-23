@@ -90,42 +90,44 @@ fun TelaEstoqueScreen(
                 validadeViewModel = validadeViewModel,
                 navController = navController,
             )
-        }
-    }
 
-    if (produtoViewModel.deuErro || validadeViewModel.deuErro) {
-        AlertError(
-            msg = "Ops! Algo deu errado. Tente novamente mais tarde.",
-            onClick = {
-                produtoViewModel.deuErro = false
-                produtoViewModel.mensagem = ""
-                validadeViewModel.deuErro = false
-                validadeViewModel.erro = ""
+            if (produtoViewModel.deuErro || validadeViewModel.deuErro) {
+                AlertError(
+                    msg = produtoViewModel.mensagem,
+                    onClick = {
+                        produtoViewModel.deuErro = false
+                        produtoViewModel.mensagem = ""
+                        validadeViewModel.deuErro = false
+                        validadeViewModel.erro = ""
+                    }
+                )
+
+                LaunchedEffect("erro") {
+                    delay(6000)
+                    produtoViewModel.deuErro = false
+                    validadeViewModel.deuErro = false
+                    produtoViewModel.mensagem = ""
+                    validadeViewModel.erro = ""
+                }
             }
-        )
 
-        LaunchedEffect("erro") {
-            delay(6000)
-            produtoViewModel.deuErro = false
-            validadeViewModel.deuErro = false
-            produtoViewModel.mensagem = ""
-            validadeViewModel.erro = ""
+            if (!validadeViewModel.deuErro && validadeViewModel.erro.isNotEmpty()) {
+                AlertSuccess(
+                    msg = "Estoque atualizado com sucesso!",
+                    onClick = { validadeViewModel.erro = "" }
+                )
+
+                LaunchedEffect("sucess") {
+                    validadeViewModel.atualizarQtdEstoqueValidades()
+                    produtoViewModel.getProdutos(preferencesHelper.getIdEmpresa())
+                    delay(6000)
+                    validadeViewModel.erro = ""
+                }
+            }
         }
     }
 
-    if (!validadeViewModel.deuErro && validadeViewModel.erro.isNotEmpty()) {
-        AlertSuccess(
-            msg = "Estoque atualizado com sucesso!",
-            onClick = { validadeViewModel.erro = "" }
-        )
 
-        LaunchedEffect("sucess") {
-            validadeViewModel.atualizarQtdEstoqueValidades()
-            produtoViewModel.getProdutos(preferencesHelper.getIdEmpresa())
-            delay(6000)
-            validadeViewModel.erro = ""
-        }
-    }
 
     if (exibirFiltro) {
         FiltroEstoqueModal(

@@ -256,10 +256,17 @@ fun ProductModal(
 ) {
     var data by remember { mutableStateOf("") }
     var quantidadeError by remember { mutableStateOf(false) }  // Estado para gerenciar o erro de quantidade
+    var dataError by remember { mutableStateOf(false) }  // Estado para gerenciar o erro de data
+
 
     // Função para validar a quantidade
     fun isQuantidadeValida(): Boolean {
         return viewModel.quantidade.value > 0
+    }
+
+    // Função para validar a data
+    fun isDataValida(): Boolean {
+        return data.isNotEmpty()
     }
 
     AlertDialog(
@@ -299,7 +306,8 @@ fun ProductModal(
                     value = produto,
                     onValueChange = {},
                     label = "Produto",
-                    readOnly = true
+                    readOnly = true,
+                    isMediumInput = true
                 )
 
                 SelectableDatesRow(
@@ -308,15 +316,18 @@ fun ProductModal(
                         if (it != data) {
                             data = it
                             onDateSelected(it)
+                            dataError = false
                         }
                     },
                     onClickAdicionarData = onClickAdicionarData,
                     isRepor = isRepor,
-                    qtdEstoqueData = viewModel.quantidadeEstoqueData.value
+                    qtdEstoqueData = viewModel.quantidadeEstoqueData.value,
+                    dataError = dataError,
+                    isMedium = true
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
-                LabelInput(label = "Quantidade")
+                LabelInput(label = "Quantidade", isMediumInput = true)
                 Spacer(modifier = Modifier.height(4.dp))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -358,18 +369,22 @@ fun ProductModal(
                 }
 
                 // Exibir mensagem de erro se a quantidade for inválida
-                if (!isQuantidadeValida()) {
+                if (!isQuantidadeValida() && data.isNotEmpty()) {
                     Text(
-                        text = "Quantidade inválida. A quantidade deve ser maior que 0.",
-                        color = Color.Red,
-                        style = MaterialTheme.typography.bodySmall // Ajuste para Material 3
+                        text = "A quantidade deve ser maior que 0.",
+                        color = Vermelho,
+                        letterSpacing = letterSpacingPrincipal,
+                        fontFamily = fontFamilyPoppins,
+                        fontSize = 9.5.sp,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.padding(start = 12.dp)
                     )
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Row() {
-                    LabelInput(label = "Total em Estoque: ")
+                    LabelInput(label = "Total em Estoque: ", isMediumInput = true)
                     LabelInput(
                         label = "$quantidadeEstoque produtos",
                         color = getColorTextEstoque(quantidadeEstoque)
@@ -382,13 +397,14 @@ fun ProductModal(
                 titulo = buttonText,
                 cor = buttonColor,
                 onClick = {
-                    if (isQuantidadeValida()) {
+                    if (isQuantidadeValida() && isDataValida()) {
                         onConfirm(viewModel.quantidade.value)
                     } else {
+                        dataError = true  // Indica erro de validação
                         quantidadeError = true  // Indica erro de validação
                     }
                 },
-                enabled = isQuantidadeValida()  // Desabilita o botão se a quantidade for inválida
+                //enabled = isQuantidadeValida()  // Desabilita o botão se a quantidade for inválida
             )
         },
         dismissButton = {
@@ -399,7 +415,7 @@ fun ProductModal(
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun preview(){
+fun preview() {
     ProductModal(
         title = "Despesa",
         buttonColor = RoxoNubank,

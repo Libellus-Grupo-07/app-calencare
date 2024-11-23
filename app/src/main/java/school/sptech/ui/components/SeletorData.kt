@@ -35,6 +35,7 @@ import school.sptech.ui.theme.CinzaOpacidade7
 import school.sptech.ui.theme.Preto
 import school.sptech.ui.theme.RoxoNubank
 import school.sptech.ui.theme.RoxoNubankOpacidade15
+import school.sptech.ui.theme.Vermelho
 import school.sptech.ui.theme.fontFamilyPoppins
 import school.sptech.ui.theme.letterSpacingPrincipal
 
@@ -62,7 +63,9 @@ fun SelectableDatesRow(
     onClickAdicionarData: () -> Unit = {},
     qtdEstoqueData: Int = 0,
     isRepor: Boolean = false,
-    selectedDate: String? = null
+    selectedDate: String? = null,
+    isMedium: Boolean = false,
+    dataError: Boolean = false
 ) {
     var currentDate by remember { mutableStateOf(selectedDate) }
 
@@ -75,61 +78,70 @@ fun SelectableDatesRow(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            LabelInput(label = "Data de Validade")
+            LabelInput(label = "Data de Validade", isMediumInput = isMedium)
 
             if (isRepor) {
-                TextButton(
-                    onClick = onClickAdicionarData,
-                    contentPadding = PaddingValues(horizontal = 4.dp, vertical = 0.dp),
-                    colors = ButtonDefaults.textButtonColors(
-                        containerColor = Color.Transparent,
-                        contentColor = Color.Transparent,
-                    )
-                ) {
-                    Text(
-                        text = "Adicionar Data",
-                        fontFamily = fontFamilyPoppins,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 10.sp,
-                        letterSpacing = letterSpacingPrincipal,
-                        color = Preto
-                    )
-                }
+                Text(
+                    modifier = Modifier.clickable { onClickAdicionarData() },
+                    text = "Adicionar Data",
+                    fontFamily = fontFamilyPoppins,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = if (isMedium) 9.sp else 10.sp,
+                    letterSpacing = letterSpacingPrincipal,
+                    color = Preto
+                )
             }
-
         }
+
+        Spacer(modifier = Modifier.height(if (isMedium) 4.dp else 8.dp))
 
         Row(modifier = Modifier.fillMaxWidth()) {
-            Text(
-                buildAnnotatedString {
-                    withStyle(
-                        SpanStyle(
-                            color = RoxoNubank,
-                            fontFamily = fontFamilyPoppins,
-                            letterSpacing = letterSpacingPrincipal,
-                            fontSize = 10.5.sp,
-                            fontWeight = FontWeight.ExtraBold
-                        )
-                    ) {
-                        append("$qtdEstoqueData ${if (qtdEstoqueData == 1) "produto" else "produtos"} ")
-                    }
-                    withStyle(
-                        SpanStyle(
-                            color = Cinza,
-                            fontFamily = fontFamilyPoppins,
-                            letterSpacing = letterSpacingPrincipal,
-                            fontWeight = FontWeight.Medium,
-                            fontSize = 10.5.sp,
-                        )
-                    ) {
-                        append("com a data de validade selecionada.")
-                    }
-                },
-            )
-
+            if (dates.isEmpty()) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Nenhuma data de validade disponível",
+                        color = Cinza,
+                        fontFamily = fontFamilyPoppins,
+                        letterSpacing = letterSpacingPrincipal,
+                        fontSize = 10.5.sp,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            } else {
+                Text(
+                    buildAnnotatedString {
+                        withStyle(
+                            SpanStyle(
+                                color = RoxoNubank,
+                                fontFamily = fontFamilyPoppins,
+                                letterSpacing = letterSpacingPrincipal,
+                                fontSize = 10.5.sp,
+                                fontWeight = FontWeight.ExtraBold
+                            )
+                        ) {
+                            append("$qtdEstoqueData ${if (qtdEstoqueData == 1) "produto" else "produtos"} ")
+                        }
+                        withStyle(
+                            SpanStyle(
+                                color = Cinza,
+                                fontFamily = fontFamilyPoppins,
+                                letterSpacing = letterSpacingPrincipal,
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 10.5.sp,
+                            )
+                        ) {
+                            append("com a data de validade selecionada.")
+                        }
+                    },
+                )
+            }
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(if (isMedium) 4.dp else 8.dp))
+
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -140,13 +152,29 @@ fun SelectableDatesRow(
                     isSelected = date == currentDate,
                     onClick = {
                         //if(date != currentDate){
-                            currentDate = date
-                            onDateSelected(date)
+                        currentDate = date
+                        onDateSelected(date)
                         //}
                     }
                 )
             }
         }
+
+        if (dataError) {
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "Selecione uma data de validade",
+                color = Vermelho,
+                fontFamily = fontFamilyPoppins,
+                letterSpacing = letterSpacingPrincipal,
+                fontSize = 9.5.sp,
+                fontWeight = FontWeight.Medium,
+                textAlign = TextAlign.Center
+            )
+        }
+
+
     }
 }
 

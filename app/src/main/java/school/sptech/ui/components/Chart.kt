@@ -55,17 +55,29 @@ import school.sptech.ui.theme.fontFamilyPoppins
 import school.sptech.ui.theme.letterSpacingPrincipal
 
 @Composable
-fun Chart() {
-    ChartLine()
+fun Chart(
+    receitas: List<Double> = listOf(0.0, 0.0, 0.0, 0.0),
+    lucro:List<Double> = listOf(0.0, 0.0, 0.0,0.0),
+    despesas:List<Double> = listOf(4.0,12.0,8.0,1.0,27.0)
+) {
+    ChartLine(
+        receitas = receitas,
+        lucro = lucro,
+        despesas = despesas
+    )
     //Spacer(modifier = Modifier.size(16.dp))
     //GroupButtons()
 }
 
 @Composable
-fun ChartLine(){
+fun ChartLine(
+    receitas: List<Double>,
+    lucro: List<Double>,
+    despesas: List<Double>
+){
     Box(modifier = Modifier
         .fillMaxWidth(1f)
-        .fillMaxHeight(0.45f)
+        .fillMaxHeight(0.5f)
         .shadow(
             4.dp, shape = RoundedCornerShape(20.dp)
         )
@@ -79,7 +91,7 @@ fun ChartLine(){
     ) {
         Column(modifier = Modifier
             .background(Branco)
-            .padding(top = 18.dp),
+            .padding(top = 14.dp),
             Arrangement.Center,
             Alignment.CenterHorizontally
         ) {
@@ -94,15 +106,15 @@ fun ChartLine(){
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(
-                        start = 16.dp,
-                        end = 32.dp,
+                        start = 12.dp,
+                        end = 24.dp,
                         top = 8.dp,
-                        bottom = 16.dp
+                        bottom = 12.dp
                     ),
                 data = listOf(
                     Line(
                         label = stringResource(id = R.string.receita),
-                        values = listOf(28.0,41.0,5.0,10.0,35.0),
+                        values = if(receitas.isEmpty()) listOf(0.0, 0.0, 0.0, 0.0, 0.0) else receitas,
                         color = SolidColor(Azul),
                         //firstGradientFillColor = Azul.copy(alpha = .5f),
                         //secondGradientFillColor = Color.Transparent,
@@ -119,7 +131,7 @@ fun ChartLine(){
                     ),
                     Line(
                         label = stringResource(id = R.string.lucro),
-                        values = listOf(8.0,21.0,9.0,15.0,32.0),
+                        values = if(lucro.isEmpty()) listOf(0.0, 0.0, 0.0, 0.0, 0.0) else lucro,
                         color = SolidColor(Verde),
                         //firstGradientFillColor = Verde.copy(alpha = .5f),
                         //secondGradientFillColor = Color.Transparent,
@@ -136,7 +148,7 @@ fun ChartLine(){
                     ),
                     Line(
                         label = stringResource(id = R.string.despesa),
-                        values = listOf(4.0,12.0,8.0,1.0,27.0),
+                        values = if(despesas.isEmpty()) listOf(0.0, 0.0, 0.0, 0.0, 0.0) else despesas,
                         color = SolidColor(Vermelho),
                         //firstGradientFillColor = Vermelho.copy(alpha = .5f),
                         //secondGradientFillColor = Color.Transparent,
@@ -155,9 +167,10 @@ fun ChartLine(){
                 animationMode = AnimationMode.Together(delayBuilder = { it -> it * 200L }),
                 indicatorProperties = HorizontalIndicatorProperties(
                     enabled = true,
+                    padding = 4.dp,
                     textStyle = TextStyle(
                         fontFamily = fontFamilyPoppins,
-                        fontSize = 9.5.sp,
+                        fontSize = 8.5.sp,
                         fontWeight = FontWeight.Normal,
                         letterSpacing = letterSpacingPrincipal,
                         color = Cinza
@@ -168,10 +181,11 @@ fun ChartLine(){
                 ),
                 labelProperties = LabelProperties(
                     enabled = true,
+                    padding = 12.dp,
                     textStyle = TextStyle(
                         fontFamily = fontFamilyPoppins,
-                        fontSize = 9.5.sp,
-                        fontWeight = FontWeight.Normal,
+                        fontSize = 8.sp,
+                        fontWeight = FontWeight.Medium,
                         letterSpacing = letterSpacingPrincipal,
                         color = Cinza
                     ),
@@ -180,6 +194,7 @@ fun ChartLine(){
                         "Semana 2",
                         "Semana 3",
                         "Semana 4",
+                        "Semana 5",
                     )
                 ),
                 labelHelperProperties = LabelHelperProperties(

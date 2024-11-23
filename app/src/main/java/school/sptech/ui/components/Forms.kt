@@ -65,25 +65,27 @@ fun FormFieldWithLabel(
     label: String,
     error: Boolean = false,
     readOnly: Boolean = false,
+    enabledClearDate: Boolean = false,
     isMultiline: Boolean = false,
     isDateInput: Boolean = false,
-    enabledClearDate: Boolean = false,
+    isDatePastOrPresent: Boolean = false,
     isNumericInput: Boolean = false,
     isSmallInput: Boolean = false,
+    isMediumInput: Boolean = false,
+    isObrigatorio: Boolean = true,
     clickableInput: Boolean = false,
     onClickInput: () -> Unit = {},
-    isObrigatorio: Boolean = true,
-    isDatePastOrPresent: Boolean = false,
     minSize: Int? = null
 ) {
     var enabledDatePicker by remember { mutableStateOf(false) }
+    val isLong = value.toLongOrNull() != null
     val dateValue: Long =
         if(!isDateInput || value.isEmpty()) 0L
-        else if (isDateInput && value.length > 10) getLongDate(value)
+        else if (isDateInput && !isLong) getLongDate(value)
         else value.toLong()
     val dateValueFormat =
         if(!isDateInput || value.isEmpty()) label
-        else if (isDateInput && value.length > 10) formatarData(value)
+        else if (isDateInput && !isLong) formatarData(value)
         else formatarDataDatePicker(
             inputFormat = true,
             data = dateValue
@@ -97,7 +99,11 @@ fun FormFieldWithLabel(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            LabelInput(label = label, isSmallInput = isSmallInput)
+            LabelInput(
+                label = label,
+                isSmallInput = isSmallInput,
+                isMediumInput = isMediumInput
+            )
 
             if (isDateInput && enabledClearDate) {
                 Text(
@@ -185,6 +191,7 @@ fun FormFieldWithLabel(
                 readOnly = readOnly,
                 campoObrigatorio = isObrigatorio,
                 isNumericInput = isNumericInput,
+                isMediumInput = isMediumInput,
                 isSmallInput = isSmallInput,
                 isMultiline = isMultiline,
                 tamanhoMinimo = minSize
@@ -199,6 +206,7 @@ fun FormFieldWithLabel(
                 onDismiss = { enabledDatePicker = false },
                 onDateSelected = { date ->
                     onValueChange(date.toString())
+                    enabledDatePicker = false
                 },
             )
         }

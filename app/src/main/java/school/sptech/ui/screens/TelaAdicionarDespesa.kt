@@ -146,6 +146,7 @@ fun TelaAddDespesa(
             LaunchedEffect(key1 = "success") {
                 delay(5000)
                 viewModel.deuErro = false
+                viewModel.erro = ""
             }
         }
 

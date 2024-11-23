@@ -149,6 +149,7 @@ fun TelaAdicionarProdutoScreen(
         LaunchedEffect("error") {
             delay(6000)
             viewModel.deuErro = false
+            viewModel.mensagem = ""
         }
     }
 
