@@ -54,7 +54,8 @@ class DespesaViewModel : ViewModel() {
                 val response = categoriaDespesaService.getAllCategoriaDespesa()
 
                 if (response.isSuccessful) {
-                    listaCategoriasDespesa = response.body()!!
+                    listaCategoriasDespesa = response.body() ?: listOf()
+                    listaCategoriasDespesa = listaCategoriasDespesa.sortedBy { it.nome }
                     deuErro = false
                 } else {
                     Log.e(
@@ -195,15 +196,17 @@ class DespesaViewModel : ViewModel() {
             )
         } else ""
 
-        return listaDespesas.filter {
+        val despesasFiltradas = listaDespesas.filter {
             (filtro.categorias.isEmpty() || filtro.categorias.contains(it.categoriaDespesaNome))
                     && (filtro.dtPagamento.isEmpty() || dtPagamentoFiltroFormatada == formatarData(
                 it.dtPagamento!!
             ))
                     && (filtro.formasPagamento.isEmpty() || filtro.formasPagamento.contains(it.formaPagamento))
-                    && (it.valor!!.toDouble() >= filtro.valorMinimo.div(100))
-                    && (it.valor!!.toDouble() <= filtro.valorMaximo.div(100))
+                    && (it.valor?.toDoubleOrNull() ?: 0.0 >= filtro.valorMinimo.div(100))
+                    && (filtro.valorMaximo == 0.0 || it.valor?.toDoubleOrNull() ?: 0.0 <= filtro.valorMaximo.div(100))
         }
+
+        return despesasFiltradas
     }
 
     fun limparFiltro() {
@@ -224,7 +227,7 @@ class DespesaViewModel : ViewModel() {
 
                 if (response.isSuccessful) {
                     despesa = response.body()!!
-                    val valorFormatado =  despesa.valor?.let { formatarDecimal(it.toDouble()) }
+                    val valorFormatado = despesa.valor?.let { formatarDecimal(it.toDouble()) }
                     despesa = despesa.copy(valor = valorFormatado)
                     deuErro = false
                     erro = ""

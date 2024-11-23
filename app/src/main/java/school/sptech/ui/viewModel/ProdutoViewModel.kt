@@ -44,7 +44,7 @@ class ProdutoViewModel : ViewModel() {
     }
 
     fun getListaProdutosEstoqueBaixo(): List<Produto> {
-        if(produtos.isEmpty()){
+        if (produtos.isEmpty()) {
             getProdutos()
         }
 
@@ -65,7 +65,8 @@ class ProdutoViewModel : ViewModel() {
                 val response = categoriaProdutoService.getAllCategoriaProduto()
 
                 if (response.isSuccessful) {
-                    categoriasProduto = response.body()!!
+                    categoriasProduto = response.body() ?: listOf()
+                    categoriasProduto = categoriasProduto.sortedBy { it.nome }
                     deuErro = false
                 } else {
                     Log.e(
@@ -126,9 +127,9 @@ class ProdutoViewModel : ViewModel() {
                     produtos.clear()
                     produtos.addAll(response.body() ?: listOf())
 
-                    if(filtro.rangeQtdEstoque.endInclusive == 0f){
+                    if (filtro.rangeQtdEstoque.endInclusive == 0f) {
                         qtdMaximaEstoque = produtos.maxOf { it.qntdTotalEstoque!! }.toFloat()
-                        filtro = filtro.copy(rangeQtdEstoque = 0f .. qtdMaximaEstoque)
+                        filtro = filtro.copy(rangeQtdEstoque = 0f..qtdMaximaEstoque)
                     }
 
                 } else {
@@ -204,7 +205,7 @@ class ProdutoViewModel : ViewModel() {
     }
 
     fun limparFiltro() {
-        filtro = FiltroEstoque(rangeQtdEstoque = 0f .. qtdMaximaEstoque)
+        filtro = FiltroEstoque(rangeQtdEstoque = 0f..qtdMaximaEstoque)
     }
 
     fun filtroIsEmpty(): Boolean {
@@ -214,7 +215,10 @@ class ProdutoViewModel : ViewModel() {
     fun excluirProduto() {
         GlobalScope.launch {
             try {
-                val response = produtoService.excluirProduto(empresaId = produto.empresaId ?: 0, produtoId = produto.id ?: 0)
+                val response = produtoService.excluirProduto(
+                    empresaId = produto.empresaId ?: 0,
+                    produtoId = produto.id ?: 0
+                )
 
                 if (response.isSuccessful) {
                     deuErro = false

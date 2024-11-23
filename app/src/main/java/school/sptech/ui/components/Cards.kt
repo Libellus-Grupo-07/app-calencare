@@ -65,12 +65,14 @@ import school.sptech.data.model.Produto
 import school.sptech.data.model.Validade
 import school.sptech.ui.theme.Amarelo
 import school.sptech.ui.theme.Azul
+import school.sptech.ui.theme.AzulClaro
 import school.sptech.ui.theme.AzulOpacidade15
 import school.sptech.ui.theme.Branco
 import school.sptech.ui.theme.Cinza
 import school.sptech.ui.theme.CinzaOpacidade35
 import school.sptech.ui.theme.Laranja
 import school.sptech.ui.theme.LaranjaDourado
+import school.sptech.ui.theme.LaranjaEscuro
 import school.sptech.ui.theme.LaranjaOpacidade15
 import school.sptech.ui.theme.Preto
 import school.sptech.ui.theme.PretoOpacidade15
@@ -79,6 +81,7 @@ import school.sptech.ui.theme.RoxoNubank
 import school.sptech.ui.theme.Verde
 import school.sptech.ui.theme.VerdeOpacidade15
 import school.sptech.ui.theme.Vermelho
+import school.sptech.ui.theme.VermelhoLaranja
 import school.sptech.ui.theme.VermelhoOpacidade15
 import school.sptech.ui.theme.fontFamilyPoppins
 import school.sptech.ui.theme.letterSpacingPrincipal
@@ -621,9 +624,9 @@ fun CardDescricaoMovimentacao(
         }
 
         val corTexto = when (tipoCard) {
-            "Despesas" -> Laranja
-            "Agendamentos" -> Verde
-            else -> Amarelo
+            "Despesas" -> VermelhoLaranja
+            "Agendamentos" -> AzulClaro
+            else -> LaranjaEscuro
         }
 
         val isAgendamento by remember { mutableStateOf(tipoCard == "Agendamentos") }
@@ -851,7 +854,7 @@ fun CardDespesa(despesa: Despesa, onClickDespesa: () -> Unit) {
                     ) {
                         Text(
                             text = despesa.categoriaDespesaNome?.uppercase() ?: "",
-                            fontSize = 12.5.sp,
+                            fontSize = 11.5.sp,
                             color = Cinza,
                             fontWeight = FontWeight.Bold,
                         )
@@ -870,7 +873,7 @@ fun CardDespesa(despesa: Despesa, onClickDespesa: () -> Unit) {
                                 text = "Pago em ${despesa.dtPagamento?.let { formatarData(it) }}",
                                 //                text = despesa.dtPagamento ?: "",
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 10.sp,
+                                fontSize = 9.5.sp,
                                 fontFamily = fontFamilyPoppins,
                                 letterSpacing = letterSpacingSecundaria
                             )

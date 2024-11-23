@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,6 +30,7 @@ import school.sptech.ui.components.Chart
 import school.sptech.ui.components.SeletorData
 import school.sptech.ui.components.TopBarComSelecaoData
 import school.sptech.ui.theme.*
+import school.sptech.ui.viewModel.DashFinancasViewModel
 import school.sptech.ui.viewModel.DespesaViewModel
 import school.sptech.ui.viewModel.MovimentacoesViewModel
 import java.time.LocalDate
@@ -49,6 +51,7 @@ class TelaFinancas : ComponentActivity() {
 
 @Composable
 fun TelaFinancasScreen(
+    dashFinancasViewModel: DashFinancasViewModel = viewModel(),
     financasViewModel: MovimentacoesViewModel = viewModel(),
     despesaViewModel: DespesaViewModel = viewModel(),
     navController: NavController = rememberNavController()
@@ -75,6 +78,12 @@ fun TelaFinancasScreen(
     val idEmpresa = preferencesHelper.getIdEmpresa()
 
     LaunchedEffect(Unit) {
+        dashFinancasViewModel.getDadosDashPorMesAno(
+            empresaId = idEmpresa,
+            ano = anoSelecionado,
+            mes = getMonthInt(mesSelecionado)?.value ?: 0
+        )
+
         financasViewModel.getMovimentacoes(
             empresaId = idEmpresa,
             ano = anoSelecionado,
@@ -98,6 +107,12 @@ fun TelaFinancasScreen(
                 mesSelecionado = mes
                 anoSelecionado = ano
                 mostrarSeletorData = false
+
+                dashFinancasViewModel.getDadosDashPorMesAno(
+                    empresaId = idEmpresa,
+                    ano = anoSelecionado,
+                    mes = getMonthInt(mesSelecionado)?.value ?: 0
+                )
 
                 financasViewModel.getMovimentacoes(
                     empresaId = idEmpresa,
@@ -123,6 +138,7 @@ fun TelaFinancasScreen(
         faturamento = faturamento.value,
         comissoes = comissoes.value,
         movimentacoes = financasViewModel.movimentacoes,
+        viewModel = dashFinancasViewModel,
         navController = navController
     )
 
@@ -146,6 +162,7 @@ fun ConteudoTelaFinancas(
     faturamento: Double,
     comissoes: Double,
     movimentacoes: List<Movimentacoes>,
+    viewModel: DashFinancasViewModel,
     navController: NavController
 ) {
     Background()
@@ -167,7 +184,11 @@ fun ConteudoTelaFinancas(
             ResumoFinanceiro(receitas, despesasTotais, faturamento, comissoes)
         }
 
-        Chart()
+        Chart(
+            receitas = viewModel.receitas.map { it.valor ?: 0.0 }.toList(),
+            lucro = viewModel.lucros.map { it.valor ?: 0.0 }.toList(),
+            despesas = viewModel.despesas.map { it.valor ?: 0.0 }.toList()
+        )
 
         BoxMovimentacoes(movimentacoes = movimentacoes, onClickCard = {
             navController.navigate(Routes.InformacoesMovimentacao.route)

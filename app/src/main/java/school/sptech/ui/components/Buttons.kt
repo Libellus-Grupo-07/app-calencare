@@ -23,6 +23,7 @@ import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -45,6 +46,7 @@ import school.sptech.ui.theme.AzulOpacidade15
 import school.sptech.ui.theme.Branco
 import school.sptech.ui.theme.Cinza
 import school.sptech.ui.theme.CinzaOpacidade35
+import school.sptech.ui.theme.CinzaOpacidade50
 import school.sptech.ui.theme.CinzaOpacidade7
 import school.sptech.ui.theme.Laranja
 import school.sptech.ui.theme.LaranjaOpacidade15
@@ -219,11 +221,11 @@ fun ButtonBackground(
         shape = CircleShape,
         enabled = enabled,
         onClick = onClick,
-        colors = ButtonColors(
+        colors = ButtonDefaults.buttonColors(
             contentColor = corTexto,
             containerColor = cor,
-            disabledContentColor = Cinza,
-            disabledContainerColor = Branco
+            disabledContentColor = Branco,
+            disabledContainerColor = CinzaOpacidade50
         ),
         contentPadding = PaddingValues(
             horizontal = if(isSmallButton) 14.dp else 18.dp,

@@ -130,6 +130,7 @@ fun InputMedium(
     error: Boolean = false,
     isMultiline: Boolean = false,
     isNumericInput: Boolean = false,
+    isMediumInput: Boolean = false,
     isSmallInput: Boolean = false,
     tamanhoMinimo: Int? = null,
     campoObrigatorio: Boolean = true,
@@ -142,13 +143,13 @@ fun InputMedium(
     val shapeSize = if (isMultiline) 20.dp else 40.dp
     val textStyle = TextStyle(
         fontFamily = fontFamilyPoppins,
-        fontSize = if (isSmallInput) 11.5.sp else 13.5.sp,
+        fontSize = if (isSmallInput) 11.5.sp  else if(isMediumInput) 12.5.sp else 13.5.sp,
         letterSpacing = letterSpacingPrincipal,
         fontWeight = FontWeight.Medium,
         baselineShift = BaselineShift(0f),
         textIndent = TextIndent(
-            firstLine = if (isSmallInput) 2.sp else 8.sp,
-            restLine = if (isSmallInput) 2.sp else 8.sp
+            firstLine = if (isSmallInput) 2.sp else if(isMediumInput) 6.sp  else 8.sp,
+            restLine = if (isSmallInput) 2.sp else if(isSmallInput) 6.sp  else 8.sp
         )
     )
 
@@ -198,8 +199,8 @@ fun InputMedium(
             .fillMaxWidth()
             .let {
                 if (isMultiline) it.height(124.dp)
-                else if (!campoObrigatorio && isSmallInput) it.height(64.dp)
-                else if (isSmallInput) it.height(66.dp)
+                else if (!campoObrigatorio && (isSmallInput || isMediumInput)) it.height(64.dp)
+                else if (isSmallInput || isMediumInput) it.height(66.dp)
                 else it.height(70.dp)
             },
         shape = RoundedCornerShape(shapeSize),

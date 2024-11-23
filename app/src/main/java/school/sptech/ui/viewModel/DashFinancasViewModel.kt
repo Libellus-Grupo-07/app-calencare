@@ -16,12 +16,10 @@ import java.time.LocalDate
 
 class DashFinancasViewModel : ViewModel() {
     private val dashFinancasService: DashFinancasService
-    private val empresaId = preferencesHelper.getIdEmpresa()
+    var vetorDash = mutableStateListOf<List<DashFinancas>>()
     var receitas = mutableStateListOf<DashFinancas>()
     var despesas = mutableStateListOf<DashFinancas>()
     var lucros = mutableStateListOf<DashFinancas>()
-    var mes by mutableStateOf(LocalDate.now().monthValue)
-    var ano by mutableStateOf(LocalDate.now().year)
     var deuErro by mutableStateOf(false)
     var erro by mutableStateOf("")
 
@@ -29,13 +27,50 @@ class DashFinancasViewModel : ViewModel() {
         dashFinancasService = RetrofitService.getClientDashFinancas()
     }
 
-    fun getReceitasPorMesAno(){
+    fun getDadosDashPorMesAno(empresaId:Int, mes:Int, ano:Int){
+        GlobalScope.launch {
+            try {
+                val response = dashFinancasService.getDadosDashboard(
+                    empresaId = empresaId,
+                    ano = ano,
+                    mes = mes
+                )
+
+                if(response.isSuccessful){
+                    val receitasVetor = response.body()?.get(0) ?: listOf()
+                    receitas.clear()
+                    receitas.addAll(receitasVetor.toList())
+
+                    val lucrosVetor = response.body()?.get(1) ?: listOf()
+                    lucros.clear()
+                    lucros.addAll(lucrosVetor.toList())
+
+                    val despesasVetor = response.body()?.get(2) ?: listOf()
+                    despesas.clear()
+                    despesas.addAll(despesasVetor.toList())
+
+                    deuErro = false
+                    erro = "sucess"
+                } else {
+                    Log.e("api", response.errorBody().toString())
+                    deuErro = true
+                    erro = response.errorBody().toString()
+                }
+            } catch (ex: Exception){
+                Log.e("api", ex.message.toString())
+                deuErro = true
+                erro = ex.message.toString()
+            }
+        }
+    }
+
+    fun getReceitasPorMesAno(empresaId:Int, mes:Int, ano:Int){
         GlobalScope.launch {
             try {
                 val response = dashFinancasService.getReceitasPorMesAno(
                     empresaId = empresaId,
-                    ano = mes,
-                    mes = ano
+                    ano = ano,
+                    mes = mes
                 )
 
                 if(response.isSuccessful){
@@ -56,13 +91,13 @@ class DashFinancasViewModel : ViewModel() {
         }
     }
 
-    fun getDespesasPorMesAno(){
+    fun getDespesasPorMesAno(empresaId:Int, mes:Int, ano:Int){
         GlobalScope.launch {
             try {
                 val response = dashFinancasService.getDespesasPorMesAno(
                     empresaId = empresaId,
-                    ano = mes,
-                    mes = ano
+                    ano = ano,
+                    mes = mes
                 )
 
                 if(response.isSuccessful){
@@ -83,13 +118,13 @@ class DashFinancasViewModel : ViewModel() {
         }
     }
 
-    fun getLucrosPorMesAno(){
+    fun getLucrosPorMesAno(empresaId:Int, mes:Int, ano:Int){
         GlobalScope.launch {
             try {
                 val response = dashFinancasService.getLucrosPorMesAno(
                     empresaId = empresaId,
-                    ano = mes,
-                    mes = ano
+                    ano = ano,
+                    mes = mes
                 )
 
                 if(response.isSuccessful){

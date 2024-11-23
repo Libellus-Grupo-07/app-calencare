@@ -60,7 +60,7 @@ fun TelaInformacoesMovimentosScreen(
             Movimentacoes(
                 total = "1233.0",
                 data = "2024-12-12",
-                descricao = "Comissões"
+                descricao = "Agendamentos"
             )
         )
     }
