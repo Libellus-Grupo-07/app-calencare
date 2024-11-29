@@ -9,13 +9,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -23,12 +23,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.SearchBar
-import androidx.compose.material3.SearchBarColors
-import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -57,7 +53,6 @@ import school.sptech.ui.theme.RoxoNubank
 import school.sptech.ui.theme.fontFamilyPoppins
 import school.sptech.ui.theme.letterSpacingPrincipal
 import school.sptech.data.model.Funcionario
-import school.sptech.ui.theme.Branco
 
 @Composable
 fun TopBarInicio(
@@ -272,7 +267,13 @@ fun TopBarComSelecaoData(
         verticalAlignment = Alignment.CenterVertically
     ) {
         TituloLarge(titulo = titulo)
-        TextButton(onClick = aoClicarSeletorData) {
+        TextButton(
+            colors = ButtonDefaults.textButtonColors(
+                contentColor = Cinza,
+                containerColor = Color.Transparent
+            ),
+            onClick = aoClicarSeletorData
+        ) {
             Text(
                 text = "$mesSelecionado $anoSelecionado",
                 fontSize = 14.sp,
