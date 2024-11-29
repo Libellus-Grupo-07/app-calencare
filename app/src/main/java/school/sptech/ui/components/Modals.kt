@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -14,12 +15,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DatePicker
@@ -33,6 +40,7 @@ import androidx.compose.material3.FloatingActionButtonElevation
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
@@ -77,8 +85,13 @@ import school.sptech.ui.theme.letterSpacingPrincipal
 import school.sptech.ui.viewModel.EnderecoViewModel
 import school.sptech.ui.viewModel.ReporProdutoViewModel
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.ui.text.substring
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import school.sptech.ui.theme.CinzaOpacidade7
+import school.sptech.ui.theme.RoxoNubankOpacidade15
+import school.sptech.ui.theme.RoxoNubankOpacidade7
 
 
 @Composable
@@ -107,45 +120,94 @@ fun CustomMonthYearPickerDialog(
         "Novembro",
         "Dezembro"
     )
-    val anos = (2020..2100).toList()
+    val anos = (2001..2100).toList()
 
     AlertDialog(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 4.dp),
+            .fillMaxWidth(),
         onDismissRequest = onDismissRequest,
         title = {
+//            Row(
+//                modifier = Modifier.fillMaxWidth(),
+//                horizontalArrangement = Arrangement.SpaceBetween,
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                TituloLarge(titulo = "Selecione o Mês e Ano")
+//                IconButton(
+//                    modifier = Modifier.size(24.dp),
+//                    onClick = onDismissRequest
+//                )
+//                {
+//                    Icon(Icons.Filled.Close, contentDescription = "Fechar", tint = Preto)
+//                }
+//            }
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                TituloLarge(titulo = "Selecione o Mês e Ano")
-                IconButton(
-                    modifier = Modifier.size(24.dp),
-                    onClick = onDismissRequest
+                IconButton(onClick = {
+                    val index = anos.indexOf(ano)
+                    if (index > 0) {
+                        ano = anos[index - 1]
+                    } else {
+                        ano = anos.last()
+                    }
+                }) {
+                    Icon(
+                        Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                        contentDescription = "Escolher mês anterior",
+                        tint = Cinza,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+
+                Text(
+                    text = ano.toString(),
+                    fontFamily = fontFamilyPoppins,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = letterSpacingPrincipal,
+                    fontSize = 16.sp,
+                    color = Cinza
                 )
-                {
-                    Icon(Icons.Filled.Close, contentDescription = "Fechar", tint = Preto)
+
+                IconButton(onClick = {
+                    val index = anos.indexOf(ano)
+                    if (index < anos.size - 1) {
+                        ano = anos[index + 1]
+                    } else {
+                        ano = anos.first()
+                    }
+                }) {
+                    Icon(
+                        Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = "Escolher próximo mês",
+                        tint = Cinza
+                    )
                 }
             }
         },
         text = {
-            Column {
-                DropdownBox(
-                    mes,
-                    expandedMes,
-                    { expandedMes = true },
-                    { mes = it; expandedMes = false },
-                    meses
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                DropdownBox(
-                    ano.toString(),
-                    expandedAno,
-                    { expandedAno = true },
-                    { ano = it.toInt(); expandedAno = false },
-                    anos.map { it.toString() })
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                contentPadding = PaddingValues(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                items(meses.size){
+                    TextButton(
+                        contentPadding = PaddingValues(vertical = 20.dp),
+                        colors = ButtonDefaults.textButtonColors(
+                            containerColor = if (meses[it] == mes) RoxoNubankOpacidade7 else Color.Transparent,
+                            contentColor = if (meses[it] == mes) RoxoNubank else Cinza
+                        ),
+                        onClick = { mes = meses[it] }
+                    ) {
+                        TextoButtonLarge(texto = meses[it].substring(0, 3))
+                    }
+                }
             }
         },
         confirmButton = {

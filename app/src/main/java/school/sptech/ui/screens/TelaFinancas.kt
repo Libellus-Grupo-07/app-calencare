@@ -28,6 +28,7 @@ import school.sptech.ui.components.BoxMovimentacoes
 import school.sptech.ui.components.CardKpi
 import school.sptech.ui.components.Chart
 import school.sptech.ui.components.SeletorData
+import school.sptech.ui.components.TextoValorColorido
 import school.sptech.ui.components.TopBarComSelecaoData
 import school.sptech.ui.theme.*
 import school.sptech.ui.viewModel.DashFinancasViewModel
@@ -81,13 +82,11 @@ fun TelaFinancasScreen(
         idEmpresa = dataStoreRepository.getEmpresaId()
 
         dashFinancasViewModel.getDadosDashPorMesAno(
-            empresaId = idEmpresa,
             ano = anoSelecionado,
             mes = getMonthInt(mesSelecionado)?.value ?: 0
         )
 
         financasViewModel.getMovimentacoes(
-            empresaId = idEmpresa,
             ano = anoSelecionado,
             mes = getMonthInt(mesSelecionado)?.value ?: 0
         )
@@ -111,13 +110,11 @@ fun TelaFinancasScreen(
                 mostrarSeletorData = false
 
                 dashFinancasViewModel.getDadosDashPorMesAno(
-                    empresaId = idEmpresa,
                     ano = anoSelecionado,
                     mes = getMonthInt(mesSelecionado)?.value ?: 0
                 )
 
                 financasViewModel.getMovimentacoes(
-                    empresaId = idEmpresa,
                     ano = anoSelecionado,
                     mes = getMonthInt(mesSelecionado)?.value ?: 0
                 )

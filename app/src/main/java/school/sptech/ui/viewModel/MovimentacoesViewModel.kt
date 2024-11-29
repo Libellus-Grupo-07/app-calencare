@@ -8,24 +8,30 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import school.sptech.data.model.Movimentacoes
 import school.sptech.data.service.MovimentacoesService
+import school.sptech.dataStoreRepository
 import school.sptech.network.RetrofitService
 
 class MovimentacoesViewModel : ViewModel() {
     private val movimentacoesService:MovimentacoesService
+    private var empresaId:Int = 0
     var deuErro by mutableStateOf(false)
     var erro by mutableStateOf("")
     var movimentacoes = mutableListOf<Movimentacoes>()
 
     init {
         movimentacoesService = RetrofitService.getClientMovimentacoes()
+
+        GlobalScope.launch {
+            empresaId = dataStoreRepository.getEmpresaId()
+        }
     }
 
-    fun getMovimentacoes(empresaId: Int, mes: Int, ano: Int) : List<Movimentacoes> {
-        getMovimentacoesByMes(empresaId, mes, ano)
+    fun getMovimentacoes(mes: Int, ano: Int) : List<Movimentacoes> {
+        getMovimentacoesByMes(mes, ano)
         return movimentacoes
     }
 
-    private fun getMovimentacoesByMes(empresaId: Int, mes: Int, ano: Int) {
+    private fun getMovimentacoesByMes(mes: Int, ano: Int) {
         GlobalScope.launch {
             try {
                 val response = movimentacoesService.getMovimentacoes(empresaId, mes, ano)

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -22,8 +23,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.SearchBar
+import androidx.compose.material3.SearchBarColors
+import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -52,6 +57,7 @@ import school.sptech.ui.theme.RoxoNubank
 import school.sptech.ui.theme.fontFamilyPoppins
 import school.sptech.ui.theme.letterSpacingPrincipal
 import school.sptech.data.model.Funcionario
+import school.sptech.ui.theme.Branco
 
 @Composable
 fun TopBarInicio(
@@ -148,9 +154,19 @@ fun TopBarVoltar(navController: NavController, titulo: String) {
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBarSearch(onClickBack: () -> Unit, onClickAdd: () -> Unit, onClickFiltro: () -> Unit, modifier: Modifier = Modifier) {
-    var text by remember { mutableStateOf("") }
+fun TopBarSearch(
+    onClickBack: () -> Unit,
+    onClickAdd: () -> Unit,
+    onClickFiltro: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var textoPesquisa by remember { mutableStateOf("") }
+
+    var active by remember {
+        mutableStateOf(false)
+    }
 
     Row(
         modifier = modifier
@@ -165,10 +181,10 @@ fun TopBarSearch(onClickBack: () -> Unit, onClickAdd: () -> Unit, onClickFiltro:
             modifier = Modifier
                 .fillMaxWidth(0.6f)
                 .fillMaxHeight(0.069f),
-            value = text,
+            value = textoPesquisa,
             onValueChange = {
                 if (it.length < 20) {
-                    text = it
+                    textoPesquisa = it
                 }
             },
             leadingIcon = {
@@ -215,7 +231,7 @@ fun TopBarSearch(onClickBack: () -> Unit, onClickAdd: () -> Unit, onClickFiltro:
             modifier = modifier,
         ) {
             IconButton(
-                onClick =  onClickAdd,
+                onClick = onClickAdd,
                 colors = IconButtonDefaults.iconButtonColors(
                     contentColor = Preto
                 )
