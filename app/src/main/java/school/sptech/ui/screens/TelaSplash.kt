@@ -1,5 +1,6 @@
 package school.sptech.ui.screens
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -15,11 +16,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.datastore.core.DataStore
+import androidx.datastore.dataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import school.sptech.R
 import school.sptech.Routes
+import school.sptech.dataStoreRepository
 import school.sptech.navigation.NavBar
 import school.sptech.navigation.NavigationGraph
 import school.sptech.ui.theme.CalencareAppTheme
@@ -54,7 +64,7 @@ fun SplashScreen(
         visible = false // Inicia a animação de saída
         // O delay antes da navegação foi removido para que a tela de login apareça imediatamente após a animação
         navController.navigate(
-            if(userLogado) NavBar.Inicio.route else Routes.Login.route
+            if(dataStoreRepository.isLogado()) NavBar.Inicio.route else Routes.Login.route
         ) {
             popUpTo("splash") { inclusive = true }
         }

@@ -29,13 +29,14 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.delay
 import school.sptech.Routes
-import school.sptech.preferencesHelper
+import school.sptech.dataStoreRepository
 import school.sptech.ui.components.AlertError
 import school.sptech.ui.components.AlertSuccess
 import school.sptech.ui.components.Background
 import school.sptech.ui.components.BoxPerfil
 import school.sptech.ui.components.FormDadosEmpresa
 import school.sptech.ui.components.FormDadosPessoais
+import school.sptech.ui.components.LabelInput
 import school.sptech.ui.components.ModalConfirmarSair
 import school.sptech.ui.components.ModalEditarEndereco
 import school.sptech.ui.components.TopBarConta
@@ -69,10 +70,14 @@ fun TelaContaScreen(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
+    var idEmpresa = 0
+
     LaunchedEffect(Unit) {
-        usuarioViewModel.getFuncionario(preferencesHelper.getIdUsuario())
-        empresaViewModel.getEmpresa(preferencesHelper.getIdEmpresa())
-        enderecoViewModel.getEndereco(preferencesHelper.getIdEmpresa())
+        idEmpresa = dataStoreRepository.getEmpresaId()
+
+        usuarioViewModel.getFuncionario(dataStoreRepository.getUserId())
+        empresaViewModel.getEmpresa(dataStoreRepository.getEmpresaId())
+        enderecoViewModel.getEndereco(dataStoreRepository.getEmpresaId())
     }
 
     val usuario = usuarioViewModel.usuario
@@ -153,8 +158,8 @@ fun TelaContaScreen(
         if (exibirModalSair) {
             ModalConfirmarSair(
                 onConfirm = {
-                    preferencesHelper.saveIdEmpresa(-1)
-                    preferencesHelper.saveIdUsuario(-1)
+                    dataStoreRepository.logout()
+
                     exibirModalSair = false
                     navController.navigate(Routes.Login.route) {
                         popUpTo(0) {
@@ -173,7 +178,7 @@ fun TelaContaScreen(
             ModalEditarEndereco(
                 onDismiss = {
                     exibirModalEndereco = false
-                    enderecoViewModel.getEndereco(preferencesHelper.getIdEmpresa())
+                    enderecoViewModel.getEndereco(idEmpresa)
                 },
                 onConfirm = {
                     enderecoViewModel.atualizarEndereco()

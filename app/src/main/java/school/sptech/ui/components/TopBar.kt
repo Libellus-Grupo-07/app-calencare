@@ -86,7 +86,7 @@ fun TopBarInicio(
 
             Column {
                 Text(
-                    text = usuario.nome ?: "Nome do User",
+                    text = usuario.nome ?: "",
                     //text = "Nome do User",
                     fontWeight = FontWeight.ExtraBold,
                     fontSize = 14.sp,
@@ -98,7 +98,7 @@ fun TopBarInicio(
                 Spacer(modifier = modifier.size(4.dp))
 
                 Text(
-                    text = usuario.empresa?.razaoSocial ?: "Nome da Empresa",
+                    text = usuario.empresa?.razaoSocial ?: "",
 //                    text = "Nome da Empresa",
                     fontWeight = FontWeight.Bold,
                     fontSize = 11.5.sp,

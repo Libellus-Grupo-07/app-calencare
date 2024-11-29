@@ -9,7 +9,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import school.sptech.data.service.MovimentacaoValidadeService
 import school.sptech.network.RetrofitService
-import school.sptech.preferencesHelper
 
 class MovimentacaoValidadeViewModel : ViewModel() {
     private val movimentacaoValidadeService:MovimentacaoValidadeService

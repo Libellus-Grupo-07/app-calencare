@@ -9,8 +9,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import school.sptech.data.model.Empresa
 import school.sptech.data.service.EmpresaService
+import school.sptech.dataStoreRepository
 import school.sptech.network.RetrofitService
-import school.sptech.preferencesHelper
 
 class EmpresaViewModel : ViewModel() {
     private val empresaService: EmpresaService
@@ -47,11 +47,12 @@ class EmpresaViewModel : ViewModel() {
     fun atualizarEmpresa() {
         GlobalScope.launch {
             try {
-                var response = empresaService.atualizarEmpresa(preferencesHelper.getIdEmpresa(), empresa)
+                var response = empresaService.atualizarEmpresa(dataStoreRepository.getEmpresaId(), empresa)
 
                 if(response.isSuccessful){
                     deuErro = false
                     erro = "Empresa atualizada com sucesso!"
+                    dataStoreRepository.saveUser(dataStoreRepository.getUser().copy(nomeEmpresa = empresa.razaoSocial!!))
                 } else {
                     Log.e("api", "Erro ao tentar atualizar empresa ${response.errorBody()?.string()}")
                     deuErro = true

@@ -14,8 +14,8 @@ import school.sptech.data.model.Produto
 import school.sptech.data.model.Validade
 import school.sptech.data.service.CategoriaProdutoService
 import school.sptech.data.service.ProdutoService
+import school.sptech.dataStoreRepository
 import school.sptech.network.RetrofitService
-import school.sptech.preferencesHelper
 
 class ProdutoViewModel : ViewModel() {
     private val produtoService: ProdutoService;
@@ -24,8 +24,8 @@ class ProdutoViewModel : ViewModel() {
     private var empresaId by mutableStateOf(0)
     var produtos = mutableStateListOf<Produto>()
     var categoriasProduto by mutableStateOf(listOf<CategoriaProduto>())
-    var produto by mutableStateOf(Produto(empresaId = preferencesHelper.getIdEmpresa()))
-    private var _produtoAtual by mutableStateOf(Produto(empresaId = preferencesHelper.getIdEmpresa()))
+    var produto by mutableStateOf(Produto())
+    private var _produtoAtual by mutableStateOf(Produto())
     var categoriaProduto by mutableStateOf(CategoriaProduto())
     var validade by mutableStateOf(Validade())
     var filtro by mutableStateOf(FiltroEstoque())
@@ -39,13 +39,13 @@ class ProdutoViewModel : ViewModel() {
     }
 
     fun getListaProdutos(): List<Produto> {
-        getProdutos()
+        getProdutosByEmpresaId(empresaId)
         return produtos.toList()
     }
 
     fun getListaProdutosEstoqueBaixo(): List<Produto> {
         if (produtos.isEmpty()) {
-            getProdutos()
+            getProdutosByEmpresaId(empresaId)
         }
 
         return produtos.filter { it.qntdTotalEstoque!! < 10 }.toList()
@@ -112,15 +112,15 @@ class ProdutoViewModel : ViewModel() {
 
     fun getProdutos(empresaId: Int): List<Produto> {
         this.empresaId = empresaId
-        getProdutos()
+        getProdutosByEmpresaId(empresaId)
         return produtos.toList()
     }
 
-    private fun getProdutos() {
+    private fun getProdutosByEmpresaId(empresaId: Int) {
         GlobalScope.launch {
             try {
                 val response =
-                    produtoService.getAllProdutosByEmpresaId(preferencesHelper.getIdEmpresa())
+                    produtoService.getAllProdutosByEmpresaId(empresaId)
                 mensagem = response.errorBody()?.string() ?: "Erro desconhecido"
 
                 if (response.isSuccessful) {
@@ -148,6 +148,7 @@ class ProdutoViewModel : ViewModel() {
     fun adicionarProduto() {
         GlobalScope.launch {
             try {
+                produto.empresaId = dataStoreRepository.getEmpresaId()
                 produto.categoriaProdutoId =
                     categoriasProduto.find({ it.nome == categoriaProduto.nome })?.id
                 val response = produtoService.adicionarProduto(produto)

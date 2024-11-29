@@ -28,8 +28,8 @@ import kotlinx.coroutines.launch
 import school.sptech.R
 import school.sptech.Routes
 import school.sptech.data.model.Produto
+import school.sptech.dataStoreRepository
 import school.sptech.navigation.NavBar
-import school.sptech.preferencesHelper
 import school.sptech.ui.components.AlertError
 import school.sptech.ui.components.AlertSuccess
 import school.sptech.ui.components.Background
@@ -72,10 +72,10 @@ fun TelaInformacoesProdutoScreen(
     reporProdutoViewModel: ReporProdutoViewModel = viewModel(),
     navController: NavHostController,
     idProduto: Int = 0,
-    idEmpresa: Int = preferencesHelper.getIdEmpresa()
 ) {
 
     LaunchedEffect(Unit) {
+        val idEmpresa = dataStoreRepository.getEmpresaId()
         produtoViewModel.getCategoriasProduto()
         produtoViewModel.getProdutoById(empresaId = idEmpresa, produtoId = idProduto)
         validadeViewModel.getValidades(idProduto)

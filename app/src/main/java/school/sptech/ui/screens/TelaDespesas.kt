@@ -28,7 +28,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import school.sptech.Routes
 import school.sptech.data.model.Despesa
-import school.sptech.preferencesHelper
+import school.sptech.dataStoreRepository
 import school.sptech.ui.components.Background
 import school.sptech.ui.components.CardDespesa
 import school.sptech.ui.components.TextoNenhumItemCadastrado
@@ -59,10 +59,12 @@ fun TelaDespesasScreen(
     despesaViewModel: DespesaViewModel = viewModel(),
     modifier: Modifier = Modifier
 ) {
-    val idEmpresa = preferencesHelper.getIdEmpresa()
+    var idEmpresa = 0
     var exibirFiltro by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
+        idEmpresa = dataStoreRepository.getEmpresaId()
+
         despesaViewModel.getDespesas(
             empresaId = idEmpresa,
         )

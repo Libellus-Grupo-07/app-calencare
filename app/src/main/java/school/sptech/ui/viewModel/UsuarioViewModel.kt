@@ -29,6 +29,7 @@ class UsuarioViewModel : ViewModel() {
                 if (response.isSuccessful && response.body() != null) {
                     val usuarioResponse = response.body()!!
                     usuario.id = usuarioResponse.userId
+                    usuario.nome = usuarioResponse.nome
                     deuErro = false
                     erro = "sucess"
                 } else {

@@ -13,7 +13,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -27,13 +26,11 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.delay
 import school.sptech.R
 import school.sptech.Routes
-import school.sptech.data.model.Produto
-import school.sptech.preferencesHelper
+import school.sptech.dataStoreRepository
 import school.sptech.ui.components.AlertError
 import school.sptech.ui.components.AlertSuccess
 import school.sptech.ui.components.Background
 import school.sptech.ui.components.BoxProdutos
-import school.sptech.ui.components.LabelInput
 import school.sptech.ui.components.TopBarSearch
 import school.sptech.ui.viewModel.ProdutoViewModel
 import school.sptech.ui.viewModel.ValidadeViewModel
@@ -56,7 +53,9 @@ fun TelaEstoqueScreen(
     navController: NavController
 ) {
     LaunchedEffect("produtos") {
-        produtoViewModel.getProdutos(preferencesHelper.getIdEmpresa())
+        val idEmpresa = dataStoreRepository.getEmpresaId()
+
+        produtoViewModel.getProdutos(idEmpresa)
         produtoViewModel.getCategoriasProduto()
     }
 
@@ -119,7 +118,7 @@ fun TelaEstoqueScreen(
 
                 LaunchedEffect("sucess") {
                     validadeViewModel.atualizarQtdEstoqueValidades()
-                    produtoViewModel.getProdutos(preferencesHelper.getIdEmpresa())
+                    produtoViewModel.getProdutos(dataStoreRepository.getEmpresaId())
                     delay(6000)
                     validadeViewModel.erro = ""
                 }

@@ -7,7 +7,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import school.sptech.Routes
-import school.sptech.helper.PreferencesHelper
 import school.sptech.ui.screens.TelaContaScreen
 import school.sptech.ui.screens.LoginScreen
 import school.sptech.ui.screens.SplashScreen
@@ -24,7 +23,6 @@ import school.sptech.ui.screens.TelaNotificacoesScreen
 
 @Composable
 fun NavigationGraph(
-    preferencesHelper: PreferencesHelper? = null,
     navController: NavHostController,
     onBottomBarVisibleChanged: (Boolean) -> Unit,
 ) {
@@ -32,7 +30,6 @@ fun NavigationGraph(
         composable(Routes.Splash.route) {
             onBottomBarVisibleChanged(false)
             SplashScreen(
-                userLogado = preferencesHelper?.getIdUsuario() != -1,
                 navController = navController
             )
         }

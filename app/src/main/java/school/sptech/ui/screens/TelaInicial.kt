@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -19,9 +20,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import school.sptech.R
-import school.sptech.preferencesHelper
+import school.sptech.data.model.Empresa
+import school.sptech.data.model.Funcionario
+import school.sptech.dataStoreRepository
+import school.sptech.di.UserSession
 import school.sptech.ui.components.AlertError
 import school.sptech.ui.components.AlertSuccess
 import school.sptech.ui.components.Background
@@ -56,12 +62,37 @@ fun TelaInicio(
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(Unit) {
-        usuarioViewModel.getFuncionario(preferencesHelper.getIdUsuario())
+        val idUser = dataStoreRepository.getUser().idUser
+
+        GlobalScope.launch {
+            if (!dataStoreRepository.alreadySaved()) {
+                usuarioViewModel.getFuncionario(idUser)
+
+                dataStoreRepository.saveUser(
+                    UserSession(
+                        idUser = idUser,
+                        idEmpresa = usuarioViewModel.usuario.empresa?.id ?: 0,
+                        nome = usuarioViewModel.usuario.nome ?: "",
+                        nomeEmpresa = usuarioViewModel.usuario.empresa?.razaoSocial ?: ""
+                    )
+                )
+            } else {
+                usuarioViewModel.usuario = Funcionario(
+                    id = dataStoreRepository.getUser().idUser,
+                    nome = dataStoreRepository.getUser().nome,
+                    empresa = Empresa(
+                        id = dataStoreRepository.getUser().idEmpresa,
+                        razaoSocial = dataStoreRepository.getUser().nomeEmpresa
+                    )
+                )
+            }
+
+            produtoViewModel.getProdutos(dataStoreRepository.getUser().idEmpresa)
+        }
     }
 
     val usuario = usuarioViewModel.usuario
-    var idEmpresa = usuarioViewModel.usuario.empresa?.id ?: preferencesHelper.getIdEmpresa()
-    preferencesHelper.saveIdEmpresa(idEmpresa)
+    var idEmpresa = usuarioViewModel.usuario.empresa?.id ?: 0
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Background()
@@ -74,10 +105,18 @@ fun TelaInicio(
                 Spacer(modifier = Modifier.size(21.dp))
 
                 BoxKpisEstoque(
-                    qtdProdutosEstoqueAlto = movimentacaoValidadeViewModel.getQuantidadeProdutosEstoqueAlto(idEmpresa),
-                    qtdProdutosSemEstoque = movimentacaoValidadeViewModel.getQuantidadeProdutosSemEstoque(idEmpresa),
-                    qtdProdutosRepostosNoDia = movimentacaoValidadeViewModel.getQuantidadeProdutosRepostosNoDia(idEmpresa),
-                    qtdProdutosEstoqueBaixo = movimentacaoValidadeViewModel.getQuantidadeProdutosEstoqueBaixo(idEmpresa)
+                    qtdProdutosEstoqueAlto = movimentacaoValidadeViewModel.getQuantidadeProdutosEstoqueAlto(
+                        idEmpresa
+                    ),
+                    qtdProdutosSemEstoque = movimentacaoValidadeViewModel.getQuantidadeProdutosSemEstoque(
+                        idEmpresa
+                    ),
+                    qtdProdutosRepostosNoDia = movimentacaoValidadeViewModel.getQuantidadeProdutosRepostosNoDia(
+                        idEmpresa
+                    ),
+                    qtdProdutosEstoqueBaixo = movimentacaoValidadeViewModel.getQuantidadeProdutosEstoqueBaixo(
+                        idEmpresa
+                    )
                 )
 
                 Spacer(modifier = Modifier.size(21.dp))
@@ -102,11 +141,11 @@ fun TelaInicio(
         }
     }
 
-    if(!validadeViewModel.deuErro && validadeViewModel.erro.isNotEmpty()){
+    if (!validadeViewModel.deuErro && validadeViewModel.erro.isNotEmpty()) {
         AlertSuccess(msg = "Estoque atualizado com sucesso!")
 
         LaunchedEffect("sucesso") {
-            produtoViewModel.getProdutos(preferencesHelper.getIdEmpresa())
+            produtoViewModel.getProdutos(idEmpresa)
             delay(6000)
             validadeViewModel.erro = ""
         }
