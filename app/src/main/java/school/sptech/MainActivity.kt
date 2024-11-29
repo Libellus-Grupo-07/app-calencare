@@ -1,5 +1,6 @@
 package school.sptech
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -19,20 +20,24 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.navigation.compose.rememberNavController
-import school.sptech.helper.PreferencesHelper
+import school.sptech.data.repository.DataStoreRepository
 import school.sptech.ui.components.BottomBar
 import school.sptech.navigation.NavigationGraph
 import school.sptech.network.RetrofitService
 import school.sptech.ui.theme.BrancoFundo
 import school.sptech.ui.theme.CalencareAppTheme
 
-lateinit var preferencesHelper: PreferencesHelper
+lateinit var dataStoreRepository: DataStoreRepository
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "session")
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        preferencesHelper = PreferencesHelper(this)
+        dataStoreRepository = DataStoreRepository(this)
 
         enableEdgeToEdge()
         setContent {
@@ -62,7 +67,6 @@ class MainActivity : ComponentActivity() {
                                 bottom = innerPadding.calculateBottomPadding(),
                         )) {
                         NavigationGraph(
-                            preferencesHelper = preferencesHelper,
                             navController = navController,
                             onBottomBarVisibleChanged = { isVisible ->
                                 buttonVisible = isVisible

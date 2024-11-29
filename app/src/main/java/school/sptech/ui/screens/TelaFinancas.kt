@@ -21,7 +21,7 @@ import kotlinx.coroutines.delay
 import school.sptech.R
 import school.sptech.Routes
 import school.sptech.data.model.Movimentacoes
-import school.sptech.preferencesHelper
+import school.sptech.dataStoreRepository
 import school.sptech.ui.components.AlertError
 import school.sptech.ui.components.Background
 import school.sptech.ui.components.BoxMovimentacoes
@@ -75,9 +75,11 @@ fun TelaFinancasScreen(
 
     var anoSelecionado by remember { mutableStateOf(LocalDate.now().year) }
     var mostrarSeletorData by remember { mutableStateOf(false) }
-    val idEmpresa = preferencesHelper.getIdEmpresa()
+    var idEmpresa = 0
 
     LaunchedEffect(Unit) {
+        idEmpresa = dataStoreRepository.getEmpresaId()
+
         dashFinancasViewModel.getDadosDashPorMesAno(
             empresaId = idEmpresa,
             ano = anoSelecionado,

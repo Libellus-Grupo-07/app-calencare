@@ -41,6 +41,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     composeOptions {
@@ -82,13 +83,11 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
 
     // DataStore
-    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("androidx.datastore:datastore-preferences:1.1.0")
+    implementation("androidx.datastore:datastore-core:1.1.0")
 
-    // Room - Banco de Dados Local
-    implementation("androidx.room:room-runtime:2.4.0")
-    implementation("androidx.room:room-ktx:2.4.0")
-//    implementation(libs.androidx.compose.material3)
-//    kapt("androidx.room:room-compiler:2.4.0")
+    // Koin
+    implementation("io.insert-koin:koin-android:4.0.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

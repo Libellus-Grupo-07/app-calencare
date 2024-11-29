@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name=".CalencareApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -19,12 +20,6 @@
             android:name=".ui.screens.TelaInformacoesDespesa"
             android:exported="false"
             android:label="@string/title_activity_tela_editar_despesa"
-            android:theme="@style/Theme.CalencareApp" />
-        <activity
-            android:name=".ui.screens.Dashboard"
-            android:exported="false"
-            android:label="@string/title_activity_dashboard"
-            android:screenOrientation="portrait"
             android:theme="@style/Theme.CalencareApp" />
         <activity
             android:name=".ui.screens.TelaInformacoesMovimentos"
@@ -55,12 +50,7 @@
             android:exported="false"
             android:label="@string/title_activity_conta"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.CalencareApp" /> 
-        <!-- activity -->
-        <!-- android:name=".NavGraph" -->
-        <!-- android:exported="false" -->
-        <!-- android:label="@string/title_activity_nav_graph" -->
-        <!-- android:theme="@style/Theme.CalencareApp" /> -->
+            android:theme="@style/Theme.CalencareApp" />
         <activity
             android:name=".ui.screens.TelaFinancas"
             android:exported="true"

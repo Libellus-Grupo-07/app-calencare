@@ -17,8 +17,8 @@ import school.sptech.data.model.Despesa
 import school.sptech.data.model.FiltroDespesa
 import school.sptech.data.service.CategoriaDespesaService
 import school.sptech.data.service.DespesaService
+import school.sptech.dataStoreRepository
 import school.sptech.network.RetrofitService
-import school.sptech.preferencesHelper
 import transformarEmLocalDateTime
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -117,7 +117,7 @@ class DespesaViewModel : ViewModel() {
                     observacao = despesa.observacao,
                     valor = formatarDoubleBd(despesa.valor ?: "0,00"),
                     formaPagamento = despesa.formaPagamento,
-                    empresaId = preferencesHelper.getIdEmpresa(),
+                    empresaId = dataStoreRepository.getEmpresaId(),
                     categoriaDespesaId = listaCategoriasDespesa.find {
                         it.nome.equals(despesa.categoriaDespesaNome)
                     }?.id,
@@ -163,7 +163,7 @@ class DespesaViewModel : ViewModel() {
         GlobalScope.launch {
             try {
                 val response = despesaService.getTotalDespesasByEmpresaIdAndMesAndAno(
-                    empresaId = preferencesHelper.getIdEmpresa(),
+                    empresaId = dataStoreRepository.getEmpresaId(),
                     mes = mes,
                     ano = ano
                 )
@@ -221,7 +221,7 @@ class DespesaViewModel : ViewModel() {
         GlobalScope.launch {
             try {
                 val response = despesaService.getDespesaById(
-                    empresaId = preferencesHelper.getIdEmpresa(),
+                    empresaId = dataStoreRepository.getEmpresaId(),
                     despesaId = despesaId
                 )
 
@@ -282,7 +282,7 @@ class DespesaViewModel : ViewModel() {
         GlobalScope.launch {
             try {
                 val response = despesaService.deleteDespesa(
-                    empresaId = preferencesHelper.getIdEmpresa(),
+                    empresaId = dataStoreRepository.getEmpresaId(),
                     despesaId = despesa.id ?: 0
                 )
 

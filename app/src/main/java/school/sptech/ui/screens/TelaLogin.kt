@@ -1,5 +1,6 @@
 package school.sptech.ui.screens
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -52,15 +53,12 @@ import school.sptech.R
 import school.sptech.navigation.NavBar
 import school.sptech.ui.components.InputIcon
 import school.sptech.ui.components.TextoButtonExtraLarge
-import school.sptech.ui.theme.Cinza
-import school.sptech.ui.theme.fontFamilyPoppins
-import school.sptech.ui.theme.letterSpacingPrincipal
 import school.sptech.ui.viewModel.UsuarioViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import school.sptech.data.model.Funcionario
-import school.sptech.preferencesHelper
+import school.sptech.dataStoreRepository
+import school.sptech.di.UserSession
 import school.sptech.ui.components.AlertError
 
 class TelaLogin : ComponentActivity() {
@@ -85,11 +83,10 @@ fun LoginScreen(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
+    val scope = rememberCoroutineScope()
     var emailPreenchido by remember { mutableStateOf(true) }
     var senhaPreenchida by remember { mutableStateOf(true) }
     var passwordVisibility by remember { mutableStateOf(false) }
-    var deuRuim by remember { mutableStateOf(viewModel.deuErro) }
-    var msg by remember { mutableStateOf("") }
 
     Box(
         modifier = Modifier
@@ -207,9 +204,13 @@ fun LoginScreen(
                         viewModel.logar()
 
                         if (!viewModel.deuErro && viewModel.erro.isNotEmpty()) {
-                            preferencesHelper.saveIdUsuario(
-                                viewModel.usuario.id!!
-                            )
+                            scope.launch {
+                                dataStoreRepository.saveUser(UserSession(
+                                    idUser = viewModel.usuario.id!!,
+                                    nome = viewModel.usuario.nome!!,
+                                    logado = true
+                                ))
+                            }
                             navController.navigate(NavBar.Inicio.route)
                         }
                     }

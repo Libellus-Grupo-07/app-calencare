@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -119,7 +120,7 @@ fun ChartLine(
                         //firstGradientFillColor = Azul.copy(alpha = .5f),
                         //secondGradientFillColor = Color.Transparent,
                         strokeAnimationSpec = tween(1000, easing = EaseInOutCubic),
-                        gradientAnimationDelay = 500,
+                        //gradientAnimationDelay = 500,
                         drawStyle = DrawStyle.Stroke(width = 3.5.dp),
                         dotProperties = DotProperties(
                             enabled = true,
@@ -198,7 +199,7 @@ fun ChartLine(
                     )
                 ),
                 labelHelperProperties = LabelHelperProperties(
-                    enabled = false
+                    enabled = false,
                 ),
                 gridProperties = GridProperties(
                     enabled = true,
@@ -219,7 +220,7 @@ fun ChartLine(
                         letterSpacing = letterSpacingPrincipal,
                         color = Branco
                     ),
-                    contentBuilder = { it ->
+                    contentBuilder = {
                         formatarValorMonetario(it.toFloat())
                     }
                 )
