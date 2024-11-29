@@ -38,6 +38,7 @@ import school.sptech.ui.theme.RoxoNubankOpacidade15
 import school.sptech.ui.theme.Vermelho
 import school.sptech.ui.theme.fontFamilyPoppins
 import school.sptech.ui.theme.letterSpacingPrincipal
+import school.sptech.ui.theme.letterSpacingSecundaria
 
 @Composable
 fun SeletorData(
@@ -105,8 +106,9 @@ fun SelectableDatesRow(
                         text = "Nenhuma data de validade disponível",
                         color = Cinza,
                         fontFamily = fontFamilyPoppins,
-                        letterSpacing = letterSpacingPrincipal,
-                        fontSize = 10.5.sp,
+                        letterSpacing = letterSpacingSecundaria,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Medium,
                         textAlign = TextAlign.Center
                     )
                 }
