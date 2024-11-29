@@ -68,6 +68,7 @@ fun TelaInicio(
             if (!dataStoreRepository.alreadySaved()) {
                 usuarioViewModel.getFuncionario(idUser)
 
+                delay(1000)
                 dataStoreRepository.saveUser(
                     UserSession(
                         idUser = idUser,
@@ -81,7 +82,7 @@ fun TelaInicio(
                     id = dataStoreRepository.getUser().idUser,
                     nome = dataStoreRepository.getUser().nome,
                     empresa = Empresa(
-                        id = dataStoreRepository.getUser().idEmpresa,
+                        id = dataStoreRepository.getEmpresaId(),
                         razaoSocial = dataStoreRepository.getUser().nomeEmpresa
                     )
                 )
