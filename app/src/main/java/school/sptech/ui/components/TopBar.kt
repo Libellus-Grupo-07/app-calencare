@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -148,9 +149,19 @@ fun TopBarVoltar(navController: NavController, titulo: String) {
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBarSearch(onClickBack: () -> Unit, onClickAdd: () -> Unit, onClickFiltro: () -> Unit, modifier: Modifier = Modifier) {
-    var text by remember { mutableStateOf("") }
+fun TopBarSearch(
+    onClickBack: () -> Unit,
+    onClickAdd: () -> Unit,
+    onClickFiltro: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var textoPesquisa by remember { mutableStateOf("") }
+
+    var active by remember {
+        mutableStateOf(false)
+    }
 
     Row(
         modifier = modifier
@@ -165,10 +176,10 @@ fun TopBarSearch(onClickBack: () -> Unit, onClickAdd: () -> Unit, onClickFiltro:
             modifier = Modifier
                 .fillMaxWidth(0.6f)
                 .fillMaxHeight(0.069f),
-            value = text,
+            value = textoPesquisa,
             onValueChange = {
                 if (it.length < 20) {
-                    text = it
+                    textoPesquisa = it
                 }
             },
             leadingIcon = {
@@ -215,7 +226,7 @@ fun TopBarSearch(onClickBack: () -> Unit, onClickAdd: () -> Unit, onClickFiltro:
             modifier = modifier,
         ) {
             IconButton(
-                onClick =  onClickAdd,
+                onClick = onClickAdd,
                 colors = IconButtonDefaults.iconButtonColors(
                     contentColor = Preto
                 )
@@ -256,7 +267,13 @@ fun TopBarComSelecaoData(
         verticalAlignment = Alignment.CenterVertically
     ) {
         TituloLarge(titulo = titulo)
-        TextButton(onClick = aoClicarSeletorData) {
+        TextButton(
+            colors = ButtonDefaults.textButtonColors(
+                contentColor = Cinza,
+                containerColor = Color.Transparent
+            ),
+            onClick = aoClicarSeletorData
+        ) {
             Text(
                 text = "$mesSelecionado $anoSelecionado",
                 fontSize = 14.sp,

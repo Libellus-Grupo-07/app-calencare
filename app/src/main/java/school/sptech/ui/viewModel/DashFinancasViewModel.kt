@@ -10,10 +10,12 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import school.sptech.data.model.DashFinancas
 import school.sptech.data.service.DashFinancasService
+import school.sptech.dataStoreRepository
 import school.sptech.network.RetrofitService
 
 class DashFinancasViewModel : ViewModel() {
     private val dashFinancasService: DashFinancasService
+    private var empresaId:Int = 0
     var vetorDash = mutableStateListOf<List<DashFinancas>>()
     var receitas = mutableStateListOf<DashFinancas>()
     var despesas = mutableStateListOf<DashFinancas>()
@@ -23,9 +25,13 @@ class DashFinancasViewModel : ViewModel() {
 
     init {
         dashFinancasService = RetrofitService.getClientDashFinancas()
+
+        GlobalScope.launch {
+            empresaId = dataStoreRepository.getEmpresaId()
+        }
     }
 
-    fun getDadosDashPorMesAno(empresaId:Int, mes:Int, ano:Int){
+    fun getDadosDashPorMesAno(mes:Int, ano:Int){
         GlobalScope.launch {
             try {
                 val response = dashFinancasService.getDadosDashboard(
@@ -62,7 +68,7 @@ class DashFinancasViewModel : ViewModel() {
         }
     }
 
-    fun getReceitasPorMesAno(empresaId:Int, mes:Int, ano:Int){
+    fun getReceitasPorMesAno(mes:Int, ano:Int){
         GlobalScope.launch {
             try {
                 val response = dashFinancasService.getReceitasPorMesAno(
@@ -89,7 +95,7 @@ class DashFinancasViewModel : ViewModel() {
         }
     }
 
-    fun getDespesasPorMesAno(empresaId:Int, mes:Int, ano:Int){
+    fun getDespesasPorMesAno(mes:Int, ano:Int){
         GlobalScope.launch {
             try {
                 val response = dashFinancasService.getDespesasPorMesAno(
@@ -116,7 +122,7 @@ class DashFinancasViewModel : ViewModel() {
         }
     }
 
-    fun getLucrosPorMesAno(empresaId:Int, mes:Int, ano:Int){
+    fun getLucrosPorMesAno( mes:Int, ano:Int){
         GlobalScope.launch {
             try {
                 val response = dashFinancasService.getLucrosPorMesAno(
