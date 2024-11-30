@@ -7,9 +7,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import formatarData
+import formatarDataBd
 import formatarDataDatePicker
 import formatarDecimal
 import formatarDoubleBd
+import getLongDate
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import school.sptech.data.model.CategoriaDespesa
@@ -39,8 +41,7 @@ class DespesaViewModel : ViewModel() {
     var deuErro by mutableStateOf(false)
     var erro by mutableStateOf("")
 
-    private var mes by mutableStateOf(LocalDate.now().monthValue)
-    private var ano by mutableStateOf(LocalDate.now().year)
+    var data by mutableStateOf(formatarDataBd(LocalDate.now()))
 
     init {
         despesaService = RetrofitService.getClientDespesa()
@@ -78,17 +79,44 @@ class DespesaViewModel : ViewModel() {
     }
 
     fun getDespesas(empresaId: Int): List<Despesa> {
-        getDespesasByMesAndAno(empresaId)
+        getDespesasByEmpresaId(empresaId)
         return listaDespesas
     }
 
-    private fun getDespesasByMesAndAno(empresaId: Int) {
+    private fun getDespesasByEmpresaId(empresaId: Int) {
         GlobalScope.launch {
             try {
-                val response = despesaService.getAllDespesasByEmpresaIdAndMesAndAno(
+                val response = despesaService.getAllDespesas(empresaId)
+
+                if (response.isSuccessful) {
+                    listaDespesas.clear()
+                    listaDespesas.addAll(response.body() ?: listOf())
+                    deuErro = false
+                    erro = ""
+                } else {
+                    Log.e("api", "Erro ao buscar despesas => ${response.errorBody()?.string()}")
+                    deuErro = true
+                    erro = response.errorBody()?.string() ?: "Erro desconhecido"
+                }
+            } catch (ex: Exception) {
+                Log.e("api", "Erro ao buscar despesas => ${ex.message}")
+                deuErro = true
+                erro = ex.message ?: "Erro desconhecido"
+            }
+        }
+    }
+
+    fun getDespesasPorData(empresaId: Int): List<Despesa> {
+        getDespesasByData(empresaId)
+        return listaDespesas
+    }
+
+    private fun getDespesasByData(empresaId: Int) {
+        GlobalScope.launch {
+            try {
+                val response = despesaService.getAllDespesasByEmpresaIdAndData(
                     empresaId = empresaId,
-                    mes = mes,
-                    ano = ano
+                    data = data
                 )
 
                 if (response.isSuccessful) {
@@ -159,7 +187,7 @@ class DespesaViewModel : ViewModel() {
         return totalDespesas
     }
 
-    fun getTotalDespesasByMes(mes: Int, ano: Int) {
+    private fun getTotalDespesasByMes(mes: Int, ano: Int) {
         GlobalScope.launch {
             try {
                 val response = despesaService.getTotalDespesasByEmpresaIdAndMesAndAno(
@@ -203,7 +231,9 @@ class DespesaViewModel : ViewModel() {
             ))
                     && (filtro.formasPagamento.isEmpty() || filtro.formasPagamento.contains(it.formaPagamento))
                     && (it.valor?.toDoubleOrNull() ?: 0.0 >= filtro.valorMinimo.div(100))
-                    && (filtro.valorMaximo == 0.0 || it.valor?.toDoubleOrNull() ?: 0.0 <= filtro.valorMaximo.div(100))
+                    && (filtro.valorMaximo == 0.0 || it.valor?.toDoubleOrNull() ?: 0.0 <= filtro.valorMaximo.div(
+                100
+            ))
         }
 
         return despesasFiltradas
@@ -253,6 +283,13 @@ class DespesaViewModel : ViewModel() {
                     categoriaDespesaId = listaCategoriasDespesa.find {
                         it.nome.equals(despesa.categoriaDespesaNome)
                     }?.id,
+                    dtPagamento = transformarEmLocalDateTime(
+                        formatarDataDatePicker(
+                            data = despesa.dtPagamento!!.toLongOrNull()
+                                ?: getLongDate(despesa.dtPagamento!!),
+                            inputFormat = true
+                        )
+                    ).toString()
                 )
 
                 val response = despesaService.putDespesaById(
@@ -268,7 +305,7 @@ class DespesaViewModel : ViewModel() {
                 } else {
                     Log.e("api", "Erro ao salvar despesa => ${response.errorBody()?.string()}")
                     deuErro = true
-                    erro = response.errorBody()?.string() ?: "Erro desconhecido"
+                    erro = response.message()
                 }
             } catch (ex: Exception) {
                 Log.e("api", "Erro ao salvar despesa => ${ex.message}")

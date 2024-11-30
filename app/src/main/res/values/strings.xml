@@ -56,7 +56,7 @@
     <string name="informacoesProduto">Informações do Produto</string>
     <string name="totalEmEstoque">Total em Estoque: </string>
     <string name="estoque">Estoque</string>
-    <string name="valorMovimentos" translatable="false">R$ %1$s %2$s</string>
+    <string name="valorMovimentos" translatable="false">%1$s R$ %2$s</string>
     <string name="financas">Finanças</string>
     <string name="dashboard" translatable="false">Dashboard</string>
     <string name="receita">Receita</string>

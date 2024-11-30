@@ -8,4 +8,5 @@ data class Agendamento(
     var nomeServico: String? = null,
     var nomeFuncionario: String? = null,
     var nomeCliente: String? = null,
+    var descricaoStatus: String? = null
 )

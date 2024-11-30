@@ -101,12 +101,18 @@ fun NavigationGraph(
             )
         }
         composable(
-            "${Routes.InformacoesMovimentacao.route}",
-            //arguments = listOf(navArgument("movimentoId") { type = NavType.IntType })
+            "${Routes.InformacoesMovimentacao.route}/{data}/{tipo}/{valor}",
+            arguments = listOf(
+                navArgument("data") { type = NavType.StringType },
+                navArgument("tipo") { type = NavType.StringType },
+                navArgument("valor") { type = NavType.StringType })
         ) { backStackEntry ->
             onBottomBarVisibleChanged(false)
             TelaInformacoesMovimentosScreen(
                 navController = navController,
+                data = backStackEntry.arguments?.getString("data") ?: "",
+                tipo = backStackEntry.arguments?.getString("tipo") ?: "",
+                valor = backStackEntry.arguments?.getString("valor") ?: ""
                 //idMovimentos = backStackEntry.arguments?.getInt("movimentoId") ?: 0
             )
 

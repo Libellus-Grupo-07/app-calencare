@@ -57,6 +57,8 @@ import formatarData
 import formatarDataDatePicker
 import formatarDecimal
 import formatarValorMonetario
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import school.sptech.R
 import school.sptech.data.model.Agendamento
 import school.sptech.data.model.Despesa
@@ -150,14 +152,6 @@ fun CardProduto(
     var exibirModalRetirar by remember { mutableStateOf(false) } // Controle do modal de retirada
     var exibirModalAdicionarData by remember { mutableStateOf(false) } // Controle do modal de retirada
     var dateValue by remember { mutableStateOf(0L) }
-
-    LaunchedEffect("estoque") {
-        validadeViewModel.getValidades(produto.id!!)
-        //validadeViewModel.getTotalEstoqueProduto(produto.id!!)
-        //validadeViewModel.atualizarQtdEstoqueValidades()
-    }
-
-    produto.validades = validadeViewModel.listaValidades
 
     Row(
         modifier = modifier
@@ -334,7 +328,7 @@ fun CardProduto(
                     onDateSelected = {
                         reporProdutoViewModel.quantidadeEstoqueData.value = 0
                         validadeViewModel.validade = Validade()
-                        val validade = produto.validades?.find { validadeAtual ->
+                        val validade = validadeViewModel.getListaValidades().find { validadeAtual ->
                             it!!.equals((validadeAtual.dtValidade ?: ""))
                                     && validadeAtual.produtoId == produto.id
                         }
@@ -369,14 +363,17 @@ fun CardProduto(
                             exibirModalRepor = false
                         }
                     },
-                    datesFromBackend = produto.validades?.map { it.dtValidade ?: "" } ?: listOf()
+                    datesFromBackend = validadeViewModel.getListaValidades()
+                        .map { it.dtValidade ?: "" } ?: listOf()
                 )
             }
 
             // Exibe o modal de retirada de produto
             if (exibirModalRetirar) {
                 LaunchedEffect(Unit) {
-                    validadeViewModel.getValidades(produto.id!!)
+                    if (validadeViewModel.getListaValidades().isEmpty()) {
+                        validadeViewModel.getValidades(produto.id!!)
+                    }
                 }
 
                 RetirarProductModal(
@@ -417,6 +414,8 @@ fun CardProduto(
                         reporProdutoViewModel.quantidadeEstoqueData.value =
                             validadeViewModel.quantidadeEstoqueValidade
                         reporProdutoViewModel.setQuantidadeMaxima(validadeViewModel.quantidadeEstoqueValidade)
+                        
+
                         reporProdutoViewModel.setQuantidadeInicial(0)
                     },
                     onQuantidadeChanged = {
@@ -487,7 +486,7 @@ fun CardMovimentacoes(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = if(isLargeCard) 0.dp else 4.dp)
+            .padding(horizontal = if (isLargeCard) 0.dp else 4.dp)
             .shadow(
                 4.dp,
                 RoundedCornerShape(20.dp),
@@ -565,7 +564,7 @@ fun CardMovimentacoes(
 
                     Text(
                         text = movimentacoes.descricao ?: "",
-                        fontSize = if(isLargeCard) 14.sp else 13.sp,
+                        fontSize = if (isLargeCard) 14.sp else 13.sp,
                         fontWeight = if (isLargeCard) FontWeight.Bold else FontWeight.SemiBold,
                         fontFamily = fontFamilyPoppins,
                         letterSpacing = letterSpacingPrincipal,
@@ -639,7 +638,12 @@ fun CardDescricaoMovimentacao(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 20.dp, top = 16.dp, end = 20.dp, bottom = if(isAgendamento) 6.dp else 16.dp),
+                .padding(
+                    start = 20.dp,
+                    top = 16.dp,
+                    end = 20.dp,
+                    bottom = if (isAgendamento) 6.dp else 16.dp
+                ),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -820,10 +824,10 @@ fun CardDespesa(despesa: Despesa, onClickDespesa: () -> Unit) {
                 ambientColor = Color.Transparent,
                 spotColor = PretoOpacidade25,
                 elevation = 4.dp,
-            ).clickable {
+            )
+            .clickable {
                 onClickDespesa()
-            }
-        ,
+            },
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = Branco)
     ) {

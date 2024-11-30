@@ -56,6 +56,8 @@ class MainActivity : ComponentActivity() {
                                 state = buttonVisible,
                                 modifier = Modifier.fillMaxWidth()
                             )
+                        } else {
+                            Box(modifier = Modifier.fillMaxWidth())
                         }
                     },
                 ) { innerPadding ->
