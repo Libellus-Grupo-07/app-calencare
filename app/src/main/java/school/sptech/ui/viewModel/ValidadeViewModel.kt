@@ -27,6 +27,7 @@ class ValidadeViewModel : ViewModel() {
     )
     var movimentacaoValidade by mutableStateOf(MovimentacaoValidade())
     var quantidadeEstoqueValidade by mutableStateOf(0)
+    var quantidadeEstoqueValidadeTela by mutableStateOf(0)
     var quantidadeTotalEstoque by mutableStateOf(0)
     var deuErro by mutableStateOf(false)
     var erro by mutableStateOf("")
@@ -59,7 +60,6 @@ class ValidadeViewModel : ViewModel() {
     }
 
     fun getListaValidades(): List<Validade> {
-        getValidades(produtoId)
         return listaValidades
     }
 
@@ -98,67 +98,42 @@ class ValidadeViewModel : ViewModel() {
 
         GlobalScope.launch {
             listaValidades.forEach { validadeAtual ->
-                if(validadeAtual.qntdEstoque == null){
-                    validade =  Validade()
-                    validade =  validadeAtual
-                    novaLista.add(validadeAtual.copy(qntdEstoque = getQuantidadeEstoqueDaValidade()))
+                if (validadeAtual.qntdEstoque == null) {
+                    validade = Validade()
+                    validade = validadeAtual
+                    novaLista.add(
+                        validadeAtual.copy(
+                            qntdEstoque = getQuantidadeEstoqueDaValidade(
+                                validadeAtual.id!!
+                            )
+                        )
+                    )
                 }
             }
         }
 
-        validade =  Validade()
+        validade = Validade()
         listaValidades.clear()
         listaValidades.addAll(novaLista)
     }
 
-    fun getTotalEstoqueProduto(produtoId: Int): Int {
-        this.produtoId = produtoId
-
-//        if(quantidadeTotalEstoque == 0){
-        getTotalEstoqueProdutoById(produtoId)
-//        }
-
-        return quantidadeTotalEstoque
-    }
-
-    private fun getTotalEstoqueProdutoById(produtoId: Int) {
-        GlobalScope.launch {
-            try {
-                val response = movimentacaoValidadeService.getTotalEstoque(produtoId)
-
-                if (response.isSuccessful) {
-                    quantidadeTotalEstoque = response.body()!!
-                    deuErro = false
-                    erro = ""
-                } else {
-                    deuErro = true
-                    erro = response.errorBody()?.string() ?: "Erro desconhecido"
-                }
-            } catch (ex: Exception) {
-                deuErro = true
-                erro = ex.message ?: "Erro desconhecido"
-            }
-        }
-    }
-
-    fun getQuantidadeEstoqueDaValidade(): Int {
-        quantidadeEstoqueValidade = 0
+    fun getQuantidadeEstoqueDaValidade(validadeId: Int): Int {
         validade.qntdEstoque = null
-        getQuantidadeEstoquePorValidade()
         return quantidadeEstoqueValidade
     }
 
-    fun getQuantidadeEstoquePorValidade() {
-        if(validade.qntdEstoque == null){
+    fun getQuantidadeEstoquePorValidade(validadeId: Int, isTela:Boolean = false) {
+        if (validade.qntdEstoque == null) {
             GlobalScope.launch {
                 try {
                     val response =
                         movimentacaoValidadeService.getQuantidadePorValidade(
-                            validadeId = validade.id ?: 0
+                            validadeId = validadeId
                         )
 
                     if (response.isSuccessful) {
-                        quantidadeEstoqueValidade = response.body()!!
+                        if(isTela) quantidadeEstoqueValidadeTela = response.body()!!
+                        else quantidadeEstoqueValidade = response.body()!!
                         deuErro = false
                     } else {
                         deuErro = true

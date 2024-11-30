@@ -196,7 +196,7 @@ fun CustomMonthYearPickerDialog(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                items(meses.size){
+                items(meses.size) {
                     TextButton(
                         contentPadding = PaddingValues(vertical = 20.dp),
                         colors = ButtonDefaults.textButtonColors(
@@ -307,6 +307,7 @@ fun ProductModal(
     buttonText: String,
     produto: String,
     quantidadeEstoque: Int,
+    quantidadeEstoqueData: Int? = null,
     onDateSelected: (String?) -> Unit = {},
     onClickAdicionarData: () -> Unit = {},
     onQuantidadeChanged: (Int?) -> Unit = {},
@@ -383,7 +384,7 @@ fun ProductModal(
                     },
                     onClickAdicionarData = onClickAdicionarData,
                     isRepor = isRepor,
-                    qtdEstoqueData = viewModel.quantidadeEstoqueData.value,
+                    qtdEstoqueData = quantidadeEstoqueData ?: viewModel.quantidadeEstoqueData.value,
                     dataError = dataError,
                     isMedium = true
                 )
@@ -413,8 +414,14 @@ fun ProductModal(
                     )
                     IconButton(
                         onClick = {
-                            viewModel.aumentarQuantidade()
-                            onQuantidadeChanged(viewModel.quantidade.value)
+                            if (viewModel.quantidade.value
+                                < if (!isRepor) quantidadeEstoqueData!!
+                                else viewModel.quantidade.value + 1
+                                ) {
+
+                                viewModel.aumentarQuantidade()
+                                onQuantidadeChanged(viewModel.quantidade.value)
+                            }
                         },
                         colors = IconButtonColors(
                             containerColor = VerdeOpacidade15,
@@ -466,7 +473,7 @@ fun ProductModal(
                         quantidadeError = true  // Indica erro de validação
                     }
                 },
-                //enabled = isQuantidadeValida()  // Desabilita o botão se a quantidade for inválida
+                enabled = isQuantidadeValida()  // Desabilita o botão se a quantidade for inválida
             )
         },
         dismissButton = {
@@ -495,6 +502,7 @@ fun preview() {
 fun ReporProductModal(
     produto: String,
     quantidadeEstoque: Int,
+    quantidadeEstoqueData: Int? = null,
     onDismiss: () -> Unit,
     onDateSelected: (String?) -> Unit = {},
     onQuantidadeChanged: (Int?) -> Unit = {},
@@ -509,6 +517,7 @@ fun ReporProductModal(
         buttonText = stringResource(id = R.string.repor),
         produto = produto,
         quantidadeEstoque = quantidadeEstoque,
+        quantidadeEstoqueData = quantidadeEstoqueData,
         onConfirm = onConfirm,
         onDismiss = onDismiss,
         onClickAdicionarData = onClickAdicionarData,
@@ -524,6 +533,7 @@ fun ReporProductModal(
 fun RetirarProductModal(
     produto: String,
     quantidadeEstoque: Int,
+    quantidadeEstoqueData: Int?,
     onDismiss: () -> Unit,
     onConfirm: (Int) -> Unit,
     onDateSelected: (String?) -> Unit = {},
@@ -537,6 +547,7 @@ fun RetirarProductModal(
         buttonText = stringResource(id = R.string.retirar),
         produto = produto,
         quantidadeEstoque = quantidadeEstoque,
+        quantidadeEstoqueData = quantidadeEstoqueData,
         onDateSelected = onDateSelected,
         onQuantidadeChanged = onQuantidadeChanged,
         onDismiss = onDismiss,

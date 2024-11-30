@@ -124,7 +124,7 @@ fun SelectableDatesRow(
                                 fontWeight = FontWeight.ExtraBold
                             )
                         ) {
-                            append("$qtdEstoqueData ${if (qtdEstoqueData == 1) "produto" else "produtos"} ")
+                            append("${if (currentDate?.isEmpty() == true) 0 else qtdEstoqueData} ${if (qtdEstoqueData == 1) "produto" else "produtos"} ")
                         }
                         withStyle(
                             SpanStyle(

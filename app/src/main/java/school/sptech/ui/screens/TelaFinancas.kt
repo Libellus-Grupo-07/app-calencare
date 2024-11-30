@@ -28,7 +28,6 @@ import school.sptech.ui.components.BoxMovimentacoes
 import school.sptech.ui.components.CardKpi
 import school.sptech.ui.components.Chart
 import school.sptech.ui.components.SeletorData
-import school.sptech.ui.components.TextoValorColorido
 import school.sptech.ui.components.TopBarComSelecaoData
 import school.sptech.ui.theme.*
 import school.sptech.ui.viewModel.DashFinancasViewModel

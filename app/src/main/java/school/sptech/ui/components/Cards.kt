@@ -310,6 +310,8 @@ fun CardProduto(
             if (exibirModalRepor) {
                 validadeViewModel.deuErro = false
                 validadeViewModel.erro = ""
+                reporProdutoViewModel.quantidadeEstoqueData.value =
+                    validadeViewModel.quantidadeEstoqueValidade
 
                 LaunchedEffect(Unit) {
                     validadeViewModel.getValidades(produto.id!!)
@@ -320,11 +322,12 @@ fun CardProduto(
                         exibirModalRepor = false
                         reporProdutoViewModel.quantidadeEstoqueData.value = 0
                         reporProdutoViewModel.setQuantidadeInicial(0)
-                        reporProdutoViewModel.setQuantidadeMaxima(0)
+                        reporProdutoViewModel.setValorQuantidadeMaxima(0)
                         validadeViewModel.quantidadeEstoqueValidade = 0
                     },
                     produto = produto.nome ?: "",
                     quantidadeEstoque = produto.qntdTotalEstoque ?: 0,
+                    quantidadeEstoqueData = validadeViewModel.quantidadeEstoqueValidade,
                     onDateSelected = {
                         reporProdutoViewModel.quantidadeEstoqueData.value = 0
                         validadeViewModel.validade = Validade()
@@ -334,9 +337,9 @@ fun CardProduto(
                         }
 
                         validadeViewModel.validade = validade!!
-                        reporProdutoViewModel.quantidadeEstoqueData.value =
-                            validadeViewModel.getQuantidadeEstoqueDaValidade()
-                        reporProdutoViewModel.setQuantidadeMaxima(null)
+
+                        validadeViewModel.getQuantidadeEstoquePorValidade(validade.id!!)
+                        reporProdutoViewModel.setValorQuantidadeMaxima(null)
                     },
                     onQuantidadeChanged = {
                         validadeViewModel.movimentacaoValidade =
@@ -356,7 +359,7 @@ fun CardProduto(
 
                             //validadeViewModel.atualizarQtdEstoqueValidades()
                             reporProdutoViewModel.setQuantidadeInicial(0)
-                            reporProdutoViewModel.setQuantidadeMaxima(0)
+                            reporProdutoViewModel.setValorQuantidadeMaxima(null)
                             reporProdutoViewModel.quantidadeEstoqueData.value = 0
                             validadeViewModel.quantidadeEstoqueValidade = 0
 
@@ -364,7 +367,7 @@ fun CardProduto(
                         }
                     },
                     datesFromBackend = validadeViewModel.getListaValidades()
-                        .map { it.dtValidade ?: "" } ?: listOf()
+                        .map { it.dtValidade ?: "" }
                 )
             }
 
@@ -378,11 +381,12 @@ fun CardProduto(
 
                 RetirarProductModal(
                     produto = produto.nome ?: "",
+                    quantidadeEstoqueData = validadeViewModel.quantidadeEstoqueValidade,
                     quantidadeEstoque = produto.qntdTotalEstoque ?: 0,
                     onDismiss = {
                         exibirModalRetirar = false
                         reporProdutoViewModel.setQuantidadeInicial(0)
-                        reporProdutoViewModel.setQuantidadeMaxima(0)
+                        reporProdutoViewModel.setValorQuantidadeMaxima(0)
                         reporProdutoViewModel.quantidadeEstoqueData.value = 0
                         validadeViewModel.quantidadeEstoqueValidade = 0
                     },
@@ -394,7 +398,7 @@ fun CardProduto(
                                 validadeViewModel.movimentacaoValidade.quantidade ?: 0
                             )
                             reporProdutoViewModel.setQuantidadeInicial(0)
-                            reporProdutoViewModel.setQuantidadeMaxima(0)
+                            reporProdutoViewModel.setValorQuantidadeMaxima(null)
                             reporProdutoViewModel.quantidadeEstoqueData.value = 0
                             validadeViewModel.quantidadeEstoqueValidade = 0
                             exibirModalRetirar = false
@@ -404,25 +408,25 @@ fun CardProduto(
                     onDateSelected = {
                         reporProdutoViewModel.quantidadeEstoqueData.value = 0
 
-                        val validade = produto.validades?.find { validadeAtual ->
-                            it!!.equals(validadeAtual.dtValidade ?: "")
+                        val validade = validadeViewModel.getListaValidades().find { validadeAtual ->
+                            it!!.equals((validadeAtual.dtValidade ?: ""))
+                                    && validadeAtual.produtoId == produto.id
                         }
 
                         validadeViewModel.validade = validade!!
-                        validadeViewModel.getQuantidadeEstoquePorValidade()
 
-                        reporProdutoViewModel.quantidadeEstoqueData.value =
-                            validadeViewModel.quantidadeEstoqueValidade
-                        reporProdutoViewModel.setQuantidadeMaxima(validadeViewModel.quantidadeEstoqueValidade)
-                        
+                        validadeViewModel.getQuantidadeEstoquePorValidade(validade.id!!)
 
+
+                        reporProdutoViewModel.setValorQuantidadeMaxima(null)
                         reporProdutoViewModel.setQuantidadeInicial(0)
                     },
                     onQuantidadeChanged = {
                         validadeViewModel.movimentacaoValidade =
                             validadeViewModel.movimentacaoValidade.copy(quantidade = it)
                     },
-                    datesFromBackend = produto.validades?.map { it.dtValidade ?: "" } ?: listOf()
+                    datesFromBackend = validadeViewModel.getListaValidades()
+                        .map { it.dtValidade ?: "" } ?: listOf()
                 )
             }
 
