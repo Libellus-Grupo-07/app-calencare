@@ -16,7 +16,7 @@ import school.sptech.network.RetrofitService
 class DashFinancasViewModel : ViewModel() {
     private val dashFinancasService: DashFinancasService
     private var empresaId:Int = 0
-    var vetorDash = mutableStateListOf<List<DashFinancas>>()
+    var labels = mutableStateListOf<String>()
     var receitas = mutableStateListOf<DashFinancas>()
     var despesas = mutableStateListOf<DashFinancas>()
     var lucros = mutableStateListOf<DashFinancas>()
@@ -53,87 +53,11 @@ class DashFinancasViewModel : ViewModel() {
                     despesas.clear()
                     despesas.addAll(despesasVetor.toList())
 
-                    deuErro = false
-                    erro = "sucess"
-                } else {
-                    Log.e("api", response.errorBody().toString())
-                    deuErro = true
-                    erro = response.errorBody().toString()
-                }
-            } catch (ex: Exception){
-                Log.e("api", ex.message.toString())
-                deuErro = true
-                erro = ex.message.toString()
-            }
-        }
-    }
+                    labels.clear()
+                    for (i in 0 until receitas.size){
+                        labels.add("Semana ${i + 1}")
+                    }
 
-    fun getReceitasPorMesAno(mes:Int, ano:Int){
-        GlobalScope.launch {
-            try {
-                val response = dashFinancasService.getReceitasPorMesAno(
-                    empresaId = empresaId,
-                    ano = ano,
-                    mes = mes
-                )
-
-                if(response.isSuccessful){
-                    receitas.clear()
-                    receitas.addAll(response.body() ?: listOf())
-                    deuErro = false
-                    erro = "sucess"
-                } else {
-                    Log.e("api", response.errorBody().toString())
-                    deuErro = true
-                    erro = response.errorBody().toString()
-                }
-            } catch (ex: Exception){
-                Log.e("api", ex.message.toString())
-                deuErro = true
-                erro = ex.message.toString()
-            }
-        }
-    }
-
-    fun getDespesasPorMesAno(mes:Int, ano:Int){
-        GlobalScope.launch {
-            try {
-                val response = dashFinancasService.getDespesasPorMesAno(
-                    empresaId = empresaId,
-                    ano = ano,
-                    mes = mes
-                )
-
-                if(response.isSuccessful){
-                    despesas.clear()
-                    despesas.addAll(response.body() ?: listOf())
-                    deuErro = false
-                    erro = "sucess"
-                } else {
-                    Log.e("api", response.errorBody().toString())
-                    deuErro = true
-                    erro = response.errorBody().toString()
-                }
-            } catch (ex: Exception){
-                Log.e("api", ex.message.toString())
-                deuErro = true
-                erro = ex.message.toString()
-            }
-        }
-    }
-
-    fun getLucrosPorMesAno( mes:Int, ano:Int){
-        GlobalScope.launch {
-            try {
-                val response = dashFinancasService.getLucrosPorMesAno(
-                    empresaId = empresaId,
-                    ano = ano,
-                    mes = mes
-                )
-
-                if(response.isSuccessful){
-                    lucros.clear()
-                    lucros.addAll(response.body() ?: listOf())
                     deuErro = false
                     erro = "sucess"
                 } else {

@@ -18,6 +18,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,6 +30,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import formatarValorMonetario
@@ -57,11 +61,13 @@ import school.sptech.ui.theme.letterSpacingPrincipal
 
 @Composable
 fun Chart(
-    receitas: List<Double> = listOf(0.0, 0.0, 0.0, 0.0),
-    lucro:List<Double> = listOf(0.0, 0.0, 0.0,0.0),
-    despesas:List<Double> = listOf(4.0,12.0,8.0,1.0,27.0)
+    labels: List<String>,
+    receitas: List<Double> = listOf(),
+    lucro: List<Double> = listOf(),
+    despesas: List<Double> = listOf()
 ) {
     ChartLine(
+        labels = labels,
         receitas = receitas,
         lucro = lucro,
         despesas = despesas
@@ -72,27 +78,30 @@ fun Chart(
 
 @Composable
 fun ChartLine(
+    labels: List<String>,
     receitas: List<Double>,
     lucro: List<Double>,
     despesas: List<Double>
-){
-    Box(modifier = Modifier
-        .fillMaxWidth(1f)
-        .fillMaxHeight(0.5f)
-        .shadow(
-            4.dp, shape = RoundedCornerShape(20.dp)
-        )
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth(1f)
+            .fillMaxHeight(0.5f)
+            .shadow(
+                4.dp, shape = RoundedCornerShape(20.dp)
+            )
 //        .border(
 //            BorderStroke(
 //                width = 1.dp,
 //                color = PretoOpacidade15
 //            ), RoundedCornerShape(20.dp)
 //        )
-        .clip(RoundedCornerShape(20.dp))
+            .clip(RoundedCornerShape(20.dp))
     ) {
-        Column(modifier = Modifier
-            .background(Branco)
-            .padding(top = 14.dp),
+        Column(
+            modifier = Modifier
+                .background(Branco)
+                .padding(top = 14.dp),
             Arrangement.Center,
             Alignment.CenterHorizontally
         ) {
@@ -103,131 +112,146 @@ fun ChartLine(
                 fontWeight = FontWeight.Bold,
                 fontSize = 10.5.sp
             )
-            LineChart(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(
-                        start = 12.dp,
-                        end = 24.dp,
-                        top = 8.dp,
-                        bottom = 12.dp
-                    ),
-                data = listOf(
-                    Line(
-                        label = stringResource(id = R.string.receita),
-                        values = if(receitas.isEmpty()) listOf(0.0, 0.0, 0.0, 0.0, 0.0) else receitas,
-                        color = SolidColor(Azul),
-                        //firstGradientFillColor = Azul.copy(alpha = .5f),
-                        //secondGradientFillColor = Color.Transparent,
-                        strokeAnimationSpec = tween(1000, easing = EaseInOutCubic),
-                        //gradientAnimationDelay = 500,
-                        drawStyle = DrawStyle.Stroke(width = 3.5.dp),
-                        dotProperties = DotProperties(
-                            enabled = true,
-                            color = SolidColor(Branco),
-                            radius = 4.dp,
-                            strokeWidth = 3.dp,
-                            strokeColor = SolidColor(Azul)
-                        )
-                    ),
-                    Line(
-                        label = stringResource(id = R.string.lucro),
-                        values = if(lucro.isEmpty()) listOf(0.0, 0.0, 0.0, 0.0, 0.0) else lucro,
-                        color = SolidColor(Verde),
-                        //firstGradientFillColor = Verde.copy(alpha = .5f),
-                        //secondGradientFillColor = Color.Transparent,
-                        strokeAnimationSpec = tween(1000, easing = EaseInOutCubic),
-                        //gradientAnimationDelay = 500,
-                        drawStyle = DrawStyle.Stroke(width = 3.dp),
-                        dotProperties = DotProperties(
-                            enabled = true,
-                            color = SolidColor(Branco),
-                            radius = 4.dp,
-                            strokeWidth = 3.dp,
-                            strokeColor = SolidColor(Verde)
-                        )
-                    ),
-                    Line(
-                        label = stringResource(id = R.string.despesa),
-                        values = if(despesas.isEmpty()) listOf(0.0, 0.0, 0.0, 0.0, 0.0) else despesas,
-                        color = SolidColor(Vermelho),
-                        //firstGradientFillColor = Vermelho.copy(alpha = .5f),
-                        //secondGradientFillColor = Color.Transparent,
-                        strokeAnimationSpec = tween(1000, easing = EaseInOutCubic),
-                        //gradientAnimationDelay = 500,
-                        drawStyle = DrawStyle.Stroke(width = 3.dp),
-                        dotProperties = DotProperties(
-                            enabled = true,
-                            color = SolidColor(Branco),
-                            radius = 4.dp,
-                            strokeWidth = 3.dp,
-                            strokeColor = SolidColor(Vermelho)
-                        )
-                    )
-                ),
-                animationMode = AnimationMode.Together(delayBuilder = { it -> it * 200L }),
-                indicatorProperties = HorizontalIndicatorProperties(
-                    enabled = true,
-                    padding = 4.dp,
-                    textStyle = TextStyle(
+
+            if (receitas.map { it.toFloat() }.sum() == 0f && lucro.map { it.toFloat() }
+                    .sum() == 0f && despesas.map { it.toFloat() }.sum() == 0f) {
+                Row(
+                    modifier = Modifier.fillMaxSize().padding(bottom = 24.dp),
+                    Arrangement.Center,
+                    Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Não há dados para exibir",
                         fontFamily = fontFamilyPoppins,
-                        fontSize = 8.5.sp,
-                        fontWeight = FontWeight.Normal,
-                        letterSpacing = letterSpacingPrincipal,
-                        color = Cinza
-                    ),
-                    contentBuilder = { it ->
-                        formatarValorMonetario(it.toFloat())
-                    }
-                ),
-                labelProperties = LabelProperties(
-                    enabled = true,
-                    padding = 12.dp,
-                    textStyle = TextStyle(
-                        fontFamily = fontFamilyPoppins,
-                        fontSize = 8.sp,
+                        color = Cinza,
                         fontWeight = FontWeight.Medium,
                         letterSpacing = letterSpacingPrincipal,
-                        color = Cinza
-                    ),
-                    labels = listOf(
-                        "Semana 1",
-                        "Semana 2",
-                        "Semana 3",
-                        "Semana 4",
-                        "Semana 5",
+                        textAlign = TextAlign.Center,
+                        fontSize = 11.sp
                     )
-                ),
-                labelHelperProperties = LabelHelperProperties(
-                    enabled = false,
-                ),
-                gridProperties = GridProperties(
-                    enabled = true,
-                    yAxisProperties = GridProperties.AxisProperties(
+                }
+            } else {
+                LineChart(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(
+                            start = 12.dp,
+                            end = 24.dp,
+                            top = 8.dp,
+                            bottom = 12.dp
+                        ),
+                    data = listOf(
+                        Line(
+                            label = stringResource(id = R.string.receita),
+                            values = receitas,
+                            color = SolidColor(Azul),
+                            //firstGradientFillColor = Azul.copy(alpha = .5f),
+                            //secondGradientFillColor = Color.Transparent,
+                            strokeAnimationSpec = tween(750, easing = EaseInOutCubic),
+                            //gradientAnimationDelay = 750,
+                            drawStyle = DrawStyle.Stroke(width = 3.5.dp),
+                            dotProperties = DotProperties(
+                                enabled = true,
+                                color = SolidColor(Branco),
+                                radius = 4.dp,
+                                strokeWidth = 3.dp,
+                                strokeColor = SolidColor(Azul)
+                            )
+                        ),
+                        Line(
+                            label = stringResource(id = R.string.lucro),
+                            values = lucro,
+                            color = SolidColor(Verde),
+                            //firstGradientFillColor = Verde.copy(alpha = .5f),
+                            //secondGradientFillColor = Color.Transparent,
+                            strokeAnimationSpec = tween(750, easing = EaseInOutCubic),
+                            //gradientAnimationDelay = 750,
+                            drawStyle = DrawStyle.Stroke(width = 3.dp),
+                            dotProperties = DotProperties(
+                                enabled = true,
+                                color = SolidColor(Branco),
+                                radius = 4.dp,
+                                strokeWidth = 3.dp,
+                                strokeColor = SolidColor(Verde)
+                            )
+                        ),
+                        Line(
+                            label = stringResource(id = R.string.despesa),
+                            values = despesas,
+                            color = SolidColor(Vermelho),
+                            //firstGradientFillColor = Vermelho.copy(alpha = .5f),
+                            //secondGradientFillColor = Color.Transparent,
+                            strokeAnimationSpec = tween(750, easing = EaseInOutCubic),
+                            //gradientAnimationDelay = 750,
+                            drawStyle = DrawStyle.Stroke(width = 3.dp),
+                            dotProperties = DotProperties(
+                                enabled = true,
+                                color = SolidColor(Branco),
+                                radius = 4.dp,
+                                strokeWidth = 3.dp,
+                                strokeColor = SolidColor(Vermelho)
+                            )
+                        )
+                    ),
+                    animationMode = AnimationMode.Together(delayBuilder = { it -> it * 200L }),
+                    indicatorProperties = HorizontalIndicatorProperties(
+                        enabled = true,
+                        padding = 4.dp,
+                        textStyle = TextStyle(
+                            fontFamily = fontFamilyPoppins,
+                            fontSize = 8.5.sp,
+                            fontWeight = FontWeight.Normal,
+                            letterSpacing = letterSpacingPrincipal,
+                            color = Cinza
+                        ),
+                        contentBuilder = { it ->
+                            formatarValorMonetario(it.toFloat())
+                        }
+                    ),
+                    labelProperties = LabelProperties(
+                        enabled = true,
+                        padding = 12.dp,
+                        textStyle = TextStyle(
+                            fontFamily = fontFamilyPoppins,
+                            fontSize = 8.sp,
+                            fontWeight = FontWeight.Medium,
+                            letterSpacing = letterSpacingPrincipal,
+                            color = Cinza
+                        ),
+                        labels = labels
+                    ),
+                    labelHelperProperties = LabelHelperProperties(
                         enabled = false,
                     ),
-                    xAxisProperties = GridProperties.AxisProperties(
-                        enabled = false
-                    )
-                ),
-                popupProperties = PopupProperties(
-                    enabled = true,
-                    containerColor = Preto.copy(.56f),
-                    textStyle = TextStyle(
-                        fontFamily = fontFamilyPoppins,
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Normal,
-                        letterSpacing = letterSpacingPrincipal,
-                        color = Branco
+                    gridProperties = GridProperties(
+                        enabled = true,
+                        yAxisProperties = GridProperties.AxisProperties(
+                            enabled = false,
+                        ),
+                        xAxisProperties = GridProperties.AxisProperties(
+                            enabled = false
+                        )
                     ),
-                    contentBuilder = {
-                        formatarValorMonetario(it.toFloat())
-                    }
+                    popupProperties = PopupProperties(
+                        enabled = true,
+                        containerColor = Preto.copy(.56f),
+                        textStyle = TextStyle(
+                            fontFamily = fontFamilyPoppins,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Normal,
+                            letterSpacing = letterSpacingPrincipal,
+                            color = Branco
+                        ),
+                        contentBuilder = {
+                            formatarValorMonetario(it.toFloat())
+                        }
+                    )
                 )
-            )
+            }
         }
     }
 }
+
 @Composable
 fun GroupButtons() {
     Row(

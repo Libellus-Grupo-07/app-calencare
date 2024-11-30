@@ -10,11 +10,13 @@ import retrofit2.http.Path
 import school.sptech.data.model.Despesa
 
 interface DespesaService {
-    @GET("/api/despesas/info/{empresaId}/{mes}/{ano}")
-    suspend fun getAllDespesasByEmpresaIdAndMesAndAno(
+    @GET("/api/despesas/{empresaId}")
+    suspend fun getAllDespesas(@Path("empresaId") empresaId: Int): Response<List<Despesa>>
+
+    @GET("/api/despesas/info/{empresaId}/{data}")
+    suspend fun getAllDespesasByEmpresaIdAndData(
         @Path("empresaId") empresaId: Int,
-        @Path("mes") mes: Int,
-        @Path("ano") ano: Int
+        @Path("data") data: String,
     ): Response<List<Despesa>>
 
     @GET("/api/despesas/{empresaId}/{despesaId}")

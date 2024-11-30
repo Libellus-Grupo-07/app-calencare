@@ -9,6 +9,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import school.sptech.data.model.Agendamento
 import school.sptech.data.service.AgendamentoService
+import school.sptech.dataStoreRepository
 import school.sptech.network.RetrofitService
 
 class AgendamentoViewModel : ViewModel() {
@@ -16,17 +17,24 @@ class AgendamentoViewModel : ViewModel() {
     var deuErro by mutableStateOf(false)
     var erro by mutableStateOf("")
     var agendamentos = mutableListOf<Agendamento>()
-    var dataFim by mutableStateOf("")
-    var dataInicio by mutableStateOf("")
 
     init {
         agendamentoService = RetrofitService.getClientAgendamento()
     }
 
-    fun getAgendamentosPorData() {
+    fun getListaAgendamentos(): List<Agendamento> {
+        return agendamentos.toList().filter { it.descricaoStatus == "Finalizado" }
+            .sortedBy { it.horario }
+    }
+
+    fun getAgendamentosPorData(dataInicio: String, dataFim: String) {
         GlobalScope.launch {
             try {
-                val response = agendamentoService.getAgendamentosPorData(1, dataInicio, dataFim)
+                val response = agendamentoService.getAgendamentosPorData(
+                    dataStoreRepository.getEmpresaId(),
+                    dataInicio,
+                    dataFim
+                )
 
                 if (response.isSuccessful) {
                     agendamentos.clear()

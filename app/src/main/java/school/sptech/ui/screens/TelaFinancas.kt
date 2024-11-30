@@ -184,13 +184,14 @@ fun ConteudoTelaFinancas(
         }
 
         Chart(
+            labels = viewModel.labels,
             receitas = viewModel.receitas.map { it.valor ?: 0.0 }.toList(),
             lucro = viewModel.lucros.map { it.valor ?: 0.0 }.toList(),
             despesas = viewModel.despesas.map { it.valor ?: 0.0 }.toList()
         )
 
         BoxMovimentacoes(movimentacoes = movimentacoes, onClickCard = {
-            navController.navigate(Routes.InformacoesMovimentacao.route)
+            navController.navigate("${Routes.InformacoesMovimentacao.route}/${it.data}/${it.descricao}/${it.total}")
         })
 
     }
@@ -214,7 +215,7 @@ fun ResumoFinanceiro(
             Column(modifier = Modifier.weight(0.5f)) {
                 CardKpi(
                     "Total em Receitas",
-                    "R$ + ${formatarDecimal(receitas.toFloat())}",
+                    "+ R$ ${formatarDecimal(receitas.toFloat())}",
                     "AZUL"
                 )
             }
@@ -224,7 +225,7 @@ fun ResumoFinanceiro(
             Column(modifier = Modifier.weight(0.5f)) {
                 CardKpi(
                     "Total em Despesas",
-                    "R$ - ${formatarDecimal(despesas.toFloat())}",
+                    "- R$ ${formatarDecimal(despesas.toFloat())}",
                     "VERMELHO"
                 )
             }
@@ -236,7 +237,7 @@ fun ResumoFinanceiro(
             Column(modifier = Modifier.weight(0.4f)) {
                 CardKpi(
                     "Total em Lucro",
-                    "R$ + ${formatarDecimal(lucro.toFloat())}",
+                    "+ R$ ${formatarDecimal(lucro.toFloat())}",
                     "VERDE"
                 )
             }
@@ -246,7 +247,7 @@ fun ResumoFinanceiro(
             Column(modifier = Modifier.weight(0.4f)) {
                 CardKpi(
                     "Total em Comissões",
-                    "R$ - ${formatarDecimal(comissoes.toFloat())}",
+                    "- R$ ${formatarDecimal(comissoes.toFloat())}",
                     "LARANJA"
                 )
             }

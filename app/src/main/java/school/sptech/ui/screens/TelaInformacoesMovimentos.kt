@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,19 +21,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import school.sptech.data.model.Agendamento
 import school.sptech.data.model.Despesa
 import school.sptech.data.model.Movimentacoes
+import school.sptech.dataStoreRepository
 import school.sptech.ui.components.Background
 import school.sptech.ui.components.CardAgendamentoMovimentacao
 import school.sptech.ui.components.CardComissaoMovimentacao
 import school.sptech.ui.components.CardDespesaMovimentacao
 import school.sptech.ui.components.CardMovimentacoes
+import school.sptech.ui.components.LabelInput
 import school.sptech.ui.components.TituloLarge
 import school.sptech.ui.components.TopBarVoltar
 import school.sptech.ui.theme.CalencareAppTheme
+import school.sptech.ui.viewModel.AgendamentoViewModel
+import school.sptech.ui.viewModel.DespesaViewModel
+import transformarEmLocalDateTime
+import java.time.LocalDate
 
 class TelaInformacoesMovimentos : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,84 +61,50 @@ class TelaInformacoesMovimentos : ComponentActivity() {
 @Composable
 fun TelaInformacoesMovimentosScreen(
     modifier: Modifier = Modifier,
-    navController: NavController = rememberNavController()
+    agendamentoViewModel: AgendamentoViewModel = viewModel(),
+    despesaViewModel: DespesaViewModel = viewModel(),
+    navController: NavController = rememberNavController(),
+    data: String = LocalDate.now().toString(),
+    tipo: String = "",
+    valor: String = "",
 ) {
     val movimentos by remember {
         mutableStateOf(
             Movimentacoes(
-                total = "1233.0",
-                data = "2024-12-12",
-                descricao = "Agendamentos"
+                total = valor,
+                data = data,
+                descricao = tipo
             )
         )
     }
 
-    val despesas = listOf(
-        Despesa(
-            id = 1,
-            nome = "Despesa 1",
-            observacao = "Observação 1",
-            valor = "123.0",
-            formaPagamento = "Dinheiro",
-            dtPagamento = "2024-12-12",
-            dtCriacao = "2024-12-12",
-            categoriaDespesaNome = "Categoria 1",
-            categoriaDespesaId = 1,
-            empresaId = 1
-        ),
-        Despesa(
-            id = 2,
-            nome = "Despesa 2",
-            observacao = "Observação 2",
-            valor = "123.0",
-            formaPagamento = "Dinheiro",
-            dtPagamento = "2024-12-12",
-            dtCriacao = "2024-12-12",
-            categoriaDespesaNome = "Categoria 2",
-            categoriaDespesaId = 2,
-            empresaId = 2
-        ),
-    )
+    LaunchedEffect("movimentos") {
+        when (tipo) {
+            "Despesas" -> {
+                despesaViewModel.data = data
+                despesaViewModel.getDespesasPorData(dataStoreRepository.getEmpresaId())
+            }
 
-    val agendamentos = listOf(
-        Agendamento(
-            dia = "2024-12-12",
-            horario = "12:00",
-            horarioFinalizacao = "13:00",
-            nomeServico = "Unha de Gel",
-            nomeCliente = "Maria dos Santos",
-            nomeFuncionario = "João da Silva",
-            preco = 123.0,
-        ),
-        Agendamento(
-            dia = "2024-12-12",
-            horario = "12:00",
-            horarioFinalizacao = "13:00",
-            nomeServico = "Unha de Gel",
-            nomeCliente = "Maria dos Santos",
-            nomeFuncionario = "João da Silva",
-            preco = 123.0,
-        ),
-    )
-
-    val comissoes = listOf(
-        Movimentacoes(
-            total = "1233.0",
-            data = "2024-12-12",
-            descricao = "Comissões"
-        ),
-        Movimentacoes(
-            total = "1233.0",
-            data = "2024-12-12",
-            descricao = "Comissões"
-        ),
-    )
+            else -> {
+                agendamentoViewModel.getAgendamentosPorData(
+                    dataInicio = transformarEmLocalDateTime(
+                        data,
+                        isDateBd = true
+                    ).toString(),
+                    dataFim = transformarEmLocalDateTime(
+                        data,
+                        isDateBd = true,
+                        isFinalDay = true
+                    ).toString()
+                )
+            }
+        }
+    }
 
     Background()
 
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         TopBarVoltar(navController = navController, titulo = "")
@@ -150,27 +124,19 @@ fun TelaInformacoesMovimentosScreen(
 
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(0.dp),
+                contentPadding = PaddingValues(bottom = 28.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                when (movimentos.descricao) {
+                when (tipo) {
                     "Despesas" -> {
-                        items(despesas.size) { i ->
-                            CardDespesaMovimentacao(despesa = despesas[i])
-                        }
-                    }
-
-                    "Agendamentos" -> {
-                        items(agendamentos.size) { i ->
-                            CardAgendamentoMovimentacao(agendamento = agendamentos[i])
+                        items(despesaViewModel.getListaDespesas().size) { i ->
+                            CardDespesaMovimentacao(despesa = despesaViewModel.getListaDespesas()[i])
                         }
                     }
 
                     else -> {
-                        items(comissoes.size) { i ->
-                            CardComissaoMovimentacao(
-                                comissao = comissoes[i],
-                            )
+                        items(agendamentoViewModel.getListaAgendamentos().size) { i ->
+                            CardAgendamentoMovimentacao(agendamento = agendamentoViewModel.getListaAgendamentos()[i])
                         }
                     }
                 }

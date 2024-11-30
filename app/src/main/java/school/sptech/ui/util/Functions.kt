@@ -28,13 +28,28 @@ fun transformarEmLocalDate(data: String): LocalDate {
     return dataParse
 }
 
-fun transformarEmLocalDateTime(data: String): LocalDateTime {
+fun transformarEmLocalDateTime(data: String, isDateBd:Boolean = false, isFinalDay:Boolean = false): LocalDateTime {
     // 2024-01-12
     val dateTimeParse: LocalDateTime
-    val dataIsFormatadaBd = data.length > 10
+    val dateTimeIsFormatadaBd = data.length > 10
 
-    if(dataIsFormatadaBd){
+    if(dateTimeIsFormatadaBd){
         dateTimeParse = LocalDateTime.parse(data)
+        return dateTimeParse
+    }
+
+    if(isDateBd){
+        val ano = data.substring(0, 4).toInt()
+        val mes = data.substring(5, 7).toInt()
+        val dia = data.substring(8, 10).toInt()
+        val hora = if(isFinalDay) 23 else 0
+        val minuto = if(isFinalDay) 59 else 0
+        val segundo = if(isFinalDay) 59 else 0
+
+        dateTimeParse = LocalDateTime.of(
+            ano, mes, dia, hora, minuto, segundo
+        )
+
         return dateTimeParse
     }
 
