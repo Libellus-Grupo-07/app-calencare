@@ -88,17 +88,17 @@ fun formatarData(data: LocalDate): String {
     return formatted
 }
 
-fun formatarData(data: String): String {
-    val format = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+fun formatarData(data: String, isDateTime:Boolean = false): String {
+    if(data.isEmpty()){
+        return ""
+    }
+    val format = if(isDateTime) DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
+                    else DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
     if (data.length == 10) {
         val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val date = LocalDate.parse(data, inputFormatter)
         return date.format(format)
-    }
-
-    if(data.isEmpty()){
-        return ""
     }
 
     val formatted = LocalDateTime.parse(data).format(format)
@@ -110,7 +110,6 @@ fun formatarDataBd(data: LocalDate): String {
     val formatted = LocalDate.parse(data.toString()).format(format)
     return formatted
 }
-
 
 fun formatarDoubleBd(valor: String): String {
     val format = valor.replace(".", "").replace(",", ".")
@@ -153,6 +152,10 @@ fun getColorTextEstoque(qtdEstoque: Int): Color {
         qtdEstoque in 6 until 15 -> Amarelo
         else -> Verde
     }
+}
+
+fun getMonthString(month: Int): String {
+    return Month.of(month).getDisplayName(TextStyle.FULL, Locale("pt", "BR"))
 }
 
 fun getMonthInt(month: String): Month? {

@@ -180,11 +180,12 @@ fun TelaInformacoesProdutoScreen(
                 onDismiss = {
                     exibirModalRepor = false
                     reporProdutoViewModel.setQuantidadeInicial(0)
-                    reporProdutoViewModel.setQuantidadeMaxima(0)
+                    reporProdutoViewModel.setValorQuantidadeMaxima(0)
                     reporProdutoViewModel.quantidadeEstoqueData.value = 0
                 },
                 produto = produto.nome ?: "",
                 quantidadeEstoque = produto.qntdTotalEstoque ?: 0,
+                quantidadeEstoqueData = validadeViewModel.quantidadeEstoqueValidade,
                 viewModel = reporProdutoViewModel,
                 onDateSelected = {
                     reporProdutoViewModel.quantidadeEstoqueData.value = 0
@@ -194,11 +195,10 @@ fun TelaInformacoesProdutoScreen(
                     }
 
                     validadeViewModel.validade = validade!!
-                    reporProdutoViewModel.quantidadeEstoqueData.value =
-                        validadeViewModel.getQuantidadeEstoqueDaValidade()
-
-                    reporProdutoViewModel.setQuantidadeMaxima(null)
+                    validadeViewModel.getQuantidadeEstoquePorValidade(validade.id!!)
+                    reporProdutoViewModel.setValorQuantidadeMaxima(null)
                     reporProdutoViewModel.setQuantidadeInicial(0)
+                    validadeViewModel.quantidadeEstoqueValidade = 0
 
                 },
                 onQuantidadeChanged = {
@@ -294,10 +294,9 @@ fun TelaInformacoesProdutoScreen(
                     }
                     validadeViewModel.validade = validade!!
 
-                    val qtdMaxima = validadeViewModel.getQuantidadeEstoqueDaValidade()
+                    validadeViewModel.getQuantidadeEstoquePorValidade(validade!!.id!!)
 
-                    reporProdutoViewModel.quantidadeEstoqueData.value = qtdMaxima
-                    reporProdutoViewModel.setQuantidadeMaxima(qtdMaxima)
+                    reporProdutoViewModel.setValorQuantidadeMaxima(null)
                     reporProdutoViewModel.setQuantidadeInicial(0)
                 },
                 onQuantidadeChanged = {
@@ -305,12 +304,13 @@ fun TelaInformacoesProdutoScreen(
                         validadeViewModel.movimentacaoValidade.copy(quantidade = it)
                 },
                 quantidadeEstoque = produto.qntdTotalEstoque ?: 0,
+                quantidadeEstoqueData = validadeViewModel.quantidadeEstoqueValidade,
                 onDismiss = {
                     exibirModalRetirar = false
                     reporProdutoViewModel.setQuantidadeInicial(0)
-                    reporProdutoViewModel.setQuantidadeMaxima(0)
+                    reporProdutoViewModel.setValorQuantidadeMaxima(0)
                     reporProdutoViewModel.quantidadeEstoqueData.value = 0
-
+                    validadeViewModel.quantidadeEstoqueValidade = 0
                 },
                 onConfirm = {
                     validadeViewModel.retirarEstoque()
@@ -330,7 +330,7 @@ fun TelaInformacoesProdutoScreen(
             exibirModalRetirar = false
 
             reporProdutoViewModel.setQuantidadeInicial(0)
-            reporProdutoViewModel.setQuantidadeMaxima(0)
+            reporProdutoViewModel.setValorQuantidadeMaxima(0)
             reporProdutoViewModel.quantidadeEstoqueData.value = 0
             AlertSuccess(msg = "Estoque atualizado com sucesso!")
 
@@ -377,8 +377,6 @@ fun Form(
     validadeViewModel: ValidadeViewModel,
     produto: Produto, viewModel: ProdutoViewModel
 ) {
-    var qtdEstoqueData by remember { mutableStateOf(0) }
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -424,15 +422,15 @@ fun Form(
 
         SelectableDatesRow(
             dates = produto.validades.let { it?.map { date -> date.dtValidade ?: ""} } ?: emptyList(),
-            qtdEstoqueData = qtdEstoqueData,
+            qtdEstoqueData = validadeViewModel.quantidadeEstoqueValidadeTela,
             onDateSelected = { date ->
                 val validade = produto.validades?.find { validadeAtual ->
                     date.equals(validadeAtual.dtValidade ?: "")
                 }
 
                 validadeViewModel.validade = validade!!
-                qtdEstoqueData = validadeViewModel.getQuantidadeEstoqueDaValidade()
 
+                validadeViewModel.getQuantidadeEstoquePorValidade(validade!!.id!!, true)
             }
         )
     }

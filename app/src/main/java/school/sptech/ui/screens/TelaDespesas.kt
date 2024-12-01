@@ -61,6 +61,7 @@ fun TelaDespesasScreen(
 ) {
     var idEmpresa = 0
     var exibirFiltro by remember { mutableStateOf(false) }
+    var textoPesquisa by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
         idEmpresa = dataStoreRepository.getEmpresaId()
@@ -84,14 +85,25 @@ fun TelaDespesasScreen(
             onClickBack = { navController.popBackStack() },
             onClickAdd = { navController.navigate(Routes.AdicionarDespesa.route) },
             onClickFiltro = { exibirFiltro = true },
+            textoPesquisa = textoPesquisa,
+            onChangePesquisa = {
+                textoPesquisa = it
+
+                despesas.clear()
+                despesas.addAll(
+                    if (textoPesquisa.isEmpty()) despesaViewModel.getListaDespesas()
+                    else despesaViewModel.getListaDespesas(
+                        isPesquisa = true,
+                        pesquisa = textoPesquisa
+                    )
+                )
+            }
         )
 
-        if (despesaViewModel.filtroIsEmpty() && despesas.isEmpty()) {
-            despesas.addAll(despesaViewModel.getListaDespesas())
-        }
-
         ListaDespesas(
-            despesas = despesas,
+            despesas = if (despesas.isEmpty() && textoPesquisa.isEmpty())
+                despesaViewModel.getListaDespesas()
+            else despesas,
             navController = navController
         )
     }

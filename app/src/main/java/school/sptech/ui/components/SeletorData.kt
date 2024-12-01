@@ -42,10 +42,10 @@ import school.sptech.ui.theme.letterSpacingSecundaria
 
 @Composable
 fun SeletorData(
-    mesSelecionado: String,
+    mesSelecionado: Int,
     anoSelecionado: Int,
     onDismissRequest: () -> Unit,
-    onConfirm: (String, Int) -> Unit,
+    onConfirm: (Int, Int) -> Unit,
 ) {
     CustomMonthYearPickerDialog(
         mesSelecionado = mesSelecionado,
@@ -124,7 +124,7 @@ fun SelectableDatesRow(
                                 fontWeight = FontWeight.ExtraBold
                             )
                         ) {
-                            append("$qtdEstoqueData ${if (qtdEstoqueData == 1) "produto" else "produtos"} ")
+                            append("${if (currentDate?.isEmpty() == true) 0 else qtdEstoqueData} ${if (qtdEstoqueData == 1) "produto" else "produtos"} ")
                         }
                         withStyle(
                             SpanStyle(

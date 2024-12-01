@@ -1,6 +1,7 @@
 package school.sptech.ui.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,13 +15,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -40,6 +45,7 @@ import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
@@ -53,10 +59,13 @@ import school.sptech.ui.theme.RoxoNubank
 import school.sptech.ui.theme.fontFamilyPoppins
 import school.sptech.ui.theme.letterSpacingPrincipal
 import school.sptech.data.model.Funcionario
+import school.sptech.ui.theme.Branco
+import java.util.Locale
 
 @Composable
 fun TopBarInicio(
     usuario: Funcionario,
+    existNotificacaoNaoLida: Boolean,
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
@@ -116,10 +125,13 @@ fun TopBarInicio(
                 navController.navigate(Routes.Notificacoes.route)
             }) {
                 Icon(
-                    bitmap = ImageBitmap.imageResource(id = R.mipmap.notificacao),
+                    bitmap = ImageBitmap.imageResource(
+                        id = if (existNotificacaoNaoLida) R.mipmap.notificacao_nao_lida
+                        else R.mipmap.notificacao
+                    ),
                     "I",
                     modifier = Modifier.size(32.dp),
-                    tint = Preto
+                    tint = Color.Unspecified
                 )
             }
         }
@@ -129,7 +141,14 @@ fun TopBarInicio(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBarVoltar(navController: NavController, titulo: String) {
+fun TopBarVoltar(
+    navController: NavController,
+    titulo: String,
+    isNotificacoes: Boolean = false,
+    onClickAction: () -> Unit = {}
+) {
+    var expanded by remember { mutableStateOf(false) }
+
     CenterAlignedTopAppBar(
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
             containerColor = Color.Transparent,
@@ -144,25 +163,54 @@ fun TopBarVoltar(navController: NavController, titulo: String) {
             ButtonIconVoltar(onClick = { navController.popBackStack() })
         },
         modifier = Modifier.padding(horizontal = 8.dp),
+        actions = {
+            if (isNotificacoes) {
+                IconButton(onClick = { expanded = !expanded }) {
+                    Icon(
+                        Icons.Default.MoreVert,
+                        contentDescription = "Notificação",
+                        modifier = Modifier.size(24.dp),
+                        tint = Color.Unspecified
+                    )
+                }
+
+                DropdownMenu(
+                    modifier = Modifier.background(Branco),
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                ) {
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = "Marcar todas como lida",
+                                fontSize = 12.sp,
+                                letterSpacing = letterSpacingPrincipal,
+                                fontFamily = fontFamilyPoppins,
+                                color = Preto
+                            )
+                        },
+                        onClick = {
+                            onClickAction()
+                            expanded = false
+                        },
+                    )
+                }
+            }
+        }
 
         //scrollBehavior = scrollBehavior
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBarSearch(
     onClickBack: () -> Unit,
     onClickAdd: () -> Unit,
     onClickFiltro: () -> Unit,
+    textoPesquisa: String,
+    onChangePesquisa: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var textoPesquisa by remember { mutableStateOf("") }
-
-    var active by remember {
-        mutableStateOf(false)
-    }
-
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -177,11 +225,9 @@ fun TopBarSearch(
                 .fillMaxWidth(0.6f)
                 .fillMaxHeight(0.069f),
             value = textoPesquisa,
-            onValueChange = {
-                if (it.length < 20) {
-                    textoPesquisa = it
-                }
-            },
+            onValueChange = onChangePesquisa,
+            singleLine = true,
+            maxLines = 1,
             leadingIcon = {
                 Box(modifier = modifier) {
                     Icon(
@@ -195,17 +241,18 @@ fun TopBarSearch(
                 Text(
                     modifier = modifier,
                     text = "Pesquisar",
-                    fontSize = 12.5.sp,
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.Medium,
                     fontFamily = fontFamilyPoppins,
                     letterSpacing = letterSpacingPrincipal,
                     color = Preto,
-                    lineHeight = 8.sp
+                    lineHeight = 8.sp,
+                    softWrap = false
                 )
             },
             textStyle = TextStyle(
                 textDirection = TextDirection.ContentOrLtr,
-                fontSize = 12.5.sp,
+                fontSize = 12.sp,
                 fontWeight = FontWeight.Medium,
                 fontFamily = fontFamilyPoppins,
                 letterSpacing = letterSpacingPrincipal,
@@ -217,9 +264,9 @@ fun TopBarSearch(
                 unfocusedLeadingIconColor = Preto,
                 focusedTextColor = Preto,
                 focusedBorderColor = RoxoNubank,
-                focusedLeadingIconColor = RoxoNubank
+                focusedLeadingIconColor = RoxoNubank,
+                cursorColor = Preto
             ),
-            singleLine = true,
         )
 
         Row(
@@ -275,7 +322,13 @@ fun TopBarComSelecaoData(
             onClick = aoClicarSeletorData
         ) {
             Text(
-                text = "$mesSelecionado $anoSelecionado",
+                text = "${
+                    mesSelecionado.replaceFirstChar {
+                        if (it.isLowerCase()) it.titlecase(
+                            Locale.getDefault()
+                        ) else it.toString()
+                    }
+                } $anoSelecionado",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
                 fontFamily = fontFamilyPoppins,

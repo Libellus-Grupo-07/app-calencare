@@ -17,7 +17,9 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import formatarDecimal
 import getMonthInt
+import getMonthString
 import kotlinx.coroutines.delay
+import org.koin.androidx.compose.koinViewModel
 import school.sptech.R
 import school.sptech.Routes
 import school.sptech.data.model.Movimentacoes
@@ -28,12 +30,11 @@ import school.sptech.ui.components.BoxMovimentacoes
 import school.sptech.ui.components.CardKpi
 import school.sptech.ui.components.Chart
 import school.sptech.ui.components.SeletorData
-import school.sptech.ui.components.TextoValorColorido
 import school.sptech.ui.components.TopBarComSelecaoData
 import school.sptech.ui.theme.*
 import school.sptech.ui.viewModel.DashFinancasViewModel
 import school.sptech.ui.viewModel.DespesaViewModel
-import school.sptech.ui.viewModel.MovimentacoesViewModel
+import school.sptech.ui.viewModel.FinancasViewModel
 import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.Locale
@@ -52,52 +53,36 @@ class TelaFinancas : ComponentActivity() {
 
 @Composable
 fun TelaFinancasScreen(
-    dashFinancasViewModel: DashFinancasViewModel = viewModel(),
-    financasViewModel: MovimentacoesViewModel = viewModel(),
-    despesaViewModel: DespesaViewModel = viewModel(),
+    dashFinancasViewModel: DashFinancasViewModel = koinViewModel(),
+    financasViewModel: FinancasViewModel = koinViewModel(),
     navController: NavController = rememberNavController()
 ) {
+    var mesSelecionado by remember { mutableStateOf(financasViewModel.mes)}
+    var anoSelecionado by remember { mutableStateOf(financasViewModel.ano)}
 
-    val receitas = remember { mutableStateOf(0.0) }
-    val faturamento = remember { mutableStateOf(0.0) }
-    val comissoes = remember { mutableStateOf(0.0) }
-    var mesSelecionado by remember {
-        mutableStateOf(
-            LocalDate.now().month.getDisplayName(
-                TextStyle.FULL,
-                Locale.getDefault()
-            ).replaceFirstChar {
-                if (it.isLowerCase()) it.titlecase(
-                    Locale.getDefault()
-                ) else it.toString()
-            }
-        )
-    }
-
-    var anoSelecionado by remember { mutableStateOf(LocalDate.now().year) }
     var mostrarSeletorData by remember { mutableStateOf(false) }
-    var idEmpresa = 0
 
     LaunchedEffect(Unit) {
-        idEmpresa = dataStoreRepository.getEmpresaId()
-
         dashFinancasViewModel.getDadosDashPorMesAno(
             ano = anoSelecionado,
-            mes = getMonthInt(mesSelecionado)?.value ?: 0
+            mes = mesSelecionado
         )
 
         financasViewModel.getMovimentacoes(
             ano = anoSelecionado,
-            mes = getMonthInt(mesSelecionado)?.value ?: 0
+            mes =mesSelecionado
         )
 
-        despesaViewModel.getTotalDespesasMes(
+        financasViewModel.getKpisFinancas(
             ano = anoSelecionado,
-            mes = getMonthInt(mesSelecionado)?.value ?: 0
+            mes = mesSelecionado
         )
     }
 
-    var despesasTotais = despesaViewModel.totalDespesas
+    var receitasTotais = financasViewModel.totalReceitas
+    var despesasTotais = financasViewModel.totalDespesas
+    var lucrosTotais = financasViewModel.totalLucro
+    var comissoesTotais = financasViewModel.totalComissoes
 
     if (mostrarSeletorData) {
         SeletorData(
@@ -111,17 +96,17 @@ fun TelaFinancasScreen(
 
                 dashFinancasViewModel.getDadosDashPorMesAno(
                     ano = anoSelecionado,
-                    mes = getMonthInt(mesSelecionado)?.value ?: 0
+                    mes = mesSelecionado
                 )
 
                 financasViewModel.getMovimentacoes(
                     ano = anoSelecionado,
-                    mes = getMonthInt(mesSelecionado)?.value ?: 0
+                    mes = mesSelecionado
                 )
 
-                despesaViewModel.getTotalDespesasMes(
+                financasViewModel.getKpisFinancas(
                     ano = anoSelecionado,
-                    mes = getMonthInt(mesSelecionado)?.value ?: 0
+                    mes = mesSelecionado
                 )
 
             }
@@ -132,33 +117,33 @@ fun TelaFinancasScreen(
         mesSelecionado = mesSelecionado,
         anoSelecionado = anoSelecionado,
         aoClicarSeletorData = { mostrarSeletorData = true },
-        receitas = receitas.value,
+        receitas = receitasTotais,
         despesasTotais = despesasTotais,
-        faturamento = faturamento.value,
-        comissoes = comissoes.value,
+        lucro = lucrosTotais,
+        comissoes = comissoesTotais,
         movimentacoes = financasViewModel.movimentacoes,
         viewModel = dashFinancasViewModel,
         navController = navController
     )
 
-    if (despesaViewModel.deuErro) {
-        AlertError(msg = despesaViewModel.erro)
+    if (financasViewModel.deuErro) {
+        AlertError(msg = financasViewModel.erro)
 
         LaunchedEffect("error") {
             delay(6000)
-            despesaViewModel.deuErro = false
+            financasViewModel.deuErro = false
         }
     }
 }
 
 @Composable
 fun ConteudoTelaFinancas(
-    mesSelecionado: String,
+    mesSelecionado: Int,
     anoSelecionado: Int,
     aoClicarSeletorData: () -> Unit,
     receitas: Double,
     despesasTotais: Double,
-    faturamento: Double,
+    lucro: Double,
     comissoes: Double,
     movimentacoes: List<Movimentacoes>,
     viewModel: DashFinancasViewModel,
@@ -175,12 +160,12 @@ fun ConteudoTelaFinancas(
         Column {
             TopBarComSelecaoData(
                 stringResource(id = R.string.financas),
-                mesSelecionado,
+                getMonthString(mesSelecionado),
                 anoSelecionado,
                 aoClicarSeletorData
             )
 
-            ResumoFinanceiro(receitas, despesasTotais, faturamento, comissoes)
+            ResumoFinanceiro(receitas, despesasTotais, lucro, comissoes)
         }
 
         Chart(

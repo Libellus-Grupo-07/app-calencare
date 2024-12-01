@@ -74,8 +74,13 @@ class DespesaViewModel : ViewModel() {
         }
     }
 
-    fun getListaDespesas(): List<Despesa> {
-        return listaDespesas.toList()
+    fun getListaDespesas(isPesquisa: Boolean = false, pesquisa: String = ""): List<Despesa> {
+        return if (isPesquisa) listaDespesas.filter {
+            it.nome?.contains(pesquisa, ignoreCase = true) == true ||
+                    it.observacao?.contains(pesquisa, ignoreCase = true) == true ||
+                    it.categoriaDespesaNome?.contains(pesquisa, ignoreCase = true) == true
+        }
+        else listaDespesas.toList()
     }
 
     fun getDespesas(empresaId: Int): List<Despesa> {
@@ -178,40 +183,6 @@ class DespesaViewModel : ViewModel() {
                 Log.e("api", "Erro ao adicionar despesa => ${ex.message}")
                 deuErro = true
                 erro = (ex.message) ?: "Erro desconhecido"
-            }
-        }
-    }
-
-    fun getTotalDespesasMes(mes: Int, ano: Int): Double {
-        getTotalDespesasByMes(mes, ano)
-        return totalDespesas
-    }
-
-    private fun getTotalDespesasByMes(mes: Int, ano: Int) {
-        GlobalScope.launch {
-            try {
-                val response = despesaService.getTotalDespesasByEmpresaIdAndMesAndAno(
-                    empresaId = dataStoreRepository.getEmpresaId(),
-                    mes = mes,
-                    ano = ano
-                )
-
-                if (response.isSuccessful) {
-                    deuErro = false
-                    erro = ""
-                    totalDespesas = response.body() ?: 0.0
-                } else {
-                    Log.e(
-                        "api",
-                        "Erro ao buscar total de despesas => ${response.errorBody()?.string()}"
-                    )
-                    deuErro = true
-                    erro = response.errorBody()?.string() ?: "Erro desconhecido"
-                }
-            } catch (ex: Exception) {
-                Log.e("api", "Erro ao buscar total de despesas => ${ex.message}")
-                deuErro = true
-                erro = ex.message ?: "Erro desconhecido"
             }
         }
     }

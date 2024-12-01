@@ -23,6 +23,7 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 import school.sptech.R
 import school.sptech.data.model.Empresa
 import school.sptech.data.model.Funcionario
@@ -36,6 +37,7 @@ import school.sptech.ui.components.BoxProdutos
 import school.sptech.ui.components.TopBarInicio
 import school.sptech.ui.theme.CalencareAppTheme
 import school.sptech.ui.viewModel.MovimentacaoValidadeViewModel
+import school.sptech.ui.viewModel.NotificacaoEstoqueViewModel
 import school.sptech.ui.viewModel.ProdutoViewModel
 import school.sptech.ui.viewModel.UsuarioViewModel
 import school.sptech.ui.viewModel.ValidadeViewModel
@@ -54,15 +56,16 @@ class TelaInicial : ComponentActivity() {
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun TelaInicio(
-    usuarioViewModel: UsuarioViewModel = viewModel(),
-    produtoViewModel: ProdutoViewModel = viewModel(),
+    usuarioViewModel: UsuarioViewModel = koinViewModel(),
+    produtoViewModel: ProdutoViewModel = koinViewModel(),
     validadeViewModel: ValidadeViewModel = viewModel(),
     movimentacaoValidadeViewModel: MovimentacaoValidadeViewModel = viewModel(),
+    notificacaoEstoqueViewModel: NotificacaoEstoqueViewModel = viewModel(),
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(Unit) {
-        val idUser = dataStoreRepository.getUser().idUser
+        val idUser = dataStoreRepository.getUserId()
 
         GlobalScope.launch {
             if (!dataStoreRepository.alreadySaved()) {
@@ -88,12 +91,13 @@ fun TelaInicio(
                 )
             }
 
-            produtoViewModel.getProdutos(dataStoreRepository.getUser().idEmpresa)
+            produtoViewModel.getProdutosAlertaEstoque(dataStoreRepository.getEmpresaId())
         }
     }
 
     val usuario = usuarioViewModel.usuario
     var idEmpresa = usuarioViewModel.usuario.empresa?.id ?: 0
+    val existNotificacaoNaoLida = notificacaoEstoqueViewModel.existNotificacaoNaoLida()
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Background()
@@ -102,7 +106,7 @@ fun TelaInicio(
                 modifier = modifier
                     .padding(horizontal = 24.dp, vertical = 8.dp)
             ) {
-                TopBarInicio(usuario, navController = navController)
+                TopBarInicio(usuario = usuario, existNotificacaoNaoLida = existNotificacaoNaoLida, navController = navController)
                 Spacer(modifier = Modifier.size(21.dp))
 
                 BoxKpisEstoque(
@@ -123,7 +127,7 @@ fun TelaInicio(
                 Spacer(modifier = Modifier.size(21.dp))
 
                 BoxProdutos(
-                    produtos = produtoViewModel.getListaProdutosEstoqueBaixo(),
+                    produtos = produtoViewModel.getListaProdutosAlertaEstoque(),
                     validadeViewModel = validadeViewModel,
                     titulo = stringResource(id = R.string.produtosComQuantidadeBaixa),
                     isTelaInicio = true,
@@ -146,7 +150,7 @@ fun TelaInicio(
         AlertSuccess(msg = "Estoque atualizado com sucesso!")
 
         LaunchedEffect("sucesso") {
-            produtoViewModel.getProdutos(idEmpresa)
+            produtoViewModel.getProdutosAlertaEstoque(idEmpresa)
             delay(6000)
             validadeViewModel.erro = ""
         }

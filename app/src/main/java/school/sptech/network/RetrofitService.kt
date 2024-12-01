@@ -12,14 +12,15 @@ import school.sptech.data.service.EnderecoService
 import school.sptech.data.service.FinancasService
 import school.sptech.data.service.FuncionarioService
 import school.sptech.data.service.MovimentacaoValidadeService
-import school.sptech.data.service.MovimentacoesService
+import school.sptech.data.service.NotificacaoEstoqueService
 import school.sptech.data.service.ProdutoService
 import school.sptech.data.service.ValidadeService
 
 object RetrofitService{
-//    private val ipAws = "54.243.135.89"
-    private val ipAws = "44.205.75.87"
-    private val BASE_URL_API = "http://$ipAws"
+    private val isDev = true
+    private val ipAwsDev = "http://44.205.75.87/"
+    private val ipAwsProd = "https://calencare-prod.sytes.net/"
+    private val BASE_URL_API = if(isDev) ipAwsDev else ipAwsProd
 
     fun getClientEmpresa(): EmpresaService {
         val client = Retrofit.Builder()
@@ -110,16 +111,6 @@ object RetrofitService{
         return client
     }
 
-    fun getClientMovimentacoes(): MovimentacoesService {
-        val client = Retrofit.Builder()
-            .baseUrl(BASE_URL_API)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(MovimentacoesService::class.java)
-
-        return client
-    }
-
     fun getClientFinancas(): FinancasService {
         val client = Retrofit.Builder()
             .baseUrl(BASE_URL_API)
@@ -150,4 +141,13 @@ object RetrofitService{
         return client
     }
 
+    fun getClientNotificacaoEstoque(): NotificacaoEstoqueService {
+        val client = Retrofit.Builder()
+            .baseUrl(BASE_URL_API)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(NotificacaoEstoqueService::class.java)
+
+        return client
+    }
 }

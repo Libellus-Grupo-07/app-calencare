@@ -63,6 +63,7 @@ import school.sptech.R
 import school.sptech.data.model.Agendamento
 import school.sptech.data.model.Despesa
 import school.sptech.data.model.Movimentacoes
+import school.sptech.data.model.NotificacaoEstoque
 import school.sptech.data.model.Produto
 import school.sptech.data.model.Validade
 import school.sptech.ui.theme.Amarelo
@@ -310,6 +311,8 @@ fun CardProduto(
             if (exibirModalRepor) {
                 validadeViewModel.deuErro = false
                 validadeViewModel.erro = ""
+                reporProdutoViewModel.quantidadeEstoqueData.value =
+                    validadeViewModel.quantidadeEstoqueValidade
 
                 LaunchedEffect(Unit) {
                     validadeViewModel.getValidades(produto.id!!)
@@ -320,11 +323,12 @@ fun CardProduto(
                         exibirModalRepor = false
                         reporProdutoViewModel.quantidadeEstoqueData.value = 0
                         reporProdutoViewModel.setQuantidadeInicial(0)
-                        reporProdutoViewModel.setQuantidadeMaxima(0)
+                        reporProdutoViewModel.setValorQuantidadeMaxima(0)
                         validadeViewModel.quantidadeEstoqueValidade = 0
                     },
                     produto = produto.nome ?: "",
                     quantidadeEstoque = produto.qntdTotalEstoque ?: 0,
+                    quantidadeEstoqueData = validadeViewModel.quantidadeEstoqueValidade,
                     onDateSelected = {
                         reporProdutoViewModel.quantidadeEstoqueData.value = 0
                         validadeViewModel.validade = Validade()
@@ -334,9 +338,9 @@ fun CardProduto(
                         }
 
                         validadeViewModel.validade = validade!!
-                        reporProdutoViewModel.quantidadeEstoqueData.value =
-                            validadeViewModel.getQuantidadeEstoqueDaValidade()
-                        reporProdutoViewModel.setQuantidadeMaxima(null)
+
+                        validadeViewModel.getQuantidadeEstoquePorValidade(validade.id!!)
+                        reporProdutoViewModel.setValorQuantidadeMaxima(null)
                     },
                     onQuantidadeChanged = {
                         validadeViewModel.movimentacaoValidade =
@@ -356,7 +360,7 @@ fun CardProduto(
 
                             //validadeViewModel.atualizarQtdEstoqueValidades()
                             reporProdutoViewModel.setQuantidadeInicial(0)
-                            reporProdutoViewModel.setQuantidadeMaxima(0)
+                            reporProdutoViewModel.setValorQuantidadeMaxima(null)
                             reporProdutoViewModel.quantidadeEstoqueData.value = 0
                             validadeViewModel.quantidadeEstoqueValidade = 0
 
@@ -364,7 +368,7 @@ fun CardProduto(
                         }
                     },
                     datesFromBackend = validadeViewModel.getListaValidades()
-                        .map { it.dtValidade ?: "" } ?: listOf()
+                        .map { it.dtValidade ?: "" }
                 )
             }
 
@@ -378,11 +382,12 @@ fun CardProduto(
 
                 RetirarProductModal(
                     produto = produto.nome ?: "",
+                    quantidadeEstoqueData = validadeViewModel.quantidadeEstoqueValidade,
                     quantidadeEstoque = produto.qntdTotalEstoque ?: 0,
                     onDismiss = {
                         exibirModalRetirar = false
                         reporProdutoViewModel.setQuantidadeInicial(0)
-                        reporProdutoViewModel.setQuantidadeMaxima(0)
+                        reporProdutoViewModel.setValorQuantidadeMaxima(0)
                         reporProdutoViewModel.quantidadeEstoqueData.value = 0
                         validadeViewModel.quantidadeEstoqueValidade = 0
                     },
@@ -394,7 +399,7 @@ fun CardProduto(
                                 validadeViewModel.movimentacaoValidade.quantidade ?: 0
                             )
                             reporProdutoViewModel.setQuantidadeInicial(0)
-                            reporProdutoViewModel.setQuantidadeMaxima(0)
+                            reporProdutoViewModel.setValorQuantidadeMaxima(null)
                             reporProdutoViewModel.quantidadeEstoqueData.value = 0
                             validadeViewModel.quantidadeEstoqueValidade = 0
                             exibirModalRetirar = false
@@ -404,25 +409,25 @@ fun CardProduto(
                     onDateSelected = {
                         reporProdutoViewModel.quantidadeEstoqueData.value = 0
 
-                        val validade = produto.validades?.find { validadeAtual ->
-                            it!!.equals(validadeAtual.dtValidade ?: "")
+                        val validade = validadeViewModel.getListaValidades().find { validadeAtual ->
+                            it!!.equals((validadeAtual.dtValidade ?: ""))
+                                    && validadeAtual.produtoId == produto.id
                         }
 
                         validadeViewModel.validade = validade!!
-                        validadeViewModel.getQuantidadeEstoquePorValidade()
 
-                        reporProdutoViewModel.quantidadeEstoqueData.value =
-                            validadeViewModel.quantidadeEstoqueValidade
-                        reporProdutoViewModel.setQuantidadeMaxima(validadeViewModel.quantidadeEstoqueValidade)
-                        
+                        validadeViewModel.getQuantidadeEstoquePorValidade(validade.id!!)
 
+
+                        reporProdutoViewModel.setValorQuantidadeMaxima(null)
                         reporProdutoViewModel.setQuantidadeInicial(0)
                     },
                     onQuantidadeChanged = {
                         validadeViewModel.movimentacaoValidade =
                             validadeViewModel.movimentacaoValidade.copy(quantidade = it)
                     },
-                    datesFromBackend = produto.validades?.map { it.dtValidade ?: "" } ?: listOf()
+                    datesFromBackend = validadeViewModel.getListaValidades()
+                        .map { it.dtValidade ?: "" } ?: listOf()
                 )
             }
 
@@ -910,30 +915,33 @@ fun CardDespesa(despesa: Despesa, onClickDespesa: () -> Unit) {
 }
 
 @Composable
-fun CardNotificacoes(dtHora: String, nomeProduto: String, qntdProduto: Int) {
-    var cor = Color.Black
+fun CardNotificacoes(notificacao: NotificacaoEstoque, onClick: () -> Unit) {
+    var cor = Laranja
     var img = R.mipmap.orangealert
-    var textoAlerta = ""
+    var textoAlerta = stringResource(id = R.string.quaseSemEstoque)
 
-    if (qntdProduto in 11..20) {
+    if (notificacao.nivelEstoque.equals("Estoque muito baixo", ignoreCase = true)) {
         cor = Amarelo
         img = R.mipmap.yellowalert
         textoAlerta = stringResource(R.string.estoqueBaixo)
-    } else if (qntdProduto in 1..10) {
-        cor = Laranja
-        img = R.mipmap.orangealert
-        textoAlerta = stringResource(R.string.quaseSemEstoque)
-    } else if (qntdProduto == 0) {
+    } else if (notificacao.quantidade == 0) {
         cor = Vermelho
         img = R.mipmap.redalert
         textoAlerta = stringResource(R.string.semEstoque)
     }
 
-    Column(modifier = Modifier) {
+    Column(modifier = Modifier.clickable {
+        onClick()
+    }) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 25.dp, vertical = 16.dp),
+                .padding(
+                    start = 24.dp,
+                    end = 24.dp,
+                    top = 16.dp,
+                    bottom = 12.dp
+                ),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -942,19 +950,20 @@ fun CardNotificacoes(dtHora: String, nomeProduto: String, qntdProduto: Int) {
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
-                    text = dtHora,
+                    text = notificacao.dtCriacao?.let { formatarData(data = it, isDateTime = true) } ?: "",
                     fontFamily = fontFamilyPoppins,
                     letterSpacing = letterSpacingPrincipal,
-                    color = Color(88, 88, 88, 255),
+                    color = Cinza,
                     style = TextStyle(
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 11.5.sp,
+                        fontWeight = FontWeight.Medium,
                     )
                 )
             }
 
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Column {
                     Image(
@@ -988,10 +997,20 @@ fun CardNotificacoes(dtHora: String, nomeProduto: String, qntdProduto: Int) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 MultiStyleText(
-                    stringResource(R.string.oProduto), Preto,
-                    nomeProduto, RoxoNubank,
-                    stringResource(R.string.situacaoEstoque), Preto,
-                    stringResource(R.string.qtdProdutoUnidade, qntdProduto), RoxoNubank
+                    text1 = stringResource(R.string.oProduto),
+                    color1 = Preto,
+                    text2 = notificacao.nomeProduto ?: "",
+                    color2 = RoxoNubank,
+                    text3 = if (notificacao.quantidade == 0) " está sem estoque."
+                    else stringResource(R.string.situacaoEstoque),
+                    color3 = Preto,
+                    text4 = if (notificacao.quantidade == 0) ""
+                    else stringResource(
+                        R.string.qtdProdutoUnidade,
+                        notificacao.quantidade ?: 0
+                    ),
+                    color4 = RoxoNubank,
+                    isBold = notificacao.lido == 0
                 )
             }
 
