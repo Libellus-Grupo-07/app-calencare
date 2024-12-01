@@ -937,7 +937,12 @@ fun CardNotificacoes(dtHora: String, nomeProduto: String, qntdProduto: Int) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 25.dp, vertical = 16.dp),
+                .padding(
+                    start = 24.dp,
+                    end = 24.dp,
+                    top = 16.dp,
+                    bottom = 12.dp
+                ),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -949,10 +954,10 @@ fun CardNotificacoes(dtHora: String, nomeProduto: String, qntdProduto: Int) {
                     text = dtHora,
                     fontFamily = fontFamilyPoppins,
                     letterSpacing = letterSpacingPrincipal,
-                    color = Color(88, 88, 88, 255),
+                    color = Cinza,
                     style = TextStyle(
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 11.5.sp,
+                        fontWeight = FontWeight.Medium,
                     )
                 )
             }
@@ -992,10 +997,14 @@ fun CardNotificacoes(dtHora: String, nomeProduto: String, qntdProduto: Int) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 MultiStyleText(
-                    stringResource(R.string.oProduto), Preto,
-                    nomeProduto, RoxoNubank,
-                    stringResource(R.string.situacaoEstoque), Preto,
-                    stringResource(R.string.qtdProdutoUnidade, qntdProduto), RoxoNubank
+                    stringResource(R.string.oProduto),
+                    Preto,
+                    nomeProduto,
+                    RoxoNubank,
+                    if (qntdProduto == 0) " está sem estoque." else stringResource(R.string.situacaoEstoque),
+                    Preto,
+                    if(qntdProduto == 0) "" else stringResource(R.string.qtdProdutoUnidade, qntdProduto),
+                    RoxoNubank
                 )
             }
 

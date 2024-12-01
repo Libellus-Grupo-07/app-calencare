@@ -55,7 +55,7 @@ fun LabelInput(
         fontWeight = FontWeight.Bold,
         letterSpacing = letterSpacingPrincipal,
         fontFamily = fontFamilyPoppins,
-        fontSize = if (isSmallInput) 11.5.sp else if(isMediumInput) 12.5.sp else 14.sp,
+        fontSize = if (isSmallInput) 11.5.sp else if (isMediumInput) 12.5.sp else 14.sp,
         modifier = Modifier.padding(bottom = 4.dp)
     )
 }
@@ -189,16 +189,42 @@ fun MultiStyleText(
     text4: String, color4: Color
 ) {
     Text(buildAnnotatedString {
-        withStyle(style = SpanStyle(color = color1)) {
+        withStyle(
+            style = SpanStyle(
+                letterSpacing = letterSpacingPrincipal,
+                color = color1,
+                fontSize = 13.5.sp
+            )
+        ) {
             append(text1)
         }
-        withStyle(style = SpanStyle(color = color2, fontWeight = FontWeight.SemiBold)) {
+        withStyle(
+            style = SpanStyle(
+                letterSpacing = letterSpacingPrincipal,
+                color = color2,
+                fontSize = 13.5.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+        ) {
             append(text2)
         }
-        withStyle(style = SpanStyle(color = color3)) {
+        withStyle(
+            style = SpanStyle(
+                letterSpacing = letterSpacingPrincipal,
+                color = color3,
+                fontSize = 13.5.sp
+            )
+        ) {
             append(text3)
         }
-        withStyle(style = SpanStyle(color = color4, fontWeight = FontWeight.SemiBold)) {
+        withStyle(
+            style = SpanStyle(
+                letterSpacing = letterSpacingPrincipal,
+                color = color4,
+                fontSize = 13.5.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+        ) {
             append(text4)
         }
     })

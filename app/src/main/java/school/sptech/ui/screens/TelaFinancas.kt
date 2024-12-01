@@ -32,7 +32,7 @@ import school.sptech.ui.components.TopBarComSelecaoData
 import school.sptech.ui.theme.*
 import school.sptech.ui.viewModel.DashFinancasViewModel
 import school.sptech.ui.viewModel.DespesaViewModel
-import school.sptech.ui.viewModel.MovimentacoesViewModel
+import school.sptech.ui.viewModel.FinancasViewModel
 import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.Locale
@@ -52,14 +52,9 @@ class TelaFinancas : ComponentActivity() {
 @Composable
 fun TelaFinancasScreen(
     dashFinancasViewModel: DashFinancasViewModel = viewModel(),
-    financasViewModel: MovimentacoesViewModel = viewModel(),
-    despesaViewModel: DespesaViewModel = viewModel(),
+    financasViewModel: FinancasViewModel = viewModel(),
     navController: NavController = rememberNavController()
 ) {
-
-    val receitas = remember { mutableStateOf(0.0) }
-    val faturamento = remember { mutableStateOf(0.0) }
-    val comissoes = remember { mutableStateOf(0.0) }
     var mesSelecionado by remember {
         mutableStateOf(
             LocalDate.now().month.getDisplayName(
@@ -75,11 +70,8 @@ fun TelaFinancasScreen(
 
     var anoSelecionado by remember { mutableStateOf(LocalDate.now().year) }
     var mostrarSeletorData by remember { mutableStateOf(false) }
-    var idEmpresa = 0
 
     LaunchedEffect(Unit) {
-        idEmpresa = dataStoreRepository.getEmpresaId()
-
         dashFinancasViewModel.getDadosDashPorMesAno(
             ano = anoSelecionado,
             mes = getMonthInt(mesSelecionado)?.value ?: 0
@@ -90,13 +82,16 @@ fun TelaFinancasScreen(
             mes = getMonthInt(mesSelecionado)?.value ?: 0
         )
 
-        despesaViewModel.getTotalDespesasMes(
+        financasViewModel.getKpisFinancas(
             ano = anoSelecionado,
             mes = getMonthInt(mesSelecionado)?.value ?: 0
         )
     }
 
-    var despesasTotais = despesaViewModel.totalDespesas
+    var receitasTotais = financasViewModel.totalReceitas
+    var despesasTotais = financasViewModel.totalDespesas
+    var lucrosTotais = financasViewModel.totalLucro
+    var comissoesTotais = financasViewModel.totalComissoes
 
     if (mostrarSeletorData) {
         SeletorData(
@@ -118,7 +113,7 @@ fun TelaFinancasScreen(
                     mes = getMonthInt(mesSelecionado)?.value ?: 0
                 )
 
-                despesaViewModel.getTotalDespesasMes(
+                financasViewModel.getKpisFinancas(
                     ano = anoSelecionado,
                     mes = getMonthInt(mesSelecionado)?.value ?: 0
                 )
@@ -131,21 +126,21 @@ fun TelaFinancasScreen(
         mesSelecionado = mesSelecionado,
         anoSelecionado = anoSelecionado,
         aoClicarSeletorData = { mostrarSeletorData = true },
-        receitas = receitas.value,
+        receitas = receitasTotais,
         despesasTotais = despesasTotais,
-        faturamento = faturamento.value,
-        comissoes = comissoes.value,
+        lucro = lucrosTotais,
+        comissoes = comissoesTotais,
         movimentacoes = financasViewModel.movimentacoes,
         viewModel = dashFinancasViewModel,
         navController = navController
     )
 
-    if (despesaViewModel.deuErro) {
-        AlertError(msg = despesaViewModel.erro)
+    if (financasViewModel.deuErro) {
+        AlertError(msg = financasViewModel.erro)
 
         LaunchedEffect("error") {
             delay(6000)
-            despesaViewModel.deuErro = false
+            financasViewModel.deuErro = false
         }
     }
 }
@@ -157,7 +152,7 @@ fun ConteudoTelaFinancas(
     aoClicarSeletorData: () -> Unit,
     receitas: Double,
     despesasTotais: Double,
-    faturamento: Double,
+    lucro: Double,
     comissoes: Double,
     movimentacoes: List<Movimentacoes>,
     viewModel: DashFinancasViewModel,
@@ -179,7 +174,7 @@ fun ConteudoTelaFinancas(
                 aoClicarSeletorData
             )
 
-            ResumoFinanceiro(receitas, despesasTotais, faturamento, comissoes)
+            ResumoFinanceiro(receitas, despesasTotais, lucro, comissoes)
         }
 
         Chart(

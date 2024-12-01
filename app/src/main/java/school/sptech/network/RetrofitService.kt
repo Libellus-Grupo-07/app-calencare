@@ -12,7 +12,6 @@ import school.sptech.data.service.EnderecoService
 import school.sptech.data.service.FinancasService
 import school.sptech.data.service.FuncionarioService
 import school.sptech.data.service.MovimentacaoValidadeService
-import school.sptech.data.service.MovimentacoesService
 import school.sptech.data.service.ProdutoService
 import school.sptech.data.service.ValidadeService
 
@@ -106,16 +105,6 @@ object RetrofitService{
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(EnderecoService::class.java)
-
-        return client
-    }
-
-    fun getClientMovimentacoes(): MovimentacoesService {
-        val client = Retrofit.Builder()
-            .baseUrl(BASE_URL_API)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(MovimentacoesService::class.java)
 
         return client
     }

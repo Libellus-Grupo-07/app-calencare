@@ -25,14 +25,6 @@ interface DespesaService {
         @Path("despesaId") despesaId: Int
     ): Response<Despesa>
 
-
-    @GET("/api/despesas/total/{empresaId}/{mes}/{ano}")
-    suspend fun getTotalDespesasByEmpresaIdAndMesAndAno(
-        @Path("empresaId") empresaId: Int,
-        @Path("mes") mes: Int,
-        @Path("ano") ano: Int
-    ): Response<Double>
-
     @PUT("/api/despesas/{empresaId}/{despesaId}/{categoriaDespesaId}")
     suspend fun putDespesaById(
         @Path("empresaId") empresaId: Int,
