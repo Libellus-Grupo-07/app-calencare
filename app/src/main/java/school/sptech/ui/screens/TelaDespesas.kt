@@ -101,7 +101,9 @@ fun TelaDespesasScreen(
         )
 
         ListaDespesas(
-            despesas = if (despesas.isEmpty()) despesaViewModel.getListaDespesas() else despesas,
+            despesas = if (despesas.isEmpty() && textoPesquisa.isEmpty())
+                despesaViewModel.getListaDespesas()
+            else despesas,
             navController = navController
         )
     }

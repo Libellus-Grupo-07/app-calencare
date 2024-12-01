@@ -106,7 +106,9 @@ fun TelaEstoqueScreen(
                 .padding(horizontal = 24.dp, vertical = 12.dp)
         ) {
             BoxProdutos(
-                produtos = if (listaProdutos.isEmpty()) produtoViewModel.getListaProdutos() else listaProdutos,
+                produtos = if (listaProdutos.isEmpty() && textoPesquisa.isEmpty())
+                    produtoViewModel.getListaProdutos()
+                else listaProdutos,
                 titulo = stringResource(id = R.string.estoque),
                 isTelaInicio = false,
                 modifier = Modifier.fillMaxWidth(),
