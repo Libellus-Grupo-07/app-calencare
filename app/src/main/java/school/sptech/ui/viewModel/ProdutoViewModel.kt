@@ -39,9 +39,15 @@ class ProdutoViewModel : ViewModel() {
         categoriaProdutoService = RetrofitService.getClientCategoriaProduto()
     }
 
-    fun getListaProdutos(): List<Produto> {
+    fun getListaProdutos(isPesquisa: Boolean = false, pesquisa: String = ""): List<Produto> {
         //getProdutos(empresaId)
-        return produtos.toList()
+        val regex = Regex(pesquisa, RegexOption.IGNORE_CASE)
+        return if (isPesquisa) produtos.filter {
+            it.nome?.contains(regex) == true
+                    || it.marca?.contains(regex) == true
+                    || it.descricao?.contains(regex) == true
+                    || it.categoriaProdutoNome?.contains(regex) == true
+        } else produtos.toList()
     }
 
     fun getListaProdutosAlertaEstoque(): List<Produto> {
@@ -54,7 +60,7 @@ class ProdutoViewModel : ViewModel() {
             produto.qntdTotalEstoque!! >= filtro.rangeQtdEstoque.start &&
                     produto.qntdTotalEstoque!! <= filtro.rangeQtdEstoque.endInclusive &&
                     (filtro.categorias.isEmpty() || filtro.categorias.contains(produto.categoriaProdutoNome)) &&
-                        produto.validades?.map { it.dtValidade }?.contains(filtro.dtValidade) == true
+                    produto.validades?.map { it.dtValidade }?.contains(filtro.dtValidade) == true
         }
     }
 
@@ -138,7 +144,7 @@ class ProdutoViewModel : ViewModel() {
         }
     }
 
-    fun atualizarValidadeProdutos(produtos:List<Produto>){
+    fun atualizarValidadeProdutos(produtos: List<Produto>) {
         GlobalScope.launch {
             produtos.forEach {
                 validadeViewModel.getValidades(it.id ?: 0)

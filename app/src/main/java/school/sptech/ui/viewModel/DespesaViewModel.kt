@@ -74,8 +74,13 @@ class DespesaViewModel : ViewModel() {
         }
     }
 
-    fun getListaDespesas(): List<Despesa> {
-        return listaDespesas.toList()
+    fun getListaDespesas(isPesquisa: Boolean = false, pesquisa: String = ""): List<Despesa> {
+        return if (isPesquisa) listaDespesas.filter {
+            it.nome?.contains(pesquisa, ignoreCase = true) == true ||
+                    it.observacao?.contains(pesquisa, ignoreCase = true) == true ||
+                    it.categoriaDespesaNome?.contains(pesquisa, ignoreCase = true) == true
+        }
+        else listaDespesas.toList()
     }
 
     fun getDespesas(empresaId: Int): List<Despesa> {

@@ -7,33 +7,27 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.SearchBar
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import school.sptech.R
 import school.sptech.Routes
+import school.sptech.data.model.Produto
 import school.sptech.dataStoreRepository
 import school.sptech.ui.components.AlertError
 import school.sptech.ui.components.AlertSuccess
@@ -60,6 +54,10 @@ fun TelaEstoqueScreen(
     validadeViewModel: ValidadeViewModel = koinViewModel(),
     navController: NavController
 ) {
+    var listaProdutos = remember {
+        mutableStateListOf<Produto>()
+    }
+
     LaunchedEffect("produtos") {
         val idEmpresa = dataStoreRepository.getEmpresaId()
 
@@ -71,6 +69,9 @@ fun TelaEstoqueScreen(
         mutableStateOf(false)
     }
 
+    var textoPesquisa by remember {
+        mutableStateOf("")
+    }
 
     Background()
 
@@ -80,7 +81,24 @@ fun TelaEstoqueScreen(
             onClickAdd = {
                 navController.navigate(Routes.AdicionarProduto.route)
             },
-            onClickFiltro = { exibirFiltro = !exibirFiltro }
+            onClickFiltro = { exibirFiltro = !exibirFiltro },
+            textoPesquisa = textoPesquisa,
+            onChangePesquisa = {
+                textoPesquisa = it
+
+                if (textoPesquisa.isNotEmpty()) {
+                    listaProdutos.clear()
+                    listaProdutos.addAll(
+                        produtoViewModel.getListaProdutos(
+                            isPesquisa = true,
+                            pesquisa = textoPesquisa
+                        )
+                    )
+                } else {
+                    listaProdutos.clear()
+                    listaProdutos.addAll(produtoViewModel.getListaProdutos())
+                }
+            }
         )
 
         Row(
@@ -88,9 +106,7 @@ fun TelaEstoqueScreen(
                 .padding(horizontal = 24.dp, vertical = 12.dp)
         ) {
             BoxProdutos(
-                produtos =
-                if (produtoViewModel.filtroIsEmpty()) produtoViewModel.getListaProdutos()
-                else produtoViewModel.getListaProdutosPorFiltro(),
+                produtos = if (listaProdutos.isEmpty()) produtoViewModel.getListaProdutos() else listaProdutos,
                 titulo = stringResource(id = R.string.estoque),
                 isTelaInicio = false,
                 modifier = Modifier.fillMaxWidth(),
@@ -148,6 +164,8 @@ fun TelaEstoqueScreen(
             },
             onSalvar = {
                 exibirFiltro = false
+                listaProdutos.clear()
+                listaProdutos.addAll(produtoViewModel.getListaProdutosPorFiltro())
             },
         )
     }

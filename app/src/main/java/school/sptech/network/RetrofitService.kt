@@ -17,9 +17,10 @@ import school.sptech.data.service.ProdutoService
 import school.sptech.data.service.ValidadeService
 
 object RetrofitService{
-//    private val ipAws = "54.243.135.89"
-    private val ipAws = "44.205.75.87"
-    private val BASE_URL_API = "http://$ipAws"
+    private val isDev = true
+    private val ipAwsDev = "http://44.205.75.87/"
+    private val ipAwsProd = "https://calencare-prod.sytes.net/"
+    private val BASE_URL_API = if(isDev) ipAwsDev else ipAwsProd
 
     fun getClientEmpresa(): EmpresaService {
         val client = Retrofit.Builder()

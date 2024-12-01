@@ -202,20 +202,15 @@ fun TopBarVoltar(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBarSearch(
     onClickBack: () -> Unit,
     onClickAdd: () -> Unit,
     onClickFiltro: () -> Unit,
+    textoPesquisa: String,
+    onChangePesquisa: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var textoPesquisa by remember { mutableStateOf("") }
-
-    var active by remember {
-        mutableStateOf(false)
-    }
-
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -230,11 +225,9 @@ fun TopBarSearch(
                 .fillMaxWidth(0.6f)
                 .fillMaxHeight(0.069f),
             value = textoPesquisa,
-            onValueChange = {
-                if (it.length < 20) {
-                    textoPesquisa = it
-                }
-            },
+            onValueChange = onChangePesquisa,
+            singleLine = true,
+            maxLines = 1,
             leadingIcon = {
                 Box(modifier = modifier) {
                     Icon(
@@ -248,17 +241,18 @@ fun TopBarSearch(
                 Text(
                     modifier = modifier,
                     text = "Pesquisar",
-                    fontSize = 12.5.sp,
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.Medium,
                     fontFamily = fontFamilyPoppins,
                     letterSpacing = letterSpacingPrincipal,
                     color = Preto,
-                    lineHeight = 8.sp
+                    lineHeight = 8.sp,
+                    softWrap = false
                 )
             },
             textStyle = TextStyle(
                 textDirection = TextDirection.ContentOrLtr,
-                fontSize = 12.5.sp,
+                fontSize = 12.sp,
                 fontWeight = FontWeight.Medium,
                 fontFamily = fontFamilyPoppins,
                 letterSpacing = letterSpacingPrincipal,
@@ -270,9 +264,9 @@ fun TopBarSearch(
                 unfocusedLeadingIconColor = Preto,
                 focusedTextColor = Preto,
                 focusedBorderColor = RoxoNubank,
-                focusedLeadingIconColor = RoxoNubank
+                focusedLeadingIconColor = RoxoNubank,
+                cursorColor = Preto
             ),
-            singleLine = true,
         )
 
         Row(
@@ -328,11 +322,13 @@ fun TopBarComSelecaoData(
             onClick = aoClicarSeletorData
         ) {
             Text(
-                text = "${mesSelecionado.replaceFirstChar {
-                    if (it.isLowerCase()) it.titlecase(
-                        Locale.getDefault()
-                    ) else it.toString()
-                }} $anoSelecionado",
+                text = "${
+                    mesSelecionado.replaceFirstChar {
+                        if (it.isLowerCase()) it.titlecase(
+                            Locale.getDefault()
+                        ) else it.toString()
+                    }
+                } $anoSelecionado",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
                 fontFamily = fontFamilyPoppins,

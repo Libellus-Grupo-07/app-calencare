@@ -28,7 +28,6 @@ class ValidadeViewModel : ViewModel() {
     var movimentacaoValidade by mutableStateOf(MovimentacaoValidade())
     var quantidadeEstoqueValidade by mutableStateOf(0)
     var quantidadeEstoqueValidadeTela by mutableStateOf(0)
-    var quantidadeTotalEstoque by mutableStateOf(0)
     var deuErro by mutableStateOf(false)
     var erro by mutableStateOf("")
 
