@@ -28,7 +28,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 import school.sptech.R
 import school.sptech.Routes
 import school.sptech.dataStoreRepository
@@ -53,8 +56,8 @@ class TelaEstoque : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TelaEstoqueScreen(
-    produtoViewModel: ProdutoViewModel = viewModel(),
-    validadeViewModel: ValidadeViewModel = viewModel(),
+    produtoViewModel: ProdutoViewModel = koinViewModel(),
+    validadeViewModel: ValidadeViewModel = koinViewModel(),
     navController: NavController
 ) {
     LaunchedEffect("produtos") {
@@ -86,8 +89,8 @@ fun TelaEstoqueScreen(
         ) {
             BoxProdutos(
                 produtos =
-                    if (produtoViewModel.filtroIsEmpty()) produtoViewModel.getListaProdutos()
-                    else produtoViewModel.getListaProdutosPorFiltro(),
+                if (produtoViewModel.filtroIsEmpty()) produtoViewModel.getListaProdutos()
+                else produtoViewModel.getListaProdutosPorFiltro(),
                 titulo = stringResource(id = R.string.estoque),
                 isTelaInicio = false,
                 modifier = Modifier.fillMaxWidth(),
@@ -134,6 +137,8 @@ fun TelaEstoqueScreen(
 
 
     if (exibirFiltro) {
+        produtoViewModel.atualizarValidadeProdutos(produtoViewModel.getListaProdutos())
+
         FiltroEstoqueModal(
             produtoViewModel = produtoViewModel,
             onDismiss = { exibirFiltro = false },

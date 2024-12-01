@@ -42,10 +42,10 @@ import school.sptech.ui.theme.letterSpacingSecundaria
 
 @Composable
 fun SeletorData(
-    mesSelecionado: String,
+    mesSelecionado: Int,
     anoSelecionado: Int,
     onDismissRequest: () -> Unit,
-    onConfirm: (String, Int) -> Unit,
+    onConfirm: (Int, Int) -> Unit,
 ) {
     CustomMonthYearPickerDialog(
         mesSelecionado = mesSelecionado,

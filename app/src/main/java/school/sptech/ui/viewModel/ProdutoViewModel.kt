@@ -20,6 +20,7 @@ import school.sptech.network.RetrofitService
 class ProdutoViewModel : ViewModel() {
     private val produtoService: ProdutoService;
     private val categoriaProdutoService: CategoriaProdutoService;
+    private val validadeViewModel = ValidadeViewModel()
 
     private var empresaId by mutableStateOf(0)
     var produtos = mutableStateListOf<Produto>()
@@ -39,23 +40,21 @@ class ProdutoViewModel : ViewModel() {
     }
 
     fun getListaProdutos(): List<Produto> {
-        getProdutosByEmpresaId(empresaId)
+        //getProdutos(empresaId)
         return produtos.toList()
     }
 
-    fun getListaProdutosEstoqueBaixo(): List<Produto> {
-        if (produtos.isEmpty()) {
-            getProdutosByEmpresaId(empresaId)
-        }
-
-        return produtos.filter { it.qntdTotalEstoque!! < 10 }.toList()
+    fun getListaProdutosAlertaEstoque(): List<Produto> {
+        //getProdutosAlertaEstoque(empresaId)
+        return produtos.toList()
     }
 
     fun getListaProdutosPorFiltro(): List<Produto> {
         return produtos.filter { produto ->
             produto.qntdTotalEstoque!! >= filtro.rangeQtdEstoque.start &&
                     produto.qntdTotalEstoque!! <= filtro.rangeQtdEstoque.endInclusive &&
-                    (filtro.categorias.isEmpty() || filtro.categorias.contains(produto.categoriaProdutoNome))
+                    (filtro.categorias.isEmpty() || filtro.categorias.contains(produto.categoriaProdutoNome)) &&
+                        produto.validades?.map { it.dtValidade }?.contains(filtro.dtValidade) == true
         }
     }
 
@@ -110,13 +109,7 @@ class ProdutoViewModel : ViewModel() {
         }
     }
 
-    fun getProdutos(empresaId: Int): List<Produto> {
-        this.empresaId = empresaId
-        getProdutosByEmpresaId(empresaId)
-        return produtos.toList()
-    }
-
-    private fun getProdutosByEmpresaId(empresaId: Int) {
+    fun getProdutos(empresaId: Int) {
         GlobalScope.launch {
             try {
                 val response =
@@ -141,6 +134,37 @@ class ProdutoViewModel : ViewModel() {
                 Log.e("api", "Erro ao buscar produtos => ${ex.message}")
                 deuErro = true
                 mensagem = ex.message ?: "Erro desconhecido"
+            }
+        }
+    }
+
+    fun atualizarValidadeProdutos(produtos:List<Produto>){
+        GlobalScope.launch {
+            produtos.forEach {
+                validadeViewModel.getValidades(it.id ?: 0)
+                it.validades = validadeViewModel.getListaValidades()
+            }
+        }
+    }
+
+    fun getProdutosAlertaEstoque(empresaId: Int) {
+        GlobalScope.launch {
+            try {
+                val response = produtoService.getProdutosAlertaEstoque(empresaId)
+                if (response.isSuccessful) {
+                    produtos.clear()
+                    produtos.addAll(response.body() ?: emptyList())
+                    deuErro = false
+                    mensagem = ""
+                } else {
+                    Log.e("api", response.errorBody().toString())
+                    deuErro = true
+                    mensagem = response.errorBody().toString()
+                }
+            } catch (e: Exception) {
+                Log.e("api", e.message.toString())
+                deuErro = true
+                mensagem = e.message.toString()
             }
         }
     }

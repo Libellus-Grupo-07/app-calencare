@@ -96,10 +96,10 @@ import school.sptech.ui.theme.RoxoNubankOpacidade7
 
 @Composable
 fun CustomMonthYearPickerDialog(
-    mesSelecionado: String,
+    mesSelecionado: Int,
     anoSelecionado: Int,
     onDismissRequest: () -> Unit,
-    onConfirm: (String, Int) -> Unit
+    onConfirm: (Int, Int) -> Unit
 ) {
     var mes by remember { mutableStateOf(mesSelecionado) }
     var ano by remember { mutableStateOf(anoSelecionado) }
@@ -200,10 +200,10 @@ fun CustomMonthYearPickerDialog(
                     TextButton(
                         contentPadding = PaddingValues(vertical = 20.dp),
                         colors = ButtonDefaults.textButtonColors(
-                            containerColor = if (meses[it] == mes) RoxoNubankOpacidade7 else Color.Transparent,
-                            contentColor = if (meses[it] == mes) RoxoNubank else Cinza
+                            containerColor = if (it == mes-1) RoxoNubankOpacidade7 else Color.Transparent,
+                            contentColor = if (it == mes-1) RoxoNubank else Cinza
                         ),
-                        onClick = { mes = meses[it] }
+                        onClick = { mes = it + 1 }
                     ) {
                         TextoButtonLarge(texto = meses[it].substring(0, 3))
                     }

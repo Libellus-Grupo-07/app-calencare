@@ -11,13 +11,30 @@ import school.sptech.data.model.Produto
 
 interface ProdutoService {
     @GET("/api/produto/{empresaId}/{produtoId}")
-    suspend fun getProdutoById(@Path("empresaId") empresaId: Int, @Path("produtoId") produtoId: Int): Response<Produto>
+    suspend fun getProdutoById(
+        @Path("empresaId") empresaId: Int,
+        @Path("produtoId") produtoId: Int
+    ): Response<Produto>
+
     @GET("/api/produto/{empresaId}/buscar-todos")
-    suspend fun getAllProdutosByEmpresaId(@Path("empresaId") empresaId:Int): Response<List<Produto>>
+    suspend fun getAllProdutosByEmpresaId(@Path("empresaId") empresaId: Int): Response<List<Produto>>
+
+    @GET("/api/produto/alerta-estoque/{empresaId}")
+    suspend fun getProdutosAlertaEstoque(@Path("empresaId") empresaId: Int): Response<List<Produto>>
+
     @POST("/api/produto")
     suspend fun adicionarProduto(@Body produto: Produto): Response<Produto>
+
     @PUT("/api/produto/{empresaId}/{produtoId}")
-    suspend fun atualizarProduto(@Path("empresaId") empresaId: Int, @Path("produtoId") produtoId: Int, @Body produto: Produto): Response<Produto>
+    suspend fun atualizarProduto(
+        @Path("empresaId") empresaId: Int,
+        @Path("produtoId") produtoId: Int,
+        @Body produto: Produto
+    ): Response<Produto>
+
     @DELETE("/api/produto/{empresaId}/{produtoId}")
-    suspend fun excluirProduto(@Path("empresaId") empresaId: Int, @Path("produtoId") produtoId: Int): Response<Void>
+    suspend fun excluirProduto(
+        @Path("empresaId") empresaId: Int,
+        @Path("produtoId") produtoId: Int
+    ): Response<Void>
 }

@@ -63,6 +63,7 @@ import school.sptech.R
 import school.sptech.data.model.Agendamento
 import school.sptech.data.model.Despesa
 import school.sptech.data.model.Movimentacoes
+import school.sptech.data.model.NotificacaoEstoque
 import school.sptech.data.model.Produto
 import school.sptech.data.model.Validade
 import school.sptech.ui.theme.Amarelo
@@ -914,26 +915,24 @@ fun CardDespesa(despesa: Despesa, onClickDespesa: () -> Unit) {
 }
 
 @Composable
-fun CardNotificacoes(dtHora: String, nomeProduto: String, qntdProduto: Int) {
-    var cor = Color.Black
+fun CardNotificacoes(notificacao: NotificacaoEstoque, onClick: () -> Unit) {
+    var cor = Laranja
     var img = R.mipmap.orangealert
-    var textoAlerta = ""
+    var textoAlerta = stringResource(id = R.string.quaseSemEstoque)
 
-    if (qntdProduto in 11..20) {
+    if (notificacao.nivelEstoque.equals("Estoque muito baixo", ignoreCase = true)) {
         cor = Amarelo
         img = R.mipmap.yellowalert
         textoAlerta = stringResource(R.string.estoqueBaixo)
-    } else if (qntdProduto in 1..10) {
-        cor = Laranja
-        img = R.mipmap.orangealert
-        textoAlerta = stringResource(R.string.quaseSemEstoque)
-    } else if (qntdProduto == 0) {
+    } else if (notificacao.quantidade == 0) {
         cor = Vermelho
         img = R.mipmap.redalert
         textoAlerta = stringResource(R.string.semEstoque)
     }
 
-    Column(modifier = Modifier) {
+    Column(modifier = Modifier.clickable {
+        onClick()
+    }) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -951,7 +950,7 @@ fun CardNotificacoes(dtHora: String, nomeProduto: String, qntdProduto: Int) {
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
-                    text = dtHora,
+                    text = notificacao.dtCriacao?.let { formatarData(data = it, isDateTime = true) } ?: "",
                     fontFamily = fontFamilyPoppins,
                     letterSpacing = letterSpacingPrincipal,
                     color = Cinza,
@@ -963,7 +962,8 @@ fun CardNotificacoes(dtHora: String, nomeProduto: String, qntdProduto: Int) {
             }
 
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Column {
                     Image(
@@ -997,14 +997,20 @@ fun CardNotificacoes(dtHora: String, nomeProduto: String, qntdProduto: Int) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 MultiStyleText(
-                    stringResource(R.string.oProduto),
-                    Preto,
-                    nomeProduto,
-                    RoxoNubank,
-                    if (qntdProduto == 0) " está sem estoque." else stringResource(R.string.situacaoEstoque),
-                    Preto,
-                    if(qntdProduto == 0) "" else stringResource(R.string.qtdProdutoUnidade, qntdProduto),
-                    RoxoNubank
+                    text1 = stringResource(R.string.oProduto),
+                    color1 = Preto,
+                    text2 = notificacao.nomeProduto ?: "",
+                    color2 = RoxoNubank,
+                    text3 = if (notificacao.quantidade == 0) " está sem estoque."
+                    else stringResource(R.string.situacaoEstoque),
+                    color3 = Preto,
+                    text4 = if (notificacao.quantidade == 0) ""
+                    else stringResource(
+                        R.string.qtdProdutoUnidade,
+                        notificacao.quantidade ?: 0
+                    ),
+                    color4 = RoxoNubank,
+                    isBold = notificacao.lido == 0
                 )
             }
 

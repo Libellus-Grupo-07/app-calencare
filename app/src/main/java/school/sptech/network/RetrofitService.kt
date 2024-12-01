@@ -12,6 +12,7 @@ import school.sptech.data.service.EnderecoService
 import school.sptech.data.service.FinancasService
 import school.sptech.data.service.FuncionarioService
 import school.sptech.data.service.MovimentacaoValidadeService
+import school.sptech.data.service.NotificacaoEstoqueService
 import school.sptech.data.service.ProdutoService
 import school.sptech.data.service.ValidadeService
 
@@ -139,4 +140,13 @@ object RetrofitService{
         return client
     }
 
+    fun getClientNotificacaoEstoque(): NotificacaoEstoqueService {
+        val client = Retrofit.Builder()
+            .baseUrl(BASE_URL_API)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(NotificacaoEstoqueService::class.java)
+
+        return client
+    }
 }

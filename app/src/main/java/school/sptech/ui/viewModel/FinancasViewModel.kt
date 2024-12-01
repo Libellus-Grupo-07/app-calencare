@@ -13,12 +13,15 @@ import school.sptech.data.model.Movimentos
 import school.sptech.data.service.FinancasService
 import school.sptech.dataStoreRepository
 import school.sptech.network.RetrofitService
+import java.time.LocalDate
 
 class FinancasViewModel : ViewModel() {
     private val financasService: FinancasService
     val movimentacoes = mutableStateListOf<Movimentacoes>()
     var deuErro by mutableStateOf(false)
     var erro by mutableStateOf("")
+    var mes by mutableStateOf(LocalDate.now().monthValue)
+    var ano by mutableStateOf(LocalDate.now().year)
     var totalReceitas by mutableStateOf(0.0)
     var totalDespesas by mutableStateOf(0.0)
     var totalLucro by mutableStateOf(0.0)

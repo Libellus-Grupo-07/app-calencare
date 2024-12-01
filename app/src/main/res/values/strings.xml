@@ -31,9 +31,9 @@
     <string name="email" translatable="false">Email</string>
     <string name="perfil">Perfil</string>
     <string name="notificacoes">Notificações</string>
-    <string name="estoqueBaixo">"  ESTOQUE BAIXO"</string>
-    <string name="quaseSemEstoque">"  QUASE SEM ESTOQUE"</string>
-    <string name="semEstoque">"  SEM ESTOQUE"</string>
+    <string name="estoqueBaixo">"BAIXO ESTOQUE"</string>
+    <string name="quaseSemEstoque">"QUASE SEM ESTOQUE"</string>
+    <string name="semEstoque">"SEM ESTOQUE"</string>
     <string name="oProduto">"O produto "</string>
     <string name="situacaoEstoque" translatable="false">" está com estoque abaixo de "</string>
     <string name="adicionarProduto">Adicionar Produto</string>
