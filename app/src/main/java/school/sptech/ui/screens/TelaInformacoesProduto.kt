@@ -132,7 +132,7 @@ fun TelaInformacoesProdutoScreen(
                     validadeViewModel = validadeViewModel
                 )
 
-                StockQuantity(produto?.qntdTotalEstoque ?: 0)
+                StockQuantity(produto.qntdTotalEstoque ?: 0, produto.nivelEstoque ?: "")
 
                 BoxButtons(
                     enabledButtonRetirar = getEnabledButtonRetirarEstoque(
@@ -183,6 +183,7 @@ fun TelaInformacoesProdutoScreen(
                     reporProdutoViewModel.setValorQuantidadeMaxima(0)
                     reporProdutoViewModel.quantidadeEstoqueData.value = 0
                 },
+                nivelEstoque = produto.nivelEstoque ?: "",
                 produto = produto.nome ?: "",
                 quantidadeEstoque = produto.qntdTotalEstoque ?: 0,
                 quantidadeEstoqueData = validadeViewModel.quantidadeEstoqueValidade,
@@ -286,6 +287,7 @@ fun TelaInformacoesProdutoScreen(
             RetirarProductModal(
                 produto = produto.nome ?: "",
                 viewModel = reporProdutoViewModel,
+                nivelEstoque = produto.nivelEstoque ?: "",
                 onDateSelected = {
                     reporProdutoViewModel.quantidadeEstoqueData.value = 0
 
@@ -294,7 +296,7 @@ fun TelaInformacoesProdutoScreen(
                     }
                     validadeViewModel.validade = validade!!
 
-                    validadeViewModel.getQuantidadeEstoquePorValidade(validade!!.id!!)
+                    validadeViewModel.getQuantidadeEstoquePorValidade(validade.id!!)
 
                     reporProdutoViewModel.setValorQuantidadeMaxima(null)
                     reporProdutoViewModel.setQuantidadeInicial(0)
@@ -421,7 +423,8 @@ fun Form(
         )
 
         SelectableDatesRow(
-            dates = produto.validades.let { it?.map { date -> date.dtValidade ?: ""} } ?: emptyList(),
+            dates = produto.validades.let { it?.map { date -> date.dtValidade ?: "" } }
+                ?: emptyList(),
             qtdEstoqueData = validadeViewModel.quantidadeEstoqueValidadeTela,
             onDateSelected = { date ->
                 val validade = produto.validades?.find { validadeAtual ->
@@ -437,7 +440,7 @@ fun Form(
 }
 
 @Composable
-fun StockQuantity(qtdEstoque: Int) {
+fun StockQuantity(qtdEstoque: Int, nivelEstoque: String) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Start
@@ -450,7 +453,7 @@ fun StockQuantity(qtdEstoque: Int) {
 
         Text(
             text = stringResource(R.string.qtdEmEstoque, qtdEstoque),
-            color = getColorTextEstoque(qtdEstoque),
+            color = getColorTextEstoque(qtdEstoque, nivelEstoque),
             fontWeight = FontWeight.Bold,
             fontSize = 14.sp,
             fontFamily = fontFamilyPoppins

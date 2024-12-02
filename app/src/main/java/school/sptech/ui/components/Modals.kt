@@ -306,6 +306,7 @@ fun ProductModal(
     buttonColor: Color,
     buttonText: String,
     produto: String,
+    nivelEstoque: String,
     quantidadeEstoque: Int,
     quantidadeEstoqueData: Int? = null,
     onDateSelected: (String?) -> Unit = {},
@@ -456,7 +457,7 @@ fun ProductModal(
                     LabelInput(label = "Total em Estoque: ", isMediumInput = true)
                     LabelInput(
                         label = "$quantidadeEstoque produtos",
-                        color = getColorTextEstoque(quantidadeEstoque)
+                        color = getColorTextEstoque(quantidadeEstoque, nivelEstoque )
                     )
                 }
             }
@@ -493,7 +494,8 @@ fun preview() {
         quantidadeEstoque = 10,
         onDismiss = { /*TODO*/ },
         onConfirm = { /*TODO*/ },
-        datesFromBackend = listOf("1999/11/02")
+        datesFromBackend = listOf("1999/11/02"),
+        nivelEstoque = "Estoque baixo"
     )
 }
 
@@ -501,6 +503,7 @@ fun preview() {
 @Composable
 fun ReporProductModal(
     produto: String,
+    nivelEstoque: String,
     quantidadeEstoque: Int,
     quantidadeEstoqueData: Int? = null,
     onDismiss: () -> Unit,
@@ -525,13 +528,15 @@ fun ReporProductModal(
         onQuantidadeChanged = onQuantidadeChanged,
         viewModel = viewModel,
         datesFromBackend = datesFromBackend,
-        isRepor = true
+        isRepor = true,
+        nivelEstoque = nivelEstoque
     )
 }
 
 @Composable
 fun RetirarProductModal(
     produto: String,
+    nivelEstoque: String,
     quantidadeEstoque: Int,
     quantidadeEstoqueData: Int?,
     onDismiss: () -> Unit,
@@ -553,7 +558,8 @@ fun RetirarProductModal(
         onDismiss = onDismiss,
         onConfirm = onConfirm,
         viewModel = viewModel,
-        datesFromBackend = datesFromBackend
+        datesFromBackend = datesFromBackend,
+        nivelEstoque = nivelEstoque
     )
 }
 

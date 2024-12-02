@@ -5,4 +5,5 @@ data class MovimentacaoValidade(
     var tipoMovimentacao: String? = null,
     var quantidade: Int? = null,
     var idValidade: Int? = null,
+    var dtCriacao: String? = null,
 )

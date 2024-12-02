@@ -130,7 +130,8 @@ fun FiltroEstoqueModal(
             },
             label = "Data de Reposição",
             isDateInput = true,
-            isSmallInput = true
+            isSmallInput = true,
+            enabledClearDate = true
         )
 
         FormFieldWithLabel(
@@ -140,7 +141,8 @@ fun FiltroEstoqueModal(
             },
             label = "Data de Retirada",
             isDateInput = true,
-            isSmallInput = true
+            isSmallInput = true,
+            enabledClearDate = true
         )
 
         FormFieldWithLabel(
@@ -150,7 +152,8 @@ fun FiltroEstoqueModal(
             },
             label = "Data de Validade",
             isDateInput = true,
-            isSmallInput = true
+            isSmallInput = true,
+            enabledClearDate = true
         )
 
         Row(

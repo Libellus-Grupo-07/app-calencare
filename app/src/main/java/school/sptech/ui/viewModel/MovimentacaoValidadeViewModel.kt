@@ -2,11 +2,13 @@ package school.sptech.ui.viewModel
 
 import android.util.Log
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import school.sptech.data.model.MovimentacaoValidade
 import school.sptech.data.service.MovimentacaoValidadeService
 import school.sptech.network.RetrofitService
 
@@ -14,6 +16,7 @@ class MovimentacaoValidadeViewModel : ViewModel() {
     private val movimentacaoValidadeService:MovimentacaoValidadeService
     var deuErro by mutableStateOf(false)
     var erro by mutableStateOf("")
+    var listaMovimentacoes = mutableStateListOf<MovimentacaoValidade>()
     private var qtdProdutosSemEstoque by mutableStateOf(0)
     private var qtdProdutosEstoqueBaixo by mutableStateOf(0)
     private var qtdProdutosEstoqueAlto by mutableStateOf(0)
@@ -21,13 +24,6 @@ class MovimentacaoValidadeViewModel : ViewModel() {
 
     init {
         movimentacaoValidadeService = RetrofitService.getClientMovimentacaoValidade()
-    }
-
-    fun getKpisEstoque(empresaId: Int){
-        getProdutosSemEstoque(empresaId)
-        getProdutosEstoqueBaixo(empresaId)
-        getProdutosEstoqueAlto(empresaId)
-        getProdutosRepostosNoDia(empresaId)
     }
 
     fun getQuantidadeProdutosSemEstoque(empresaId: Int): Int {
@@ -124,6 +120,27 @@ class MovimentacaoValidadeViewModel : ViewModel() {
                 }
             } catch (e: Exception) {
                 Log.e("api", "Erro ao buscar produtos repostos no dia => ${e.message}")
+                deuErro = true
+                erro = e.message ?: "Erro desconhecido"
+            }
+        }
+    }
+
+    fun getMovimentacoesPorEmpresa(empresaId: Int) {
+        GlobalScope.launch {
+            try {
+                val response = movimentacaoValidadeService.getMovimentacoesPorEmpresa(empresaId)
+                if (response.isSuccessful) {
+                    deuErro = false
+                    erro = "OK"
+                    listaMovimentacoes.clear()
+                    listaMovimentacoes.addAll(response.body() ?: emptyList())
+                } else {
+                    deuErro = true
+                    erro = response.errorBody()?.string() ?: "Erro desconhecido"
+                }
+            } catch (e: Exception) {
+                Log.e("api", "Erro ao buscar movimentações por empresa => ${e.message}")
                 deuErro = true
                 erro = e.message ?: "Erro desconhecido"
             }

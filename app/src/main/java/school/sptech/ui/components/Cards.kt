@@ -57,8 +57,6 @@ import formatarData
 import formatarDataDatePicker
 import formatarDecimal
 import formatarValorMonetario
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import school.sptech.R
 import school.sptech.data.model.Agendamento
 import school.sptech.data.model.Despesa
@@ -206,6 +204,7 @@ fun CardProduto(
 
                 ButtonEstoque(
                     qtdEstoque = produto.qntdTotalEstoque ?: 0,
+                    nivelEstoque = produto.nivelEstoque ?: "",
                 )
 
                 if (isTelaInicio) {
@@ -327,6 +326,7 @@ fun CardProduto(
                         validadeViewModel.quantidadeEstoqueValidade = 0
                     },
                     produto = produto.nome ?: "",
+                    nivelEstoque = produto.nivelEstoque ?: "",
                     quantidadeEstoque = produto.qntdTotalEstoque ?: 0,
                     quantidadeEstoqueData = validadeViewModel.quantidadeEstoqueValidade,
                     onDateSelected = {
@@ -382,6 +382,7 @@ fun CardProduto(
 
                 RetirarProductModal(
                     produto = produto.nome ?: "",
+                    nivelEstoque = produto.nivelEstoque ?: "",
                     quantidadeEstoqueData = validadeViewModel.quantidadeEstoqueValidade,
                     quantidadeEstoque = produto.qntdTotalEstoque ?: 0,
                     onDismiss = {

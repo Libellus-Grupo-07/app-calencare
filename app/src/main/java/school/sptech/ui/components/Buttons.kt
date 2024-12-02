@@ -59,14 +59,14 @@ import school.sptech.ui.theme.VermelhoOpacidade15
 import java.util.Locale
 
 @Composable
-fun ButtonEstoque(qtdEstoque: Int) {
+fun ButtonEstoque(qtdEstoque:Int, nivelEstoque: String) {
     val descricao: String
     val corFundo: Color
     val corTexto: Color
     val icone: Int
 
-    when (qtdEstoque) {
-        0 -> {
+    when (nivelEstoque) {
+        "Sem estoque" -> {
             descricao = stringResource(id = R.string.semEstoque).replaceFirstChar {
                 if (it.isLowerCase()) it.titlecase(
                     Locale.getDefault()
@@ -77,7 +77,7 @@ fun ButtonEstoque(qtdEstoque: Int) {
             icone = R.mipmap.sem_estoque
         }
 
-        in 1..4 -> {
+        "Estoque muito baixo" -> {
             descricao = stringResource(id = R.string.quaseSemEstoque).replaceFirstChar {
                 if (it.isLowerCase()) it.titlecase(
                     Locale.getDefault()
@@ -88,7 +88,7 @@ fun ButtonEstoque(qtdEstoque: Int) {
             icone = R.mipmap.baixo_estoque
         }
 
-        in 5..14 -> {
+        "Estoque baixo" -> {
             descricao = "Estoque Abaixo de 15 Produtos"
             corFundo = AmareloOpacidade10
             corTexto = Amarelo
@@ -158,7 +158,7 @@ fun ButtonOutline(
     iconId: Int = R.mipmap.cancelar,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    isMediumButton:Boolean = false
+    isMediumButton: Boolean = false
 ) {
     Button(
         modifier = modifier.height(if (isMediumButton) 38.dp else 44.dp),
@@ -171,26 +171,26 @@ fun ButtonOutline(
             disabledContentColor = CinzaOpacidade35,
             disabledContainerColor = Branco
         ),
-        border = BorderStroke(1.3.dp, if(enabledButton) Cinza else CinzaOpacidade35),
+        border = BorderStroke(1.3.dp, if (enabledButton) Cinza else CinzaOpacidade35),
         contentPadding = PaddingValues(
             horizontal = 18.dp,
         )
     ) {
-        if(enabledIcon){
+        if (enabledIcon) {
             Icon(
                 painter = painterResource(id = iconId),
                 contentDescription = "Ícone de $titulo",
                 modifier = modifier.let {
-                    if(titulo.equals("Limpar", ignoreCase = true)) it.size(14.dp)
-                    else if(isMediumButton) it.size(11.dp)
+                    if (titulo.equals("Limpar", ignoreCase = true)) it.size(14.dp)
+                    else if (isMediumButton) it.size(11.dp)
                     else it.size(13.dp)
                 }
 
             )
-            Spacer(modifier = modifier.size(if(isMediumButton) 6.dp else 8.dp))
+            Spacer(modifier = modifier.size(if (isMediumButton) 6.dp else 8.dp))
         }
 
-        if(isMediumButton) TextoButtonSmall(texto = titulo) else TextoButtonLarge(texto = titulo)
+        if (isMediumButton) TextoButtonSmall(texto = titulo) else TextoButtonLarge(texto = titulo)
     }
 }
 
@@ -198,7 +198,7 @@ fun ButtonOutline(
 fun ButtonBackground(
     titulo: String,
     cor: Color,
-    enabled:Boolean = true,
+    enabled: Boolean = true,
     enabledIcon: Boolean = true,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -206,8 +206,8 @@ fun ButtonBackground(
     iconId: Int? = null,
     isMediumButton: Boolean = false,
     isSmallButton: Boolean = false
-){
-    val corTexto = when(cor){
+) {
+    val corTexto = when (cor) {
         VermelhoOpacidade15 -> Vermelho
         VerdeOpacidade15 -> Verde
         AzulOpacidade15 -> Azul
@@ -217,7 +217,8 @@ fun ButtonBackground(
 
     Button(
         modifier = modifier.height(
-            if (isSmallButton) 34.dp else if (isMediumButton) 38.dp else 44.dp),
+            if (isSmallButton) 34.dp else if (isMediumButton) 38.dp else 44.dp
+        ),
         shape = CircleShape,
         enabled = enabled,
         onClick = onClick,
@@ -228,11 +229,11 @@ fun ButtonBackground(
             disabledContainerColor = CinzaOpacidade50
         ),
         contentPadding = PaddingValues(
-            horizontal = if(isSmallButton) 14.dp else 18.dp,
+            horizontal = if (isSmallButton) 14.dp else 18.dp,
         )
     ) {
-        if(enabledIcon){
-            if(iconId != null){
+        if (enabledIcon) {
+            if (iconId != null) {
                 Icon(
                     painter = painterResource(id = iconId),
                     contentDescription = "Ícone de $titulo",
@@ -249,10 +250,10 @@ fun ButtonBackground(
                 )
             }
 
-            Spacer(modifier = modifier.size(if(isMediumButton) 4.dp else 6.dp))
+            Spacer(modifier = modifier.size(if (isMediumButton) 4.dp else 6.dp))
         }
 
-        if( isSmallButton || isMediumButton) TextoButtonSmall(texto = titulo)
+        if (isSmallButton || isMediumButton) TextoButtonSmall(texto = titulo)
         else TextoButtonLarge(texto = titulo)
 
     }
@@ -268,7 +269,7 @@ fun ButtonCancelar(onClick: () -> Unit) {
 }
 
 @Composable
-fun ButtonIconVoltar(modifier: Modifier = Modifier, onClick: () -> Unit){
+fun ButtonIconVoltar(modifier: Modifier = Modifier, onClick: () -> Unit) {
     IconButton(
         modifier = modifier
             .fillMaxHeight(0.08f),
@@ -276,7 +277,7 @@ fun ButtonIconVoltar(modifier: Modifier = Modifier, onClick: () -> Unit){
         colors = IconButtonDefaults.iconButtonColors(
             contentColor = Preto
         )
-    ){
+    ) {
         Icon(
             Icons.Rounded.ArrowBack,
             contentDescription = "Ícone de Voltar",
@@ -286,7 +287,7 @@ fun ButtonIconVoltar(modifier: Modifier = Modifier, onClick: () -> Unit){
 }
 
 @Composable
-fun ButtonIconExcluir(modifier: Modifier = Modifier, onClick: () -> Unit){
+fun ButtonIconExcluir(modifier: Modifier = Modifier, onClick: () -> Unit) {
     Column(modifier = modifier.fillMaxWidth()) {
         Box(
             modifier = modifier
