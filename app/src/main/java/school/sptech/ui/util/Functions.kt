@@ -145,11 +145,11 @@ fun getStringProduto(qtdEstoque: Int): String {
     return if (qtdEstoque == 1) "produto" else "produtos"
 }
 
-fun getColorTextEstoque(qtdEstoque: Int): Color {
+fun getColorTextEstoque(qtdEstoque: Int, nivelEstoque:String): Color {
     return when {
         qtdEstoque == 0 -> Vermelho
-        qtdEstoque in 1..5 -> Laranja
-        qtdEstoque in 6 until 15 -> Amarelo
+        nivelEstoque == "Estoque muito baixo" -> Laranja
+        nivelEstoque == "Estoque baixo" -> Amarelo
         else -> Verde
     }
 }

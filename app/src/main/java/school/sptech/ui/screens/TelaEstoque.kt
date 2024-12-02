@@ -34,6 +34,7 @@ import school.sptech.ui.components.AlertSuccess
 import school.sptech.ui.components.Background
 import school.sptech.ui.components.BoxProdutos
 import school.sptech.ui.components.TopBarSearch
+import school.sptech.ui.viewModel.MovimentacaoValidadeViewModel
 import school.sptech.ui.viewModel.ProdutoViewModel
 import school.sptech.ui.viewModel.ValidadeViewModel
 
@@ -52,6 +53,7 @@ class TelaEstoque : ComponentActivity() {
 fun TelaEstoqueScreen(
     produtoViewModel: ProdutoViewModel = koinViewModel(),
     validadeViewModel: ValidadeViewModel = koinViewModel(),
+    movimentacaoValidadeViewModel: MovimentacaoValidadeViewModel = koinViewModel(),
     navController: NavController
 ) {
     var listaProdutos = remember {
@@ -63,6 +65,8 @@ fun TelaEstoqueScreen(
 
         produtoViewModel.getProdutos(idEmpresa)
         produtoViewModel.getCategoriasProduto()
+        validadeViewModel.getValidadesPorEmpresa()
+        movimentacaoValidadeViewModel.getMovimentacoesPorEmpresa(idEmpresa)
     }
 
     var exibirFiltro by remember {
@@ -106,7 +110,7 @@ fun TelaEstoqueScreen(
                 .padding(horizontal = 24.dp, vertical = 12.dp)
         ) {
             BoxProdutos(
-                produtos = if (listaProdutos.isEmpty() && textoPesquisa.isEmpty())
+                produtos = if (textoPesquisa.isEmpty() && produtoViewModel.filtroIsEmpty())
                     produtoViewModel.getListaProdutos()
                 else listaProdutos,
                 titulo = stringResource(id = R.string.estoque),
@@ -155,7 +159,7 @@ fun TelaEstoqueScreen(
 
 
     if (exibirFiltro) {
-        produtoViewModel.atualizarValidadeProdutos(produtoViewModel.getListaProdutos())
+        //produtoViewModel.atualizarValidadeProdutos(produtoViewModel.getListaProdutos())
 
         FiltroEstoqueModal(
             produtoViewModel = produtoViewModel,
@@ -167,7 +171,10 @@ fun TelaEstoqueScreen(
             onSalvar = {
                 exibirFiltro = false
                 listaProdutos.clear()
-                listaProdutos.addAll(produtoViewModel.getListaProdutosPorFiltro())
+                listaProdutos.addAll(produtoViewModel.getListaProdutosPorFiltro(
+                    validades = validadeViewModel.listaValidadesFiltro,
+                    movimentacoes = movimentacaoValidadeViewModel.listaMovimentacoes
+                ))
             },
         )
     }

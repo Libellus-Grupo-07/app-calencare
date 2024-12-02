@@ -31,5 +31,8 @@ interface MovimentacaoValidadeService {
     suspend fun getProdutosRepostosNoDia(
         @Path("empresaId") empresaId: Int,
         @Path("data") data: LocalDate = LocalDate.now()
-     ): Response<Int>
+    ): Response<Int>
+
+    @GET("/api/movimentacao-validade/listar-movimentacoes-produto/{empresaId}")
+    suspend fun getMovimentacoesPorEmpresa(@Path("empresaId") empresaId: Int): Response<List<MovimentacaoValidade>>
 }

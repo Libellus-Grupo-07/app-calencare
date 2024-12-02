@@ -11,6 +11,7 @@ import school.sptech.data.model.MovimentacaoValidade
 import school.sptech.data.model.Validade
 import school.sptech.data.service.ValidadeService
 import school.sptech.data.service.MovimentacaoValidadeService
+import school.sptech.dataStoreRepository
 import school.sptech.network.RetrofitService
 import java.time.LocalDateTime
 
@@ -19,6 +20,7 @@ class ValidadeViewModel : ViewModel() {
     private val movimentacaoValidadeService: MovimentacaoValidadeService;
 
     var listaValidades = mutableStateListOf<Validade>()
+    var listaValidadesFiltro = mutableStateListOf<Validade>()
     private var produtoId by mutableStateOf(0)
     var validade by mutableStateOf(
         Validade(
@@ -121,7 +123,7 @@ class ValidadeViewModel : ViewModel() {
         return quantidadeEstoqueValidade
     }
 
-    fun getQuantidadeEstoquePorValidade(validadeId: Int, isTela:Boolean = false) {
+    fun getQuantidadeEstoquePorValidade(validadeId: Int, isTela: Boolean = false) {
         if (validade.qntdEstoque == null) {
             GlobalScope.launch {
                 try {
@@ -131,7 +133,7 @@ class ValidadeViewModel : ViewModel() {
                         )
 
                     if (response.isSuccessful) {
-                        if(isTela) quantidadeEstoqueValidadeTela = response.body()!!
+                        if (isTela) quantidadeEstoqueValidadeTela = response.body()!!
                         else quantidadeEstoqueValidade = response.body()!!
                         deuErro = false
                     } else {
@@ -180,4 +182,27 @@ class ValidadeViewModel : ViewModel() {
         }
     }
 
+    fun getValidadesPorEmpresa() {
+        GlobalScope.launch {
+            try {
+                val response =
+                    validadeService.getValidadesEmpresa(empresaId = dataStoreRepository.getEmpresaId())
+
+                if (response.isSuccessful) {
+                    listaValidades.clear()
+                    listaValidadesFiltro.addAll(response.body() ?: listOf())
+                    deuErro = false
+                    erro = ""
+                } else if (response.code() == 404) {
+                    deuErro = false
+                } else {
+                    deuErro = true
+                    erro = response.errorBody()?.string() ?: "Erro desconhecido"
+                }
+            } catch (ex: Exception) {
+                deuErro = true
+                erro = ex.message ?: "Erro desconhecido"
+            }
+        }
+    }
 }

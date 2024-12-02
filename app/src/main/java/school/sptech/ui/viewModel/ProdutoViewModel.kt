@@ -6,10 +6,13 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import formatarData
+import formatarDataDatePicker
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import school.sptech.data.model.CategoriaProduto
 import school.sptech.data.model.FiltroEstoque
+import school.sptech.data.model.MovimentacaoValidade
 import school.sptech.data.model.Produto
 import school.sptech.data.model.Validade
 import school.sptech.data.service.CategoriaProdutoService
@@ -55,13 +58,56 @@ class ProdutoViewModel : ViewModel() {
         return produtos.toList()
     }
 
-    fun getListaProdutosPorFiltro(): List<Produto> {
-        return produtos.filter { produto ->
+    fun getListaProdutosPorFiltro(
+        validades: List<Validade>,
+        movimentacoes: List<MovimentacaoValidade>
+    ): List<Produto> {
+        val listaProdutos = produtos
+        val listaFiltrada = listaProdutos.filter { produto ->
+            val validadesProduto = validades.filter { it.produtoId == produto.id }
+            val reposicoes = movimentacoes.filter { it.tipoMovimentacao?.equals("1") == true }
+            val retiradas = movimentacoes.filter { it.tipoMovimentacao?.equals("0") == true }
+            val dtValidadeFiltro = formatarDataDatePicker(
+                inputFormat = true,
+                data = filtro.dtValidade.toLongOrNull() ?: 0L
+            )
+            val dtReposicaoFiltro = formatarDataDatePicker(
+                inputFormat = true,
+                data = filtro.dtReposicao.toLongOrNull() ?: 0L
+            )
+            val dtRetiradaFiltro = formatarDataDatePicker(
+                inputFormat = true,
+                data = filtro.dtRetirada.toLongOrNull() ?: 0L
+            )
+
+
+            produto.validades = validadesProduto
+            produto.reposicoes =
+                reposicoes.filter { it.idValidade in validadesProduto.map { it.id } }
+            produto.retiradas = retiradas.filter { it.idValidade in validadesProduto.map { it.id } }
+
             produto.qntdTotalEstoque!! >= filtro.rangeQtdEstoque.start &&
                     produto.qntdTotalEstoque!! <= filtro.rangeQtdEstoque.endInclusive &&
                     (filtro.categorias.isEmpty() || filtro.categorias.contains(produto.categoriaProdutoNome)) &&
-                    produto.validades?.map { it.dtValidade }?.contains(filtro.dtValidade) == true
+                    (dtValidadeFiltro.isEmpty() || produto.validades!!.map {
+                        formatarData(
+                            it.dtValidade ?: ""
+                        )
+                    }.contains(dtValidadeFiltro)) &&
+                    (dtReposicaoFiltro.isEmpty() || produto.reposicoes!!.map {
+                        formatarData(
+                            it.dtCriacao ?: ""
+                        )
+                    }
+                        .contains(dtReposicaoFiltro)) &&
+                    (dtRetiradaFiltro.isEmpty() || produto.retiradas!!.map {
+                        formatarData(
+                            it.dtCriacao ?: ""
+                        )
+                    }
+                        .contains(dtRetiradaFiltro))
         }
+        return listaFiltrada
     }
 
     fun getCategoriasProduto() {
@@ -240,7 +286,13 @@ class ProdutoViewModel : ViewModel() {
     }
 
     fun filtroIsEmpty(): Boolean {
-        return filtro.rangeQtdEstoque.start == 0f && (filtro.rangeQtdEstoque.endInclusive == 0f || filtro.rangeQtdEstoque.endInclusive == qtdMaximaEstoque) && filtro.categorias.isEmpty()
+        return filtro.rangeQtdEstoque.start == 0f
+                && (filtro.rangeQtdEstoque.endInclusive == 0f
+                || filtro.rangeQtdEstoque.endInclusive == qtdMaximaEstoque)
+                && filtro.categorias.isEmpty() &&
+                filtro.dtValidade.isEmpty() &&
+                filtro.dtReposicao.isEmpty() &&
+                filtro.dtRetirada.isEmpty()
     }
 
     fun excluirProduto() {
