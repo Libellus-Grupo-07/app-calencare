@@ -17,7 +17,7 @@ import school.sptech.data.service.ProdutoService
 import school.sptech.data.service.ValidadeService
 
 object RetrofitService{
-    private val isDev = true
+    private val isDev = false
     private val ipAwsDev = "http://44.205.75.87/"
     private val ipAwsProd = "https://calencare-prod.sytes.net/"
     private val BASE_URL_API = if(isDev) ipAwsDev else ipAwsProd
